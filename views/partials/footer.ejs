@@ -1,0 +1,49 @@
+<!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Find A Store</a></li>
+                        <li><a href="#">About Our Company</a></li>
+                        <li><a href="#">About Our CSR</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Help</h4>
+                    <ul>
+                        <li><a href="#">Get on Us</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Returns</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About</a></li>
+                        <li><a href="#">News</a></li>
+                        <li><a href="#">Careers</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2025 SoleStyle Inc. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="#">Guides</a>
+                    <a href="#">Terms of Sale</a>
+                    <a href="#">Terms of Use</a>
+                    <a href="#">Privacy Policy</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Auth Modal (only show if user is not logged in) -->
+    <% if (typeof user === 'undefined' || !user) { %>
+        <%- include('authModal') %>
+    <% } %>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>
