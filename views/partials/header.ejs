@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= typeof title !== 'undefined' ? title : 'SoleStyle - Premium Footwear' %></title>
     <link rel="stylesheet" href="/css/homestyle.css">
+    <link rel="stylesheet" href="/css/signup.css">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body>
     <!-- Header -->
@@ -55,9 +59,11 @@
                             <a href="/logout" class="logout-link">Logout</a>
                         </div>
                     <% } else { %>
-                        <!-- Not Logged In: Show Login/Signup -->
+                         <!-- Not Logged In: Show Login/Signup 
                         <button class="btn-text" onclick="openAuthModal('login')">Login</button>
-                        <button class="btn-primary-small" onclick="openAuthModal('signup')">Sign Up</button>
+                        <button class="btn-primary-small" onclick="openAuthModal('signup')">Sign Up</button>  -->
+                        <a href="/Login" class="btn-text" >Login</a>
+                        <a href="/signup" class="btn-primary-small" >Sign Up</a>
                     <% } %>
 
                     <!-- Wishlist Icon -->

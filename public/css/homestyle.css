@@ -884,6 +884,14 @@ body {
     border-radius: 0; /* remove rounded corners if full width */
 }
 
+a.btn-text,
+a.btn-primary-small {
+    text-decoration: none; /* underline നീക്കം ചെയ്യുന്നു */
+    /* color: inherit; ബട്ടൺ നിറം ഉപയോഗിക്കാൻ */
+}
+
+
+
 /* Responsive */
 @media (max-width: 768px) {
     .main-nav {
