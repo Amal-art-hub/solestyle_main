@@ -44,10 +44,10 @@ const verifyOtp = async (req, res) => {
   try {
     const { otp } = req.body;
     if (!req.session.userOtp) {
-      return res.render("verify-otp", { message: "Session expired. Please signup again." });
+      return res.json({ success: false, message: "Session expired. Please signup again." });
     }
     if (otp !== req.session.userOtp) {
-      return res.render("verify-otp", { message: "Invalid OTP. Please try again." });
+      return res.json({ success: false, message: "Invalid OTP. Please try again." });
     }
     // OTP is correct – create user
     const { firstName, lastName, email, phone, password } = req.session.userData;
@@ -55,11 +55,11 @@ const verifyOtp = async (req, res) => {
     // Clean up session
     req.session.userOtp = null;
     req.session.userData = null;
-    // Redirect to login or homepage after successful registration
-    return res.redirect("/login");
+    // Return success JSON
+    return res.json({ success: true, redirectUrl: "/login" });
   } catch (error) {
     console.error("OTP verification error", error);
-    res.redirect("/pageNotFound");
+    res.status(500).json({ success: false, message: "Server error during verification" });
   }
 };
 
@@ -68,27 +68,35 @@ const signup = async (req, res) => {
   try {
     const { firstName, lastName, email, phone, password, confirmPassword } = req.body;
     if (password !== confirmPassword) {
-      return res.render("signup", { message: "Password do not match" });
+      return res.json({ message: "Password do not match" });
     }
     const existingUser = await checkExistingUser(email);
     if (existingUser) {
-      return res.render("signup", { message: "User already exists" });
+      return res.json({ message: "User already exists" });
     }
     const otp = generateOtp();
-    console.log("Generated OTP:", otp);
+    // Enhanced logging for OTP debugging
+    console.log('========== OTP DEBUGGING ==========');
+    console.log('Generated OTP:', otp);
+    console.log('Email being sent to:', email);
+    console.log('Session ID:', req.sessionID);
+    console.log('Session data before email:', JSON.stringify(req.session, null, 2));
+    
     const emailSent = await sendVerificationEmail(email, otp);
-    console.log("Email sent result:", emailSent);
+    console.log('Email sent successfully:', emailSent);
+    console.log('Session data after email:', JSON.stringify(req.session, null, 2));
+    console.log('===================================');
     if (!emailSent) {
-      return res.json("email-error");
+      return res.json({ message: "Failed to send verification email" });
     }
     // Store OTP and user data in session for later creation
     req.session.userOtp = otp;
     req.session.userData = { firstName, lastName, email, phone, password };
-    // Redirect to OTP verification page
-    return res.redirect("/verify-otp");
+    // Return JSON with redirect URL for client-side navigation
+    return res.json({ success: true, redirect: "/verify-otp" });
   } catch (error) {
     console.error("signup error", error);
-    res.redirect("/pageNotFound");
+    res.status(500).json({ message: "Server error during signup" });
   }
 };
 
@@ -100,62 +108,3 @@ module.exports = {
   loadVerifyOtp,
   verifyOtp
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//submitting signup page  ,directly user data saving in the db
-
-// const signup=async(req,res)=>{
-//    const{firstName,lastName,email,phone,password,confirmPassword}=req.body;
-//   try {
-
-//     if(password!==confirmPassword){
-//       return res.status(400).send("Password does not match");
-
-//     }
-//     const existingUser=await findUserByEmail(email);
-//     if(existingUser){
-//       return res.status(400).send("Email already registered");
-//     }
-
-//     const newUser=await createUser({
-//       firstName,lastName,email,phone,password
-//     });
-
-//     console.log(newUser);
-
-//     // return res.redirect("/login");
-//         return res.status(200).json({
-//       success: true,
-//       message: "Registration successful! Redirecting to login...",
-//       redirect: "/login"
-//     });
-
-//   } catch (error) {
-//     // res.status(500).send("Internalserver error");
-//     console.error("Signup error:", error);
-//     return res.status(500).json({
-//       success: false,
-//       message: "An error occurred during registration. Please try again."
-//     });
-//   }
-// }
