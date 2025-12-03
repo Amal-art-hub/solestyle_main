@@ -100,11 +100,63 @@ const signup = async (req, res) => {
   }
 };
 
+// Resend OTP handler
+const resendOtp = async (req, res) => {
+  try {
+    // Check if we have user data in session
+    if (!req.session.userData || !req.session.userData.email) {
+      return res.status(400).json({ 
+        success: false, 
+        message: "Session expired. Please sign up again." 
+      });
+    }
+
+    const { email } = req.session.userData;
+    const otp = generateOtp();
+    
+    // Log for debugging
+    console.log('========== RESEND OTP DEBUGGING ==========');
+    console.log('Resending OTP to:', email);
+    console.log('New OTP:', otp);
+    console.log('Session ID:', req.sessionID);
+    
+    // Send the new OTP via email
+    const emailSent = await sendVerificationEmail(email, otp);
+    
+    if (!emailSent) {
+      console.error('Failed to send OTP email to:', email);
+      return res.status(500).json({ 
+        success: false, 
+        message: "Failed to send verification email. Please try again." 
+      });
+    }
+    
+    // Update the OTP in the session
+    req.session.userOtp = otp;
+    
+    console.log('OTP resent successfully to:', email);
+    console.log('========================================');
+    
+    res.json({ 
+      success: true, 
+      message: "A new OTP has been sent to your email." 
+    });
+    
+  } catch (error) {
+    console.error('Error in resendOtp:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: "An error occurred while resending OTP. Please try again." 
+    });
+  }
+};
+
 module.exports = {
   loadHomepage,
   pageNotFound,
   loadSignup,
   signup,
   loadVerifyOtp,
-  verifyOtp
+  verifyOtp,
+  resendOtp
 };

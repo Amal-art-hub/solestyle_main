@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const timerElement = document.getElementById("timer");
     const resendLink = document.getElementById("resendLink");
     let timeLeft = 60; // 60 seconds
+    let timerId;
 
     // Auto-move cursor & formatting
     otpInput.addEventListener("input", () => {
@@ -63,14 +64,65 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (timeLeft > 0) {
             timeLeft--;
-            setTimeout(updateTimer, 1000);
+            timerId = setTimeout(updateTimer, 1000);
         } else {
             // Enable Resend Link
             resendLink.classList.remove("disabled");
             resendLink.style.pointerEvents = "auto";
             resendLink.style.color = "#007bff";
-            timerElement.textContent = ""; // Hide timer or show "Expired"
+            timerElement.textContent = "";
         }
+    }
+
+    // Handle Resend OTP
+    async function handleResendOTP() {
+        try {
+            // Disable resend link and show loading
+            resendLink.classList.add("disabled");
+            resendLink.style.pointerEvents = "none";
+            resendLink.style.color = "#6c757d";
+            
+            const response = await axios.post('/resend-otp');
+            
+            if (response.data.success) {
+                // Reset and restart timer
+                clearTimeout(timerId);
+                timeLeft = 60;
+                updateTimer();
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'OTP Resent!',
+                    text: 'A new OTP has been sent to your registered email/phone.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } else {
+                throw new Error(response.data.message || 'Failed to resend OTP');
+            }
+        } catch (error) {
+            console.error('Resend OTP error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.response?.data?.message || 'Failed to resend OTP. Please try again.'
+            });
+            
+            // Re-enable resend link on error
+            resendLink.classList.remove("disabled");
+            resendLink.style.pointerEvents = "auto";
+            resendLink.style.color = "#007bff";
+        }
+    }
+
+    // Add click event listener for resend link
+    if (resendLink) {
+        resendLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (!resendLink.classList.contains('disabled')) {
+                handleResendOTP();
+            }
+        });
     }
 
     // Start Timer
