@@ -3,7 +3,9 @@ const {
   sendVerificationEmail,
   generateOtp,
   checkExistingUser,
-  createUser
+  createUser,
+  resendOtpService,
+  verifyOtpService
 } = require("../../services/userService.js");
 
 const env = require("dotenv").config();
@@ -43,23 +45,25 @@ const loadVerifyOtp = (req, res) => {
 const verifyOtp = async (req, res) => {
   try {
     const { otp } = req.body;
-    if (!req.session.userOtp) {
-      return res.json({ success: false, message: "Session expired. Please signup again." });
+    const result = await verifyOtpService(req.session, otp);
+    
+    if (!result.success) {
+      return res.status(result.status || 500).json({
+        success: false,
+        message: result.message
+      });
     }
-    if (otp !== req.session.userOtp) {
-      return res.json({ success: false, message: "Invalid OTP. Please try again." });
-    }
-    // OTP is correct – create user
-    const { firstName, lastName, email, phone, password } = req.session.userData;
-    await createUser({ firstName, lastName, email, phone, password });
-    // Clean up session
-    req.session.userOtp = null;
-    req.session.userData = null;
-    // Return success JSON
-    return res.json({ success: true, redirectUrl: "/login" });
+    
+    res.json({
+      success: true,
+      redirectUrl: result.redirectUrl
+    });
   } catch (error) {
-    console.error("OTP verification error", error);
-    res.status(500).json({ success: false, message: "Server error during verification" });
+    console.error('Error in verifyOtp controller:', error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred during OTP verification.'
+    });
   }
 };
 
@@ -103,50 +107,24 @@ const signup = async (req, res) => {
 // Resend OTP handler
 const resendOtp = async (req, res) => {
   try {
-    // Check if we have user data in session
-    if (!req.session.userData || !req.session.userData.email) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Session expired. Please sign up again." 
-      });
-    }
-
-    const { email } = req.session.userData;
-    const otp = generateOtp();
+    const result = await resendOtpService(req.session);
     
-    // Log for debugging
-    console.log('========== RESEND OTP DEBUGGING ==========');
-    console.log('Resending OTP to:', email);
-    console.log('New OTP:', otp);
-    console.log('Session ID:', req.sessionID);
-    
-    // Send the new OTP via email
-    const emailSent = await sendVerificationEmail(email, otp);
-    
-    if (!emailSent) {
-      console.error('Failed to send OTP email to:', email);
-      return res.status(500).json({ 
-        success: false, 
-        message: "Failed to send verification email. Please try again." 
+    if (!result.success) {
+      return res.status(result.status || 500).json({
+        success: false,
+        message: result.message
       });
     }
     
-    // Update the OTP in the session
-    req.session.userOtp = otp;
-    
-    console.log('OTP resent successfully to:', email);
-    console.log('========================================');
-    
-    res.json({ 
-      success: true, 
-      message: "A new OTP has been sent to your email." 
+    res.json({
+      success: true,
+      message: result.message
     });
-    
   } catch (error) {
-    console.error('Error in resendOtp:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: "An error occurred while resending OTP. Please try again." 
+    console.error('Error in resendOtp controller:', error);
+    res.status(500).json({
+      success: false,
+      message: 'An error occurred while processing your request.'
     });
   }
 };
