@@ -2,10 +2,10 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema({
-  name: { type: String, required: true, trim: true },
-  email: { type: String, required: true, unique: true, lowercase: true, trim: true },
-  password: { type: String, required: true },
-  phone: { type: Number, required: true, unique: true },
+  name: { type: String,  trim: true },
+  email: { type: String, unique: true, lowercase: true, trim: true },
+  password: { type: String, },
+  phone: { type: Number,  unique: true },
   isVerified: { type: Boolean, default: false },
   isBlock: { type: Boolean, default: false },
   address_ids: [{ type: mongoose.Schema.Types.ObjectId, ref: "Address" }],

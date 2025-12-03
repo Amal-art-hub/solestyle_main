@@ -354,3 +354,9 @@
 .password-wrapper .toggle-password:hover {
   color: #2563eb; /* matches your theme color */
 }
+
+.error-message{
+  color:red;
+  font-size:0.75rem;
+  display:none
+}

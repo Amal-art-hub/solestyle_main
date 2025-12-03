@@ -1,6 +1,7 @@
 const express=require("express");
 const app=express();
 const env=require("dotenv").config();
+const session=require("express-session")
 const path=require("path")
 const db=require("./config/db");
 const userRouter=require("./routes/userRouter");
@@ -8,7 +9,24 @@ db();
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
+app.use(session({
+  secret:process.env.SESSION_SECRET,
+  resave:false,
+  saveUninitialized:true,
+  cookie:{
+    secure:false,
+    httpOnly:true,
+    maxAge:72*60*60*1000
+  }
+}))
 app.use(express.static(path.join(__dirname, "public")));
+
+
+
+app.use((req,res,next)=>{
+  res.set("cache-control","no-store")
+  next();
+})
 
 
 

@@ -1,17 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <%- include('../partials/header') %>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+
+    <!-- CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/css/signup.css">
-    <title>Sign Up - SoleStyle</title>
+    <link rel="stylesheet" href="/css/homestyle.css">
 </head>
+
 <body>
+
+    <!-- HEADER -->
+    <%- include('../partials/header') %>
+
     <div class="signup-container">
         <div class="signup-card">
+
             <h1 class="signup-title">Create Your Account</h1>
             <p class="signup-subtitle">Sign up to get started with our service</p>
-            
+
             <!-- Social Sign Up Buttons -->
             <div class="social-buttons">
                 <button type="button" class="social-btn google-btn">
@@ -27,13 +37,16 @@
             <div class="divider">
                 <span>OR</span>
             </div>
-            
-            <form id="signupForm" method="post" action="/signup" class="signup-form">
+
+            <form id="signupForm" method="POST" action="/signup" class="signup-form">
+
                 <div class="form-row">
                     <div class="form-group">
                         <label for="firstName">First Name</label>
                         <input type="text" id="firstName" name="firstName" placeholder="Enter your first name" required>
+                        <div id="error1" class="error-message"></div>
                     </div>
+
                     <div class="form-group">
                         <label for="lastName">Last Name</label>
                         <input type="text" id="lastName" name="lastName" placeholder="Enter your last name" required>
@@ -43,42 +56,49 @@
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input type="email" id="email" name="email" placeholder="Enter your Email" required>
-                </div>
-                <div class="form-group">
-                     <label for="phone">Phone Number</label>
-                     <input type="text" id="phone" name="phone" placeholder="Enter your phone number" required>
+                    <div id="error2" class="error-message"></div>
                 </div>
 
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="text" id="phone" name="phone" placeholder="Enter your phone number" required>
+                    <div id="error3" class="error-message"></div>
+                </div>
 
                 <div class="form-group">
                     <label for="password">Password</label>
                     <div class="password-wrapper">
-                        <input type="password" id="password" name="password" required 
-                               placeholder="Enter your password" minlength="8">
+                        <input type="password" id="password" name="password" placeholder="Enter your password" minlength="8" required>
                         <button type="button" class="toggle-password" onclick="togglePassword('password')">
                             <i class="fas fa-eye"></i>
                         </button>
+                        <div id="error4" class="error-message"></div>
                     </div>
+
                     <div class="password-strength">
                         <div class="strength-bar"></div>
                     </div>
+
                     <p class="password-hint">Use 8 or more characters with a mix of letters, numbers & symbols</p>
                 </div>
 
                 <div class="form-group">
                     <label for="confirmPassword">Confirm Password</label>
                     <div class="password-wrapper">
-                        <input type="password" id="confirmPassword" name="confirmPassword" required 
-                               placeholder="Confirm your password" minlength="8">
+                        <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password" minlength="8" required>
                         <button type="button" class="toggle-password" onclick="togglePassword('confirmPassword')">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
+                    <div id="error5" class="error-message"></div>
                 </div>
 
                 <div class="form-group checkbox-group">
                     <input type="checkbox" id="terms" name="terms" required>
-                    <label for="terms">I agree to the <a href="/terms" class="link">Terms of Service</a> and <a href="/privacy" class="link">Privacy Policy</a></label>
+                    <label for="terms">I agree to the 
+                        <a href="/terms" class="link">Terms of Service</a> and 
+                        <a href="/privacy" class="link">Privacy Policy</a>
+                    </label>
                 </div>
 
                 <button type="submit" class="submit-btn">
@@ -87,12 +107,21 @@
             </form>
 
             <div class="login-link">
-                Already have an account? <a href="/login" class="link">Log in</a>
+                Already have an account? 
+                <a href="/login" class="link">Log in</a>
             </div>
+
         </div>
     </div>
 
+    <!-- FOOTER -->
     <%- include('../partials/footer') %>
+
+    <!-- Axios (Must load BEFORE signup.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- Signup JS -->
     <script src="/js/signup.js"></script>
+
 </body>
 </html>

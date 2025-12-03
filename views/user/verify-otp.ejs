@@ -1,0 +1,129 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify OTP</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/css/homestyle.css">
+    
+    <link rel="stylesheet" href="/css/verifyOtp.css">
+</head>
+
+<body>
+
+    <%- include('../partials/header') %>
+
+    <div class="otp-container">
+        <div class="otp-card">
+            <h1 class="otp-title">Check Your Email</h1>
+            <p class="otp-subtitle">
+                We've sent a One-Time Password (OTP) to your email.<br>
+                Enter it below to verify your account.
+            </p>
+
+            <form id="otpForm" method="POST" action="/verify-otp" class="otp-form">
+                <div class="otp-input-wrapper">
+                    <input 
+                        type="text" 
+                        id="otp" 
+                        name="otp" 
+                        maxlength="6"
+                        placeholder="Enter OTP"
+                        required
+                    >
+                </div>
+
+                <button type="submit" class="otp-submit-btn">
+                    Verify OTP
+                </button>
+            </form>
+
+            <div class="otp-options">
+                <span>Didn't receive the email?</span>
+                <a href="/resend-otp" class="resend-link">Resend OTP</a>
+            </div>
+
+            <a href="/login" class="back-login">Back to Login</a>
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>
+
+    <script src="/js/verifyOtp.js"></script>
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <%- include('../partials/header') %>
+<div class="otp-container">
+    <div class="otp-card">
+        <h1 class="otp-title">Check Your Email</h1>
+        <p class="otp-subtitle">
+            We've sent a One-Time Password (OTP) to your email address.<br>
+            Enter it below to verify your account.
+        </p>
+
+        <form id="otpForm" method="POST" action="/verify-otp" class="otp-form">
+            <div class="otp-input-wrapper">
+                <input 
+                    type="text" 
+                    id="otp" 
+                    name="otp" 
+                    maxlength="6"
+                    placeholder="Enter OTP"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="otp-submit-btn">
+                Verify OTP
+            </button>
+        </form>
+
+        <div class="otp-options">
+            <span>Didn't receive the email?</span>
+            <a href="/resend-otp" class="resend-link">Resend OTP</a>
+        </div>
+
+        <a href="/login" class="back-login">Back to Login</a>
+    </div>
+</div>
+   <%- include('../partials/footer') %>
+<script src="/js/verifyOtp.js"></script>
+ --> -->
