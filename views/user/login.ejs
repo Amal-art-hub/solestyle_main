@@ -1,9 +1,13 @@
+
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
+    <title>Login</title>
 
     <!-- CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -13,65 +17,72 @@
 
 <body>
 
-    <!-- HEADER -->
     <%- include('../partials/header') %>
 
+    <div class="login-container">
 
-<div class="login-container">
+        <div class="login-left">
+            <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=880&auto=format&fit=crop" 
+                 alt="Shoe Image" class="login-image">
+        </div>
 
-    <div class="login-left">
-        <img src="https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Shoe Image" class="login-image">
-    </div>
+        <div class="login-right">
 
-    <div class="login-right">
-        <h2 class="login-title">Welcome Back</h2>
-        <p class="login-subtitle">Log in to your account to continue.</p>
+            <h2 class="login-title">Welcome Back</h2>
+            <p class="login-subtitle">Log in to your account to continue.</p>
 
-        <form id="loginForm" class="login-form">
+            <!-- Axios login form -->
+            <form id="loginForm" class="login-form">
 
-            <div class="form-group">
-                <label>Email Address</label>
-                <input type="email" id="email" name="email" placeholder="Enter your email" required>
-            </div>
-
-            <div class="form-group">
-                <label>Password</label>
-                <div class="password-wrapper">
-                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
-                    <span class="toggle-password" onclick="togglePassword()">
-                        <i class="fas fa-eye"></i>
-                    </span>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email" required>
                 </div>
-            </div>
 
-            <button type="submit" class="login-btn">Login</button>
-        </form>
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                        <span class="toggle-password" onclick="togglePassword()">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                </div>
+               
+                <%if(locals.message && message.length>0){%>
+                    <div class="alert alert-danger text-center">
+                    <%=message%>
+                    </div>
+                <%}%>
 
-        <div class="divider">OR</div>
 
-        <button class="google-btn">
-            <i class="fab fa-google"></i>
-            Continue with Google
-        </button>
 
-        <p class="create-text">
-            New to SoleStyle? <a href="/signup">Create an account</a>
-        </p>
+
+                <button type="submit" class="login-btn">Login</button>
+
+            </form>
+
+            <div id="errorMessage" style="color:red; margin-top:10px;"></div>
+
+            <div class="divider">OR</div>
+
+            <button class="google-btn">
+                <i class="fab fa-google"></i>
+                Continue with Google
+            </button>
+
+            <p class="create-text">
+                New to SoleStyle? <a href="/signup">Create an account</a>
+            </p>
+        </div>
+
     </div>
 
-</div>
-    <!-- FOOTER -->
     <%- include('../partials/footer') %>
 
-    <!-- Axios (Must load BEFORE signup.js) -->
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
-    <!-- Signup JS -->
-    <script src="/js/signup.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/js/login.js"></script>
 
 </body>
 </html>
-
-
-

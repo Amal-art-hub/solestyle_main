@@ -7,7 +7,8 @@ const {
   resendOtpService,
   verifyOtpService
 } = require("../../services/userService.js");
-
+const User = require("../../models/user");
+const bcrypt = require("bcrypt");
 const env = require("dotenv").config();
 
 const pageNotFound = (req, res) => {
@@ -18,7 +19,10 @@ const pageNotFound = (req, res) => {
 const loadHomepage = async (req, res) => {
   try {
     const data = getHomepageDate();
-    return res.render("home", data);
+    return res.render("home", {
+      ...data,
+      user: req.session.user || null   // ← send logged-in user to EJS
+    });
   } catch (error) {
     console.log("Home page not found");
     res.status(500).send("Server error");
@@ -141,27 +145,109 @@ const loadLogin=async(req,res)=>{
   }
 }
 
-const login=async(req,res)=>{
+const login = async (req, res) => {
   try {
-    const {email,password}=req.body;
-    const findUser=await User.findOne({isAdmin:0,email:email});
-    if(!findUser){
-      return res.render("login",{message:"User not found"})
-    }
-    if(findUser.isBlocked){
-      return res.render("login",{message:"User is blocked by admin"})
-    }
-    const passwordMatch=await bcrypt.compare(password,findUser.password);
-
-    if(!passwordMatch){
-      return res.render("login",{message:"Incorrect password"})
+    console.log('Login attempt with data:', req.body);
+    const { email, password } = req.body;
+    
+    if (!email || !password) {
+      console.log('Missing email or password');
+      return res.status(400).json({ 
+        success: false, 
+        message: "Email and password are required" 
+      });
     }
 
-    req.session.user=findUser._id;
-    res.redirect("/")
+    console.log('Looking for user with email:', email);
+    
+    // Find user by email, regardless of isAdmin status
+    let findUser = await User.findOne({ email: email });
+    console.log('User found:', findUser);
+    
+    // If user exists but is an admin (isAdmin = 1), redirect to admin login
+    if (findUser && findUser.isAdmin === 1) {
+      console.log('Admin user found, but trying to log in as regular user');
+      return res.status(403).json({
+        success: false,
+        message: "Please use admin login"
+      });
+    }
+    
+    // If user doesn't exist or is not an admin, we can proceed with login
+    // (treat missing isAdmin as regular user)
+    
+    if (!findUser) {
+      console.log('User not found with given criteria');
+      return res.status(401).json({ 
+        success: false, 
+        message: "Invalid email or password" 
+      });
+    }
+    
+    console.log('User found, checking if blocked');
+    if (findUser.isBlocked) {
+      console.log('User is blocked');
+      return res.status(403).json({ 
+        success: false, 
+        message: "Your account has been blocked. Please contact support." 
+      });
+    }
+    
+    console.log('Comparing passwords...');
+    const passwordMatch = await bcrypt.compare(password, findUser.password);
+
+    if (!passwordMatch) {
+      console.log('Password does not match');
+      return res.status(401).json({ 
+        success: false, 
+        message: "Invalid email or password" 
+      });
+    }
+
+    console.log('Password matched, creating session');
+    
+    // Regenerate session to prevent session fixation
+    req.session.regenerate((err) => {
+      if (err) {
+        console.error('Session regeneration error:', err);
+        return res.status(500).json({ 
+          success: false, 
+          message: "Session error. Please try again." 
+        });
+      }
+      
+      // Store user info in session
+      req.session.user = {
+        _id: findUser._id,
+        email: findUser.email,
+        name: findUser.name
+      };
+      
+      // Save the session
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.status(500).json({ 
+            success: false, 
+            message: "Session error. Please try again." 
+          });
+        }
+        
+        console.log('Login successful, sending response');
+        return res.status(200).json({ 
+          success: true, 
+          message: "Login successful",
+          redirectUrl: "/"
+        });
+      });
+    });
+    
   } catch (error) {
-    console.error("login error",error);
-    res.render("login",{message:"login failed.PLease try again"})
+    console.error("Login error:", error);
+    return res.status(500).json({ 
+      success: false, 
+      message: error.message || "An error occurred during login. Please try again." 
+    });
   }
 }
 
