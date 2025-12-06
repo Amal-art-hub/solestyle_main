@@ -78,7 +78,7 @@ const login = async (req, res) => {
 
 const loadDashboard = (req, res) => {
 
-  if (req.session.admin) {
+  
 
     try {
       res.render("dashboard")
@@ -86,9 +86,7 @@ const loadDashboard = (req, res) => {
       console.error("Error rendering admin  dashboard:", error);
       return res.redirect("/page-404")
     }
-  } else {
-    return res.redirect("/admin/login");
-  }
+ 
 }
 
 

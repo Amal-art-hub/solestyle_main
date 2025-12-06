@@ -9,6 +9,7 @@ const {
   loginUser
 } = require("../../services/userService.js");
 
+const User = require("../../models/user");
 
 const env = require("dotenv").config();
 
@@ -51,14 +52,14 @@ const verifyOtp = async (req, res) => {
   try {
     const { otp } = req.body;
     const result = await verifyOtpService(req.session, otp);
-    
+
     if (!result.success) {
       return res.status(result.status || 500).json({
         success: false,
         message: result.message
       });
     }
-    
+
     res.json({
       success: true,
       redirectUrl: result.redirectUrl
@@ -90,7 +91,7 @@ const signup = async (req, res) => {
     console.log('Email being sent to:', email);
     console.log('Session ID:', req.sessionID);
     console.log('Session data before email:', JSON.stringify(req.session, null, 2));
-    
+
     const emailSent = await sendVerificationEmail(email, otp);
     console.log('Email sent successfully:', emailSent);
     console.log('Session data after email:', JSON.stringify(req.session, null, 2));
@@ -113,14 +114,14 @@ const signup = async (req, res) => {
 const resendOtp = async (req, res) => {
   try {
     const result = await resendOtpService(req.session);
-    
+
     if (!result.success) {
       return res.status(result.status || 500).json({
         success: false,
         message: result.message
       });
     }
-    
+
     res.json({
       success: true,
       message: result.message
@@ -134,15 +135,15 @@ const resendOtp = async (req, res) => {
   }
 };
 
-const loadLogin=async(req,res)=>{
+const loadLogin = async (req, res) => {
   try {
-    if(!req.session.user){
+    if (!req.session.user) {
       return res.render("login")
-    }else{
+    } else {
       res.redirect("/")
     }
   } catch (error) {
-   res.redirect("/pageNotFound")
+    res.redirect("/pageNotFound")
   }
 }
 
@@ -150,82 +151,135 @@ const login = async (req, res) => {
   try {
     console.log('Login attempt with data:', req.body);
     const { email, password } = req.body;
-    
+
     // Call the login service
     const result = await loginUser(email, password);
-    
+
     if (!result.success) {
       // Determine appropriate status code based on the error message
-      const statusCode = result.message.includes('blocked') ? 403 : 
-                        result.message.includes('invalid') ? 401 : 400;
-      
-      return res.status(statusCode).json({ 
-        success: false, 
-        message: result.message 
+      const statusCode = result.message.includes('blocked') ? 403 :
+        result.message.includes('invalid') ? 401 : 400;
+
+      return res.status(statusCode).json({
+        success: false,
+        message: result.message
       });
     }
 
     console.log('User authenticated, creating session');
-    
+
     // Regenerate session to prevent session fixation
     req.session.regenerate((err) => {
       if (err) {
         console.error('Session regeneration error:', err);
-        return res.status(500).json({ 
-          success: false, 
-          message: "Session error. Please try again." 
+        return res.status(500).json({
+          success: false,
+          message: "Session error. Please try again."
         });
       }
-      
+
       // Store user info in session
       req.session.user = {
         _id: result.user._id,
         email: result.user.email,
         name: result.user.name
       };
-      
+
       // Save the session
       req.session.save((err) => {
         if (err) {
           console.error('Session save error:', err);
-          return res.status(500).json({ 
-            success: false, 
-            message: "Session error. Please try again." 
+          return res.status(500).json({
+            success: false,
+            message: "Session error. Please try again."
           });
         }
-        
+
         console.log('Login successful, sending response');
-        return res.status(200).json({ 
-          success: true, 
+        return res.status(200).json({
+          success: true,
           message: "Login successful",
           redirectUrl: "/"
         });
       });
     });
-    
+
   } catch (error) {
     console.error("Login error:", error);
-    return res.status(500).json({ 
-      success: false, 
-      message: error.message || "An error occurred during login. Please try again." 
+    return res.status(500).json({
+      success: false,
+      message: error.message || "An error occurred during login. Please try again."
     });
   }
 }
 
 
-const logout=async(req,res)=>{
+const logout = async (req, res) => {
   try {
-    req.session.destroy((err)=>{
-      if(err){
-        console.log("Session error",err.message);
+    req.session.destroy((err) => {
+      if (err) {
+        console.log("Session error", err.message);
         return res.redirect("/pageNoteFound")
       }
       return res.redirect("/login")
     })
   } catch (error) {
-    console.log("Logout error",error);
+    console.log("Logout error", error);
     res.redirect("/pageNotFound");
   }
+}
+
+
+const forgotEmail = (req, res) => {
+
+  try {
+    res.render("forgot-email")
+  } catch (error) {
+    console.error("forgot page rendering error", error);
+    res.redirect("/pageNotFound");
+  }
+}
+
+const forgEmailSend = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email: email });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "Email not registered"
+      });
+    }
+    const otp = generateOtp();
+
+    req.session.resetOtp = otp;
+    req.session.resetEmail = email;
+    req.session.resetOtpExpiry = Date.now() + 1 * 60 * 1000;
+
+    console.log("Reset otp for ", email, ":", otp);
+    return res.status(200).json({
+      success: true,
+      message: "otp sent to your emai"
+    });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+
+
+}
+
+const loadOtptype=(req,res)=>{
+try {
+  res.render("forg-verify-otp")
+} catch (error) {
+  console.error("otp rendering failed :",error);
+  
+}
 }
 
 
@@ -242,5 +296,8 @@ module.exports = {
   resendOtp,
   loadLogin,
   login,
-  logout
+  logout,
+  forgotEmail,
+  forgEmailSend,
+  loadOtptype
 };

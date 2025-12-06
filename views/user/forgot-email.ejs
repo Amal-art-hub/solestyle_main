@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgot Password</title>
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/user/homestyle.css">
+    <link rel="stylesheet" href="/css/user/forgot-email.css">
+</head>
+<body>
+
+        <%- include('../partials/header') %>
+
+    <div class="fp-container">
+        <h2>Forgot Your Password?</h2>
+        <p class="subtitle">
+            No problem. Enter the email address associated with your account,
+            and we’ll send you an OTP to reset your password.
+        </p>
+
+        <form id="forgotEmail" class="forgot-email">
+            <label>Email Address</label>
+            <input type="email" id="email" placeholder="Enter your email" required>
+
+            <button type="submit" class="btn">Send Reset Link</button>
+
+            <p class="back-login">
+                Remembered your password? 
+                <a href="/login">Back to Login</a>
+            </p>
+        </form>
+    </div>
+
+  <%- include('../partials/footer') %>
+
+   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/user/forgot-email.js"></script>
+</body>
+</html>

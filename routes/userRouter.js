@@ -20,6 +20,10 @@ router.get("/auth/google/callback",passport.authenticate("google",{failureRedire
 
 router.get("/login",userController.loadLogin);
 router.post("/login",userController.login);
+
+router.get("/forgot-password",userController.forgotEmail);
+router.post("/forgot-password",userController.forgEmailSend);
+router.get("/forg-verify-otp",userController.loadOtptype);
 router.get("/logout",userController.logout);
 
 module.exports = router;

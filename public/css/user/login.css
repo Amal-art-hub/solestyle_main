@@ -104,3 +104,15 @@
     color: #0D6EFD;
     font-weight: 600;
 }
+
+.forgot-password-link a {
+    color: #666;
+    font-size: 14px;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.forgot-password-link a:hover {
+    color: #000;
+    text-decoration: underline;
+}
