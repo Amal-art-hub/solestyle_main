@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoleStyle Member Access</title>
+    <link rel="stylesheet" href="/css/admin/login.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="login-panel">
+            <div class="logo">
+                <i class="fas fa-shoe-prints"></i> <span>SoleStyle</span>
+            </div>
+            <h2 class="member-access-title">Member Access</h2>
+            <p class="exclusive-text">Exclusive access for SoleStyle members.</p>
+
+            <form class="login-form" id="adminLoginForm">
+                <div class="form-group">
+                    <label for="email-username">Email or Username</label>
+                    <div class="input-container">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="email-username" name="email" placeholder="Enter your email or username"
+                            required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-container">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                        <i class="fas fa-eye password-toggle"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="login-button">Log In</button>
+            </form>
+
+            <a href="#" class="forgot-password">Forgot Password?</a>
+            <p class="apply-text">Don't have access? <a href="#">Apply here.</a></p>
+        </div>
+
+        <div class="image-panel">
+            <img src="https://images.unsplash.com/photo-1723460040710-adb88b9cfccf?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NTR8fHNob2VzJTIwc2hvcHxlbnwwfHwwfHx8MA%3D%3D"
+                alt="SoleStyle Shoes" class="background-image">
+            <h1 class="image-text">Step into the Show</h1>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/admin/login.js"></script>
+</body>
+
+</html>

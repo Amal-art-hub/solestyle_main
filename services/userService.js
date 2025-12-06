@@ -1,5 +1,6 @@
 const User = require("../models/user.js");
 const nodemailer = require("nodemailer");
+const bcrypt = require("bcrypt");
 
 const getHomepageDate = () => {
   return {
@@ -141,6 +142,53 @@ async function resendOtpService(session) {
   };
 }
 
+// Login user with email and password
+async function loginUser(email, password) {
+  try {
+    if (!email || !password) {
+      throw new Error("Email and password are required");
+    }
+
+    // Find user by email
+    const user = await User.findOne({ email });
+    
+    // If user is an admin, redirect to admin login
+    if (user?.isAdmin === 1) {
+      throw new Error("Please use admin login");
+    }
+    
+    // Check if user exists
+    if (!user) {
+      throw new Error("Invalid email or password");
+    }
+    
+    // Check if user is blocked
+    if (user.isBlocked) {
+      throw new Error("Your account has been blocked. Please contact support.");
+    }
+    
+    // Verify password
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      throw new Error("Invalid email or password");
+    }
+    
+    // Return user data without password
+    const { password: _, ...userData } = user.toObject();
+    return {
+      success: true,
+      user: userData
+    };
+    
+  } catch (error) {
+    console.error('Login service error:', error);
+    return {
+      success: false,
+      message: error.message || 'An error occurred during login.'
+    };
+  }
+}
+
 module.exports = {
   getHomepageDate,
   checkExistingUser,
@@ -148,5 +196,6 @@ module.exports = {
   sendVerificationEmail,
   createUser,
   resendOtpService,
-  verifyOtpService
+  verifyOtpService,
+  loginUser
 };

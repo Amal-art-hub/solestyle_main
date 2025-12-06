@@ -1,0 +1,185 @@
+/* Basic Reset and Variables (Optional, but good practice) */
+:root {
+    --primary-color: #007bff; /* Bright blue for button/logo */
+    --text-color: #333;
+    --light-gray: #f4f4f4; /* Light background */
+    --input-border: #ccc;
+    --placeholder-color: #888;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+body, html {
+    height: 100%;
+    background-color: var(--light-gray);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* --- Container and Panel Layout --- */
+.container {
+    display: flex;
+    width: 900px; /* Adjust as needed */
+    height: 600px; /* Adjust as needed */
+    background: white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.login-panel {
+    width: 50%;
+    padding: 60px 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    background-color: white;
+}
+
+/* --- Logo and Titles --- */
+.logo {
+    display: flex;
+    align-items: center;
+    margin-bottom: 40px;
+    color: var(--primary-color);
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.logo i {
+    font-size: 24px;
+    margin-right: 8px;
+}
+
+.member-access-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.exclusive-text {
+    color: var(--placeholder-color);
+    margin-bottom: 40px;
+    font-size: 15px;
+}
+
+/* --- Form Styling --- */
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    color: var(--text-color);
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.input-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--input-border);
+    border-radius: 4px;
+    padding: 12px 15px;
+    background-color: #fff;
+}
+
+.input-container i {
+    color: var(--placeholder-color);
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+.input-container input {
+    flex-grow: 1;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    color: var(--text-color);
+}
+
+.input-container input::placeholder {
+    color: var(--placeholder-color);
+}
+
+.password-toggle {
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+/* --- Button Styling --- */
+.login-button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background-color 0.3s;
+}
+
+.login-button:hover {
+    background-color: #0056b3;
+}
+
+/* --- Links and Footer Text --- */
+.forgot-password {
+    display: block;
+    text-align: center;
+    margin-top: 25px;
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.apply-text {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: var(--placeholder-color);
+}
+
+.apply-text a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* --- Image Panel --- */
+.image-panel {
+    width: 50%;
+    background: url('path/to/your/image.jpg') no-repeat center center/cover;
+    /* Replace 'path/to/your/image.jpg' with the actual path or use the image you provided */
+    display: flex;
+    align-items: flex-end; /* Position text at the bottom */
+    padding: 30px;
+    color: white; /* Text color for the overlay */
+    position: relative;
+    /* Optional: Add a dark overlay to make text more readable */
+    /* background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4)), url('path/to/your/image.jpg'); */
+}
+
+.image-text {
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 20px;
+    
+}.background-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;        /* removes bottom extra gap */
+}

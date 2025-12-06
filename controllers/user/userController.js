@@ -5,10 +5,11 @@ const {
   checkExistingUser,
   createUser,
   resendOtpService,
-  verifyOtpService
+  verifyOtpService,
+  loginUser
 } = require("../../services/userService.js");
-const User = require("../../models/user");
-const bcrypt = require("bcrypt");
+
+
 const env = require("dotenv").config();
 
 const pageNotFound = (req, res) => {
@@ -150,61 +151,21 @@ const login = async (req, res) => {
     console.log('Login attempt with data:', req.body);
     const { email, password } = req.body;
     
-    if (!email || !password) {
-      console.log('Missing email or password');
-      return res.status(400).json({ 
+    // Call the login service
+    const result = await loginUser(email, password);
+    
+    if (!result.success) {
+      // Determine appropriate status code based on the error message
+      const statusCode = result.message.includes('blocked') ? 403 : 
+                        result.message.includes('invalid') ? 401 : 400;
+      
+      return res.status(statusCode).json({ 
         success: false, 
-        message: "Email and password are required" 
+        message: result.message 
       });
     }
 
-    console.log('Looking for user with email:', email);
-    
-    // Find user by email, regardless of isAdmin status
-    let findUser = await User.findOne({ email: email });
-    console.log('User found:', findUser);
-    
-    // If user exists but is an admin (isAdmin = 1), redirect to admin login
-    if (findUser && findUser.isAdmin === 1) {
-      console.log('Admin user found, but trying to log in as regular user');
-      return res.status(403).json({
-        success: false,
-        message: "Please use admin login"
-      });
-    }
-    
-    // If user doesn't exist or is not an admin, we can proceed with login
-    // (treat missing isAdmin as regular user)
-    
-    if (!findUser) {
-      console.log('User not found with given criteria');
-      return res.status(401).json({ 
-        success: false, 
-        message: "Invalid email or password" 
-      });
-    }
-    
-    console.log('User found, checking if blocked');
-    if (findUser.isBlocked) {
-      console.log('User is blocked');
-      return res.status(403).json({ 
-        success: false, 
-        message: "Your account has been blocked. Please contact support." 
-      });
-    }
-    
-    console.log('Comparing passwords...');
-    const passwordMatch = await bcrypt.compare(password, findUser.password);
-
-    if (!passwordMatch) {
-      console.log('Password does not match');
-      return res.status(401).json({ 
-        success: false, 
-        message: "Invalid email or password" 
-      });
-    }
-
-    console.log('Password matched, creating session');
+    console.log('User authenticated, creating session');
     
     // Regenerate session to prevent session fixation
     req.session.regenerate((err) => {
@@ -218,9 +179,9 @@ const login = async (req, res) => {
       
       // Store user info in session
       req.session.user = {
-        _id: findUser._id,
-        email: findUser.email,
-        name: findUser.name
+        _id: result.user._id,
+        email: result.user.email,
+        name: result.user.name
       };
       
       // Save the session
@@ -252,6 +213,21 @@ const login = async (req, res) => {
 }
 
 
+const logout=async(req,res)=>{
+  try {
+    req.session.destroy((err)=>{
+      if(err){
+        console.log("Session error",err.message);
+        return res.redirect("/pageNoteFound")
+      }
+      return res.redirect("/login")
+    })
+  } catch (error) {
+    console.log("Logout error",error);
+    res.redirect("/pageNotFound");
+  }
+}
+
 
 
 
@@ -265,5 +241,6 @@ module.exports = {
   verifyOtp,
   resendOtp,
   loadLogin,
-  login
+  login,
+  logout
 };
