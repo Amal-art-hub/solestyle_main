@@ -18,13 +18,13 @@
             <h2 class="member-access-title">Member Access</h2>
             <p class="exclusive-text">Exclusive access for SoleStyle members.</p>
 
-            <form class="login-form" id="adminLoginForm">
+            <form class="login-form" id="adminLoginForm" autocomplete="off">
                 <div class="form-group">
                     <label for="email-username">Email or Username</label>
                     <div class="input-container">
                         <i class="fas fa-user"></i>
                         <input type="text" id="email-username" name="email" placeholder="Enter your email or username"
-                            required>
+                            autocomplete="off" required>
                     </div>
                 </div>
 
@@ -32,7 +32,8 @@
                     <label for="password">Password</label>
                     <div class="input-container">
                         <i class="fas fa-lock"></i>
-                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                        <input type="password" id="password" name="password" placeholder="Enter your password"
+                            autocomplete="new-password" required>
                         <i class="fas fa-eye password-toggle"></i>
                     </div>
                 </div>

@@ -76,7 +76,24 @@ const login = async (req, res) => {
 };
 
 
+const loadDashboard = (req, res) => {
+
+  if (req.session.admin) {
+
+    try {
+      res.render("dashboard")
+    } catch (error) {
+      console.error("Error rendering admin  dashboard:", error);
+      return res.redirect("/page-404")
+    }
+  } else {
+    return res.redirect("/admin/login");
+  }
+}
+
+
 module.exports = {
   loadLogin,
-  login
+  login,
+  loadDashboard
 };

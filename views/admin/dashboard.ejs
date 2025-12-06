@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - SoleStyle</title>
+    <link rel="stylesheet" href="/css/admin/dashboard-side.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- Sidebar -->
+        <%- include('../partials/adminSideBar', { activePage: 'dashboard' }) %>
+
+            <!-- Main content -->
+            <div class="main-content">
+                <h1>Dashboard</h1>
+
+                <div class="stats">
+                    <div class="stat-box">
+                        <p>Total Revenue</p>
+                        <h2>$125,678.90</h2>
+                    </div>
+
+                    <div class="stat-box">
+                        <p>Total Orders</p>
+                        <h2>8,432</h2>
+                    </div>
+
+                    <div class="stat-box">
+                        <p>New Customers</p>
+                        <h2>1,204</h2>
+                    </div>
+
+                    <div class="stat-box">
+                        <p>Avg Order Value</p>
+                        <h2>$88.50</h2>
+                    </div>
+                </div>
+
+                <div class="chart-section">
+                    <h3>Sales Trend</h3>
+                    <img src="https://dummyimage.com/600x300/cccccc/000000" alt="Sales Chart" class="chart-img">
+                </div>
+
+                <div class="orders-section">
+                    <h3>Recent Orders</h3>
+
+                    <table>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                        </tr>
+
+                        <tr>
+                            <td>#82941</td>
+                            <td>Liam Johnson</td>
+                            <td>Jun 28, 2024</td>
+                            <td>$145.50</td>
+                            <td><span class="badge delivered">Delivered</span></td>
+                        </tr>
+
+                        <tr>
+                            <td>#82940</td>
+                            <td>Olivia Smith</td>
+                            <td>Jun 28, 2024</td>
+                            <td>$89.99</td>
+                            <td><span class="badge shipped">Shipped</span></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+    </div>
+</body>
+
+</html>

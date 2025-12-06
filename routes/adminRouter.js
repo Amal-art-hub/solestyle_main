@@ -1,9 +1,11 @@
-const express=require("express");
-const router=express.Router();
-const adminController=require("../controllers/admin/adminController");
+const express = require("express");
+const router = express.Router();
+const adminController = require("../controllers/admin/adminController");
 
-router.get("/login",adminController.loadLogin);
-router.post("/login",adminController.login);
+router.get("/login", adminController.loadLogin);
+router.post("/login", adminController.login);
+
+router.get("/dashboard", adminController.loadDashboard);
 
 
-module.exports=router;
+module.exports = router;

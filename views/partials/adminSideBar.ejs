@@ -1,0 +1,64 @@
+<div class="sidebar">
+    <div class="brand">
+        <i class="fas fa-shoe-prints"></i>
+        <span>SoleStyle</span>
+        <p class="panel-label">Admin Panel</p>
+    </div>
+
+    <ul class="menu">
+
+        <li class="<%= activePage === 'dashboard' ? 'active' : '' %>">
+            <a href="/admin/dashboard">
+                <i class="fas fa-chart-line"></i> Dashboard
+            </a>
+        </li>
+
+        <li class="<%= activePage === 'users' ? 'active' : '' %>">
+            <a href="/admin/users">
+                <i class="fas fa-users"></i> Users
+            </a>
+        </li>
+
+        <li class="<%= activePage === 'products' ? 'active' : '' %>">
+            <a href="/admin/products">
+                <i class="fas fa-box"></i> Products
+            </a>
+        </li>
+
+        <li class="<%= activePage === 'offers' ? 'active' : '' %>">
+            <a href="/admin/offers">
+                <i class="fas fa-tags"></i> Offers
+            </a>
+        </li>
+
+        <li class="<%= activePage === 'coupons' ? 'active' : '' %>">
+            <a href="/admin/coupons">
+                <i class="fas fa-ticket-alt"></i> Coupons
+            </a>
+        </li>
+
+        <li class="<%= activePage === 'payments' ? 'active' : '' %>">
+            <a href="/admin/payments">
+                <i class="fas fa-credit-card"></i> Payments
+            </a>
+        </li>
+
+        <li class="<%= activePage === 'refunds' ? 'active' : '' %>">
+            <a href="/admin/refunds">
+                <i class="fas fa-undo"></i> Refunds
+            </a>
+        </li>
+
+        <li class="<%= activePage === 'ratings' ? 'active' : '' %>">
+            <a href="/admin/reviews">
+                <i class="fas fa-star"></i> Reviews/Ratings
+            </a>
+        </li>
+    </ul>
+
+    <div class="logout-section">
+        <a href="/admin/logout" class="logout-btn">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+    </div>
+</div>
