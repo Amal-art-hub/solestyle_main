@@ -189,6 +189,95 @@ async function loginUser(email, password) {
   }
 }
 
+const resentfortgotService=async(session)=>{
+  try {
+    const email=session.resetEmail;
+    if(!email){
+      return{
+        success:false,
+        status:400,
+        message:"Session expired,please start again."
+      };
+    }
+
+    const newOtp=generateOtp();
+
+    session.resetOtp=newOtp;
+    session.resetOtpExpiry=Date.now()+3*60*1000;
+
+    console.log("Resent password otp for:",email);
+    console.log("New otp is:",newOtp);
+
+
+    const emailSent=await sendVerificationEmail(email,newOtp);
+
+    if(!emailSent){
+      console.error("Failed to send reset password OTP email");
+      return {
+        success:false,
+        status:500,
+        message:"failed to send email.please try again"
+      }
+    }
+
+
+    return {
+      success:true,
+      message:"New OTP has been sent to your email"
+    };
+
+
+
+  } catch (error) {
+    console.error("Error in resentfortgotService:",error);
+    return{
+      success:false,
+      message:500,
+      message:"Server error"
+    };
+  }
+}
+
+
+const verifyResetOtpService=async(session,otp)=>{
+  try {
+    const storedOtp=session.resetOtp;
+    const email=session.resetEmail;
+    const otpExpiry=session.resetOtpExpiry;
+
+    if(!storedOtp||!email){
+      return{
+        success:true,
+        status:500,
+        message:"Otp not found.Please request a new one",
+      };
+    }
+
+    if(storedOtp !==otp){
+      return {
+        success:false,
+        status:400,
+        message:"Invalid OTP.Please try again"
+      }
+    }
+
+    session.otpVerified=true;
+    return {
+      success:true,
+      message:"otp verified successfully"
+    }
+  } catch (error) {
+    console.error("Error in verifyResetOtpService:",error);
+    return{
+      success:false,
+      status:500,
+      message:"Server error"
+    }
+  }
+}
+
+
+
 module.exports = {
   getHomepageDate,
   checkExistingUser,
@@ -197,5 +286,7 @@ module.exports = {
   createUser,
   resendOtpService,
   verifyOtpService,
-  loginUser
+  loginUser,
+  verifyResetOtpService,
+  resentfortgotService
 };
