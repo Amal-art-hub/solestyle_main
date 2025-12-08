@@ -163,7 +163,7 @@ async function loginUser(email, password) {
     }
     
     // Check if user is blocked
-    if (user.isBlocked) {
+    if (user.isBlock) {
       throw new Error("Your account has been blocked. Please contact support.");
     }
     

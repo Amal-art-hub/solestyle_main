@@ -1,4 +1,7 @@
-const { getCustomerData } = require("../../services/adminSer/customerServices");
+const { getCustomerData,
+    blockCustomerById,
+    unblockCoustomerById
+ } = require("../../services/adminSer/customerServices");
 
 
 const getCustomers = async (req, res) => {
@@ -21,6 +24,31 @@ const getCustomers = async (req, res) => {
     }
 };
 
+const blockCustomer=async(req,res)=>{
+  try {
+    const id=req.query.id;
+    await blockCustomerById(id);
+    res.redirect("/admin/users")
+  } catch (error) {
+    console.log(error.message);
+    res.redirect("/admin/users");
+  }
+}
+
+
+const unblockCoustomer=async(req,res)=>{
+    try {
+        const id=req.query.id;
+        await unblockCoustomerById(id);
+        res.redirect("/admin/users");
+    } catch (error) {
+        console.log(error);
+        res.redirect("/admin/users");
+    }
+}
+
 module.exports = {
-    getCustomers
+    getCustomers,
+    blockCustomer,
+    unblockCoustomer
 }

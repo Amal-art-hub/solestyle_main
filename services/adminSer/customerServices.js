@@ -24,6 +24,27 @@ const getCustomerData = async (search, page, limit) => {
     }
 }
 
+const blockCustomerById=async(id)=>{
+    try {
+        await User.updateOne({_id:id},{$set:{isBlock:true}});
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const unblockCoustomerById=async(id)=>{
+    try {
+        await User.updateOne({_id:id},{$set:{isBlock:false}});
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+
+
 module.exports = {
-    getCustomerData
+    getCustomerData,
+    blockCustomerById,
+    unblockCoustomerById
 }

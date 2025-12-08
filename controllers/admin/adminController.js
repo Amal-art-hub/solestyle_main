@@ -78,8 +78,6 @@ const login = async (req, res) => {
 
 const loadDashboard = (req, res) => {
 
-  
-
     try {
       res.render("dashboard")
     } catch (error) {
@@ -106,9 +104,13 @@ const logout=(req,res)=>{
 }
 
 
+
+
+
 module.exports = {
   loadLogin,
   login,
   loadDashboard,
-  logout
+  logout,
+ 
 };

@@ -9,7 +9,9 @@ router.post("/login", adminController.login);
 router.get("/logout", adminController.logout)
 
 router.get("/dashboard", isAdminLoggedIn, adminController.loadDashboard);
-router.get("/users", isAdminLoggedIn,customerController.getCustomers);
+router.get("/users", isAdminLoggedIn, customerController.getCustomers);
+router.get("/unblockCustomer", isAdminLoggedIn, customerController.unblockCoustomer);
+router.get("/blockCustomer", isAdminLoggedIn, customerController.blockCustomer);
 
 
 module.exports = router;
