@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Customers - SoleStyle Admin</title>
+    <link rel="stylesheet" href="/css/admin/dashboard-side.css">
+    <!-- Link to the new CSS file -->
+    <link rel="stylesheet" href="/css/admin/customerManag.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <%- include('../partials/adminSideBar', { activePage: 'customers' }) %>
+            <!-- Main content -->
+            <div class="main-content">
+                <h1>Customers</h1>
+                <div class="search-container">
+                    <form action="users" method="GET" style="display: flex; gap: 10px;">
+                        <input type="text" name="search" placeholder="Search by name or email..." value="<%= search %>">
+                        <button type="submit">Search</button>
+                    </form>
+                    <% if(search) { %>
+                        <a href="/admin/users" class="clear-btn">Clear</a>
+                        <% } %>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Phone</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if(data.length> 0) { %>
+                            <% data.forEach(user=> { %>
+                                <tr>
+                                    <td>
+                                        <%= user.name %>
+                                    </td>
+                                    <td>
+                                        <%= user.email %>
+                                    </td>
+                                    <td>
+                                        <%= user.phone || 'N/A' %>
+                                    </td>
+                                    <td>
+                                        <% if(user.isBlock) { %>
+                                            <span class="status-badge status-blocked">Blocked</span>
+                                            <% } else { %>
+                                                <span class="status-badge status-active">Active</span>
+                                                <% } %>
+                                    </td>
+                                    <td>
+                                        <% if(user.isBlock) { %>
+                                            <button
+                                                onclick="confirmAction('/admin/unblockCustomer?id=<%= user._id %>', 'unblock')"
+                                                class="action-btn btn-unblock">Unblock</button>
+                                            <% } else { %>
+                                                <button
+                                                    onclick="confirmAction('/admin/blockCustomer?id=<%= user._id %>', 'block')"
+                                                    class="action-btn btn-block">Block</button>
+                                                <% } %>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="5" style="text-align: center;">No customers found</td>
+                                        </tr>
+                                        <% } %>
+                    </tbody>
+                </table>
+                <!-- Pagination -->
+                <div class="pagination">
+                    <% if (currentPage> 1) { %>
+                        <a href="/admin/users?page=<%= currentPage - 1 %>&search=<%= search %>">&laquo; Previous</a>
+                        <% } %>
+                            <% for(let i=1; i <=totalPages; i++) { %>
+                                <a href="/admin/users?page=<%= i %>&search=<%= search %>"
+                                    class="<%= currentPage === i ? 'active' : '' %>">
+                                    <%= i %>
+                                </a>
+                                <% } %>
+                                    <% if (currentPage < totalPages) { %>
+                                        <a href="/admin/users?page=<%= currentPage + 1 %>&search=<%= search %>">Next
+                                            &raquo;</a>
+                                        <% } %>
+                </div>
+            </div>
+    </div>
+    <!-- Link to the new JS file -->
+    <script src="/js/admin/customerManag.js"></script>
+</body>
+
+</html>

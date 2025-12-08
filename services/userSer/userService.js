@@ -1,4 +1,4 @@
-const User = require("../models/user.js");
+const User = require("../../models/user.js");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 
@@ -277,6 +277,43 @@ const verifyResetOtpService=async(session,otp)=>{
 }
 
 
+const checkPassword=async(session,newPassword)=>{
+  try {
+    const email=session.resetEmail;
+    const otpVerified=session.otpVerified;
+
+    if(!otpVerified||!email){
+      return {
+        success:false,
+        status:403,
+        message:"Unauthorized.Please verify OTP first"
+      }
+    }
+
+    const hashedPassword=await bcrypt.hash(newPassword,10);
+
+    await User.findOneAndUpdate({email:email},{password:hashedPassword});
+
+    session.resetOtp=null;
+    session.resetEmail=null;
+    session.resetOtpExpiry=null;
+    session.otpVerified=null;
+    return {
+      success:true,
+      message:"Paassword",
+    };
+  } catch (error) {
+       console.error("Error in updateUserPasswordService:", error);
+    return {
+      success: false,
+      status: 500,
+      message: "Server error",
+    };
+  }
+}
+
+
+
 
 module.exports = {
   getHomepageDate,
@@ -288,5 +325,6 @@ module.exports = {
   verifyOtpService,
   loginUser,
   verifyResetOtpService,
-  resentfortgotService
+  resentfortgotService,
+  checkPassword
 };

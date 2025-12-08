@@ -9,7 +9,8 @@ const {
   loginUser,
   resentfortgotService,
   verifyResetOtpService,
-} = require("../../services/userService.js");
+  checkPassword
+} = require("../../services/userSer/userService.js");
 
 const User = require("../../models/user");
 
@@ -352,6 +353,36 @@ const loadrestPass=(req,res)=>{
 }
 
 
+const resetPassword=async(req,res)=>{
+
+  try{
+  const{newPassword}=req.body;
+
+  const result=await checkPassword(req.session,newPassword);
+
+  if(!result.success){
+    return res.status(result.status||500).json({
+      success:false,
+      message:result.message
+
+    });
+  }
+
+res.status(200).json({
+  success:true,
+  message:result.message,
+});
+  }catch(error){
+    console.error("error in reset password:",error);
+    res.status(500).json({
+      success:false,
+      message:"server error"
+    })
+  }
+
+}
+
+
 
 module.exports = {
   loadHomepage,
@@ -369,5 +400,6 @@ module.exports = {
   loadOtptype,
   resendForgotOtp,
   verifyForgotOtp,
-  loadrestPass
+  loadrestPass,
+  resetPassword
 };

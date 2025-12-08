@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const numCheck = document.getElementById("numCheck");
     const upperCheck = document.getElementById("upperCheck");
 
-    // Password visibility toggles
+    // Toggle password visibility
     document.getElementById("toggleNew").addEventListener("click", () => {
         newPass.type = newPass.type === "password" ? "text" : "password";
     });
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
         confirmPass.type = confirmPass.type === "password" ? "text" : "password";
     });
 
-    // Requirements validation
+    // Password requirement checks
     newPass.addEventListener("input", () => {
         const val = newPass.value;
         lenCheck.checked = val.length >= 8;
@@ -24,8 +24,8 @@ document.addEventListener("DOMContentLoaded", () => {
         upperCheck.checked = /[A-Z]/.test(val);
     });
 
-    // Form submit
-    document.getElementById("resetForm").addEventListener("submit", (e) => {
+    // Form submission
+    document.getElementById("resetForm").addEventListener("submit", async (e) => {
         e.preventDefault();
 
         if (newPass.value !== confirmPass.value) {
@@ -33,8 +33,34 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        alert("Password reset successfully!");
-        // You will send AJAX / axios request to your backend here
+        try {
+            const { data } = await axios.post("/reset-password", {
+                newPassword: newPass.value,
+            });
+
+            if (data.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Success!",
+                    text: "Password reset successfully. Please login.",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+
+                setTimeout(() => {
+                    window.location.href = "/login";
+                }, 2000);
+            }
+
+        } catch (error) {
+            console.error(error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.response?.data?.message || "Failed to reset password"
+            });
+        }
+
     });
 
 });

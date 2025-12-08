@@ -1,0 +1,315 @@
+
+
+/*
+ * SoleStyle Admin Customers Page CSS
+ * Enhancing the design for a professional look.
+ */
+
+/* General Table & Layout Enhancements */
+.main-content {
+    padding: 30px;
+    background-color: #f4f6f9; /* Light background for the content area */
+    min-height: 100vh;
+}
+
+h1 {
+    color: #2c3e50; /* Darker heading color */
+    margin-bottom: 25px;
+    font-weight: 600;
+    border-bottom: 2px solid #e1e4e8; /* Subtle separator */
+    padding-bottom: 10px;
+}
+
+/* --- Search and Filter Container --- */
+.search-container {
+    margin-bottom: 25px;
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 8px; /* Rounded corners for the search block */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Soft shadow */
+}
+
+.search-container form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.search-container input {
+    padding: 10px 15px;
+    border: 1px solid #ced4da;
+    border-radius: 6px;
+    width: 350px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+.search-container input:focus {
+    border-color: #007bff; /* Highlight on focus */
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.search-container button {
+    padding: 10px 20px;
+    background-color: #007bff; /* Primary blue color */
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s, transform 0.1s;
+}
+
+.search-container button:hover {
+    background-color: #0056b3;
+}
+
+.search-container .clear-btn {
+    background-color: #6c757d; /* Muted gray for clear button */
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    color: white;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.search-container .clear-btn:hover {
+    background-color: #5a6268;
+}
+
+/* --- Table Styling --- */
+table {
+    width: 100%;
+    border-collapse: separate; /* Use separate to allow border-radius */
+    border-spacing: 0;
+    margin-bottom: 25px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden; /* Ensures rounded corners are applied */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* More pronounced shadow for the table */
+}
+
+th, td {
+    padding: 15px 12px;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef; /* Lighter separator line */
+    font-size: 15px;
+}
+
+th {
+    background-color: #f8f9fa;
+    color: #495057; /* Darker text for headers */
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.9em;
+    letter-spacing: 0.5px;
+}
+
+/* Style for the last row's cells (removing bottom border) */
+tbody tr:last-child td {
+    border-bottom: none;
+}
+
+tbody tr:hover {
+    background-color: #f1f3f5; /* Subtle row hover effect */
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 20px; /* Fully rounded pill shape */
+    font-size: 0.8em;
+    font-weight: 600;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.status-active {
+    background-color: #d4edda; /* Light green background */
+    color: #155724; /* Dark green text */
+}
+
+.status-blocked {
+    background-color: #f8d7da; /* Light red background */
+    color: #721c24; /* Dark red text */
+}
+
+/* Action Buttons */
+.action-btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9em;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.3s, opacity 0.3s;
+    min-width: 90px; /* Ensures consistent width */
+    text-align: center;
+}
+
+.btn-block {
+    background-color: #dc3545; /* Bootstrap Red */
+}
+
+.btn-block:hover {
+    background-color: #c82333;
+}
+
+.btn-unblock {
+    background-color: #28a745; /* Bootstrap Green */
+}
+
+.btn-unblock:hover {
+    background-color: #1e7e34;
+}
+
+/* --- Pagination --- */
+.pagination {
+    display: flex;
+    justify-content: flex-end; /* Align pagination to the right */
+    gap: 5px;
+    margin-top: 25px;
+    padding: 10px 0;
+}
+
+.pagination a {
+    padding: 10px 15px;
+    border: 1px solid #ced4da;
+    text-decoration: none;
+    color: #495057;
+    border-radius: 6px;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    font-weight: 500;
+    min-width: 40px;
+    text-align: center;
+}
+
+.pagination a:hover:not(.active) {
+    background-color: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.pagination a.active {
+    background-color: #343a40; /* Darker, more professional active state */
+    color: white;
+    border-color: #343a40;
+}
+
+/* 'No customers found' message styling */
+tbody tr td[colspan="5"] {
+    font-style: italic;
+    color: #6c757d;
+    padding: 30px 12px;
+    background-color: #fdfdfd;
+}
+
+
+
+
+
+/* 
+
+
+
+
+
+
+
+
+.search-container {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+}
+.search-container input {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 300px;
+}
+.search-container button {
+    padding: 8px 15px;
+    background-color: #333;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.search-container .clear-btn {
+    background-color: #f44336;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    padding: 8px 15px;
+    color: white;
+    border-radius: 4px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+th {
+    background-color: #f8f9fa;
+}
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.85em;
+}
+.status-active {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+.status-blocked {
+    background-color: #ffebee;
+    color: #c62828;
+}
+.action-btn {
+    padding: 6px 12px;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 0.9em;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+.btn-block {
+    background-color: #ef5350;
+}
+.btn-unblock {
+    background-color: #66bb6a;
+}
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+.pagination a {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    text-decoration: none;
+    color: #333;
+    border-radius: 4px;
+}
+.pagination a.active {
+    background-color: #333;
+    color: white;
+    border-color: #333;
+} */

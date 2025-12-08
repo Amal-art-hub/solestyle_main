@@ -1,7 +1,7 @@
 const path = require('path');
 const Admin = require(path.join(__dirname, '../../models/admin'));
 const bcrypt = require("bcrypt");
-const { loginAdmin } = require("../../services/adminServices"); // if you have service
+const { loginAdmin } = require("../../services/adminSer/adminServices"); // if you have service
 
 
 const loadLogin = (req, res) => {
@@ -90,8 +90,25 @@ const loadDashboard = (req, res) => {
 }
 
 
+const logout=(req,res)=>{
+  try {
+    req.session.destroy(err=>{
+      if(err){
+        console.log("Error destroying session",err);
+        return res.redirect("/pageerror")
+      }
+      res.redirect("adminlogin")
+    })
+  } catch (error) {
+    console.log(("unexpected error during logout",error));
+    res.redirect("page-404")
+  }
+}
+
+
 module.exports = {
   loadLogin,
   login,
-  loadDashboard
+  loadDashboard,
+  logout
 };
