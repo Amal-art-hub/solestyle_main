@@ -1,0 +1,139 @@
+<link rel="stylesheet" href="../css/admin/dashboard-side.css">
+<!-- Link to the new CSS file -->
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="/css/admin/categoryManag.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+<body>
+    <div class="container">
+        <%- include("../partials/adminSideBar") %>
+
+            <div class="main-content">
+                <section class="content-main">
+                    <div class="content-header">
+                        <div>
+                            <h2 class="content-title card-title">Category Management</h2>
+                        </div>
+
+                        <!-- Search -->
+                        <div class="search-container">
+                            <form action="/admin/category" method="GET" style="display: flex; gap: 10px;">
+                                <input type="text" placeholder="Search categories..." class="search-input" name="search"
+                                    value="<%= search %>">
+                                <button type="submit" class="btn-search">Search</button>
+                                <% if(search) { %>
+                                    <a href="/admin/category" class="btn-search"
+                                        style="background-color: #6c757d; text-decoration: none;">Clear</a>
+                                    <% } %>
+                            </form>
+                        </div>
+                    </div>
+                    <!-- Add Category Form (Simplified for demo, usually side-by-side or modal) -->
+                    <div class="card mb-4" style="padding: 20px;">
+                        <h4>Add New Category</h4>
+                        <form id="addCategoryForm">
+                            <div class="form-group">
+                                <input type="text" name="name" placeholder="Category Name" class="form-control"
+                                    required />
+                            </div>
+                            <div class="form-group">
+                                <textarea name="description" placeholder="Description" class="form-control"></textarea>
+                            </div>
+                            <button type="submit" class="btn-search">Add Category</button>
+                        </form>
+                    </div>
+                    <!-- Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (cat && cat.length> 0) { %>
+                                    <% cat.forEach(category=> { %>
+                                        <tr>
+                                            <td><b>
+                                                    <%= category.name %>
+                                                </b></td>
+                                            <td>
+                                                <%= category.description %>
+                                            </td>
+                                            <td>
+                                                <% if(category.isListed) { %>
+                                                    <span class="badge-listed">Listed</span>
+                                                    <% } else { %>
+                                                        <span class="badge-unlisted">Unlisted</span>
+                                                        <% } %>
+                                            </td>
+                                            <td>
+                                                <!-- Edit Button -->
+                                                <button class="action-btn btn-edit"
+                                                    onclick="openEditModal('<%= category._id %>', '<%= category.name %>', '<%= category.description %>')">
+                                                    Edit
+                                                </button>
+
+                                                <!-- Soft Delete Button -->
+                                                <button
+                                                    class="action-btn <%= category.isListed ? 'btn-unlist' : 'btn-list' %>"
+                                                    onclick="toggleStatus('<%= category._id %>')">
+                                                    <%= category.isListed ? 'Unlist' : 'List' %>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <% }) %>
+                                            <% } else { %>
+                                                <tr>
+                                                    <td colspan="4" class="text-center">No categories found</td>
+                                                </tr>
+                                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    <div class="pagination">
+                        <% if (currentPage> 1) { %>
+                            <a href="?page=<%= currentPage - 1 %>&search=<%= search %>">Previous</a>
+                            <% } %>
+                                <% for(let i=1; i <=totalPages; i++) { %>
+                                    <a href="?page=<%= i %>&search=<%= search %>"
+                                        class="<%= i === currentPage ? 'active' : '' %>">
+                                        <%= i %>
+                                    </a>
+                                    <% } %>
+                                        <% if (currentPage < totalPages) { %>
+                                            <a href="?page=<%= currentPage + 1 %>&search=<%= search %>">Next</a>
+                                            <% } %>
+                    </div>
+            </div>
+            </section>
+    </div> <!-- End .main-content -->
+    </div> <!-- End .container -->
+    <!-- Edit Modal -->
+    <div id="editCategoryModal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeEditModal()" style="float:right; cursor:pointer; font-size: 20px;">&times;</span>
+            <h3>Edit Category</h3>
+            <form id="editCategoryForm">
+                <input type="hidden" id="edit-id">
+                <div class="form-group">
+                    <label>Name</label>
+                    <input type="text" id="edit-name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="edit-description" class="form-control"></textarea>
+                </div>
+                <button type="submit" class="btn-search">Update</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Link the new JS file -->
+    <script src="/js/admin/categoryManag.js"></script>
