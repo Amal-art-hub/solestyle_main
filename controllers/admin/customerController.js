@@ -15,7 +15,8 @@ const getCustomers = async (req, res) => {
             data: data.userData,
             totalPages: data.totalPages,
             currentPage: data.currentPage,
-            search: search
+            search: search,
+            activePage: "users" 
 
         })
     } catch (error) {
