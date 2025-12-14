@@ -28,6 +28,11 @@ const getAllCategories = async (page = 1, limit = 4, search = "") => {
 
 const createCategory = async (data) => {
   try {
+
+    if (data.name==="category"){
+      return {success:false,message:"cannote be added"}
+    }
+
     const existingCategory = await Category.findOne({
       name: { $regex: new RegExp(`^${data.name}$`, "i") },
     });

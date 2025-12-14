@@ -64,13 +64,13 @@
                                             <td>
                                                 <%= brand.description || '' %>
                                             </td>
-                                            <td>
-                                                <% if(!brand.isBlocked) { %>
-                                                    <span class="badge-listed">Active</span>
-                                                    <% } else { %>
-                                                        <span class="badge-unlisted">Blocked</span>
-                                                        <% } %>
-                                            </td>
+                                          <td>
+    <% if(brand.isListed) { %>
+        <span class="badge-listed">Active</span>
+    <% } else { %>
+        <span class="badge-unlisted">Blocked</span>
+    <% } %>
+</td>
                                             <td>
                                                 <!-- Edit Button -->
                                                 <button class="action-btn btn-edit"
@@ -80,9 +80,9 @@
 
                                                 <!-- Soft Delete Button -->
                                                 <button
-                                                    class="action-btn <%= !brand.isBlocked ? 'btn-unlist' : 'btn-list' %>"
+                                                   class="action-btn <%= brand.isListed ? 'btn-unlist' : 'btn-list' %>""
                                                     onclick="toggleStatus('<%= brand._id %>')">
-                                                    <%= !brand.isBlocked ? 'Block' : 'Unblock' %>
+                                                   <%= brand.isListed ? 'Block' : 'Unblock' %>
                                                 </button>
                                             </td>
                                         </tr>

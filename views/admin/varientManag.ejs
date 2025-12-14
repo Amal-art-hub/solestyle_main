@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manage Variants - <%= product.name %>
+  </title>
+  <link rel="stylesheet" href="/css/admin/dashboard-side.css">
+  <link rel="stylesheet" href="/css/admin/varientManag.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <!-- Add this after line 11 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+</head>
+
+<body>
+  <div class="admin-container">
+    <%- include('../partials/adminSideBar') %>
+
+      <main class="main-content">
+        <div class="page-header">
+          <div class="header-content">
+            <h1>Variants: <%= product.name %>
+            </h1>
+            <p class="product-info">
+              <%= product.categoryId.name %> | <%= product.brandId.name %>
+            </p>
+          </div>
+          <div class="header-actions">
+            <button class="btn btn-primary" onclick="openAddModal()">+ Add Variant</button>
+            <a href="/admin/products" class="btn btn-secondary">← Back to Products</a>
+          </div>
+        </div>
+        <!-- Product Images -->
+        <div class="product-images">
+          <% if (product.images && product.images.length> 0) { %>
+            <% product.images.forEach(img=> { %>
+              <img src="/uploads/product-images/<%= img %>" alt="<%= product.name %>">
+              <% }) %>
+                <% } %>
+        </div>
+        <!-- Variants Table -->
+        <div class="table-container">
+          <table class="variants-table">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Size</th>
+                <th>Color</th>
+                <th>Price (₹)</th>
+                <th>Stock</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="variantsTableBody">
+              <% if (variants && variants.length> 0) { %>
+                <% variants.forEach(variant=> { %>
+                  <tr data-id="<%= variant._id %>">
+                    <td>
+                      <% if (variant.images && variant.images.length> 0) { %>
+                        <img src="/uploads/variant-images/<%= variant.images[0] %>" alt="<%= variant.color %>"
+                          style="width:60px;height:60px;object-fit:cover;">
+                        <% } else { %>
+                          <span class="no-image">No Image</span>
+                          <% } %>
+                    </td>
+                    <td><strong>
+                        <%= variant.size %>
+                      </strong></td>
+                    <td>
+                      <%= variant.color %>
+                    </td>
+                    <td>₹<%= variant.price.toFixed(2) %>
+                    </td>
+                    <td>
+                      <span
+                        class="stock-badge <%= variant.stock > 20 ? 'in-stock' : variant.stock > 0 ? 'low-stock' : 'out-stock' %>">
+                        <%= variant.stock %>
+                      </span>
+                    </td>
+                    <td>
+                      <span class="status-badge <%= variant.isListed ? 'status-listed' : 'status-unlisted' %>">
+                        <%= variant.isListed ? 'Listed' : 'Unlisted' %>
+                      </span>
+                    </td>
+                    <td>
+                      <div class="action-buttons">
+                        <button class="btn btn-edit" data-id="<%= variant._id %>" data-size="<%= variant.size %>"
+                          data-color="<%= variant.color %>" data-price="<%= variant.price %>"
+                          data-stock="<%= variant.stock %>" onclick="openEditModal(this)">
+                          Edit
+                        </button>
+                        <button class="btn <%= variant.isListed ? 'btn-unlist' : 'btn-list' %>"
+                          data-id="<%= variant._id %>" onclick="toggleVariant(this)">
+                          <%= variant.isListed ? 'Unlist' : 'List' %>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                  <% }) %>
+                    <% } else { %>
+                      <tr>
+                        <td colspan="7" class="no-data">No variants found. Click "+ Add Variant" to create one.</td>
+                      </tr>
+                      <% } %>
+            </tbody>
+          </table>
+        </div>
+      </main>
+  </div>
+  <!-- Add Variant Modal -->
+  <div id="addModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Add Variant</h2>
+        <span class="close" onclick="closeAddModal()">&times;</span>
+      </div>
+      <form id="addVariantForm" class="variant-form" action="/admin/products/<%= product._id %>/variants" method="POST"
+        enctype="multipart/form-data">
+
+        <div class="form-group">
+          <label for="addSize">Size *</label>
+          <input type="text" id="addSize" name="size" required placeholder="e.g., 9, 10, 11">
+        </div>
+        <div class="form-group">
+          <label for="addColor">Color *</label>
+          <input type="text" id="addColor" name="color" required placeholder="e.g., Black, White">
+        </div>
+        <div class="form-group">
+          <label for="addPrice">Price (₹) *</label>
+          <input type="number" id="addPrice" name="price" min="0" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label for="addStock">Stock *</label>
+          <input type="number" id="addStock" name="stock" min="0" required>
+        </div>
+        <div class="form-group">
+          <label for="variantImages">Variant Images * (Min 3, Max 10)</label>
+          <input type="file" id="variantImages" name="images" accept="image/*" multiple required>
+          <p class="form-hint">Select 3-10 images for this variant</p>
+        </div>
+
+        <!-- Cropper Interface -->
+        <div id="cropperContainer"
+          style="display: none; margin: 15px 0; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+          <h4 style="margin-bottom: 10px;">Crop Image <span id="imageCounter"></span></h4>
+          <div
+            style="max-height: 400px; overflow: hidden; background: #fff; border: 2px solid #ddd; border-radius: 4px;">
+            <img id="cropperImage" src="" alt="Image to crop" style="max-width: 100%; display: block;">
+          </div>
+          <button type="button" id="cropBtn" class="btn btn-primary" style="margin-top: 10px;">
+            ✓ Crop & Next
+          </button>
+        </div>
+
+        <!-- Preview Cropped Images -->
+        <div id="previewContainer"
+          style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin: 15px 0; padding: 10px; background: #f1f3f5; border-radius: 5px; min-height: 50px;">
+          <!-- Cropped images preview will appear here -->
+        </div>
+
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-submit">Add Variant</button>
+          <button type="button" class="btn btn-cancel" onclick="closeAddModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- Edit Variant Modal -->
+  <div id="editModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Edit Variant</h2>
+        <span class="close" onclick="closeEditModal()">&times;</span>
+      </div>
+      <form id="editVariantForm" class="variant-form" method="POST" enctype="multipart/form-data">
+        <input type="hidden" id="editVariantId" name="variantId">
+        <input type="hidden" id="deletedImages" name="deletedImages" value="">
+
+        <div class="form-group">
+          <label for="editSize">Size *</label>
+          <input type="text" id="editSize" name="size" required>
+        </div>
+        <div class="form-group">
+          <label for="editColor">Color *</label>
+          <input type="text" id="editColor" name="color" required>
+        </div>
+        <div class="form-group">
+          <label for="editPrice">Price (₹) *</label>
+          <input type="number" id="editPrice" name="price" min="0" step="0.01" required>
+        </div>
+        <div class="form-group">
+          <label for="editStock">Stock *</label>
+          <input type="number" id="editStock" name="stock" min="0" required>
+        </div>
+
+        <!-- Current Images with Delete Buttons -->
+        <div class="form-group">
+          <label>Current Images <span id="imageCount"></span></label>
+          <div id="currentImages" class="current-images-grid"
+            style="display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px; margin:10px 0;">
+            <!-- Images will be populated by JavaScript -->
+          </div>
+          <p class="form-hint" style="color:#666; font-size:13px;">Click × to mark image for deletion. Must keep at
+            least 3 images total.</p>
+        </div>
+
+
+        <!-- Upload New Images -->
+        <div class="form-group" style="background:#f8f9fa; padding:15px; border-radius:5px; border:2px dashed #dee2e6;">
+          <label for="editImages" style="font-weight:600; color:#495057;">➕ Add More Images (Optional)</label>
+          <input type="file" id="editImages" name="newImages" accept="image/*" multiple style="margin-top:8px;">
+          <p class="form-hint" style="color:#666; font-size:13px; margin-top:8px;">Upload additional images (combined
+            total must be 3-10)</p>
+        </div>
+
+        <!-- Cropper Interface for Edit Modal -->
+        <div id="editCropperContainer"
+          style="display: none; margin: 15px 0; padding: 15px; background: #f8f9fa; border-radius: 5px;">
+          <h4 style="margin-bottom: 10px;">Crop New Image <span id="editImageCounter"></span></h4>
+          <div
+            style="max-height: 400px; overflow: hidden; background: #fff; border: 2px solid #ddd; border-radius: 4px;">
+            <img id="editCropperImage" src="" alt="Image to crop" style="max-width: 100%; display: block;">
+          </div>
+          <button type="button" id="editCropBtn" class="btn btn-primary" style="margin-top: 10px;">
+            ✓ Crop & Next
+          </button>
+        </div>
+
+        <!-- Preview Cropped Images for Edit Modal -->
+        <div id="editPreviewContainer"
+          style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin: 15px 0; padding: 10px; background: #f1f3f5; border-radius: 5px; min-height: 50px;">
+          <!-- Cropped images preview will appear here -->
+        </div>
+
+
+        <div class="modal-actions">
+          <button type="submit" class="btn btn-submit">Update Variant</button>
+          <button type="button" class="btn btn-cancel" onclick="closeEditModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <!-- Add this before line 202 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <script src="/js/admin/varientManag.js"></script>
+</body>
+
+</html>
