@@ -12,6 +12,8 @@ const {
   checkPassword
 } = require("../../services/userSer/userService.js");
 
+const { getTrendingProducts } = require("../../services/userSer/productUserServices");
+
 const User = require("../../models/user");
 
 const env = require("dotenv").config();
@@ -24,8 +26,10 @@ const pageNotFound = (req, res) => {
 const loadHomepage = async (req, res) => {
   try {
     const data = getHomepageDate();
+    const trendingData  = await getTrendingProducts();
     return res.render("home", {
       ...data,
+       trending: trendingData,
       user: req.session.user || null, // ← send logged-in user to EJS
     });
   } catch (error) {
@@ -170,8 +174,8 @@ const login = async (req, res) => {
       const statusCode = result.message.includes("blocked")
         ? 403
         : result.message.includes("invalid")
-        ? 401
-        : 400;
+          ? 401
+          : 400;
 
       return res.status(statusCode).json({
         success: false,
@@ -344,39 +348,39 @@ const verifyForgotOtp = async (req, res) => {
 };
 
 
-const loadrestPass=(req,res)=>{
+const loadrestPass = (req, res) => {
   try {
     res.render("reset-password")
   } catch (error) {
-    console.error("rendering reset password page failed:",error);
+    console.error("rendering reset password page failed:", error);
   }
 }
 
 
-const resetPassword=async(req,res)=>{
+const resetPassword = async (req, res) => {
 
-  try{
-  const{newPassword}=req.body;
+  try {
+    const { newPassword } = req.body;
 
-  const result=await checkPassword(req.session,newPassword);
+    const result = await checkPassword(req.session, newPassword);
 
-  if(!result.success){
-    return res.status(result.status||500).json({
-      success:false,
-      message:result.message
+    if (!result.success) {
+      return res.status(result.status || 500).json({
+        success: false,
+        message: result.message
 
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: result.message,
     });
-  }
-
-res.status(200).json({
-  success:true,
-  message:result.message,
-});
-  }catch(error){
-    console.error("error in reset password:",error);
+  } catch (error) {
+    console.error("error in reset password:", error);
     res.status(500).json({
-      success:false,
-      message:"server error"
+      success: false,
+      message: "server error"
     })
   }
 

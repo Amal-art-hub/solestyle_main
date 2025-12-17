@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= product.name %> | SoleStyle
+    </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/user/homestyle.css">
+    <!-- Link to the CSS file you created -->
+    <link rel="stylesheet" href="/css/user/productDetails.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    <%- include('../partials/header') %>
+
+        <!-- [CHANGE] Extract Unique Colors Logic (Run this JS before rendering HTML) -->
+        <% const uniqueColors=[...new Set(variants.map(v=> v.color))];
+            %>
+
+            <div class="product-detail-container">
+                <!-- Breadcrumbs -->
+                <div class="breadcrumbs">
+                    <a href="/">Home</a> >
+                    <a href="/mens-products?category=<%= product.categoryId._id %>">
+                        <%= product.categoryId.name %>
+                    </a> >
+                    <span>
+                        <%= product.name %>
+                    </span>
+                </div>
+
+                <div class="product-main-wrapper">
+                    <!-- Image Gallery Section -->
+                    <div class="product-gallery">
+                        <div class="thumbnails-column">
+                            <% if (variants && variants.length> 0 && variants[0].images) { %>
+                                <% variants[0].images.forEach((img, index)=> { %>
+                                    <div class="thumbnail-wrapper <%= index === 2? 'active' : '' %>"
+                                        data-image="<%= img %>">
+                                        <img src="/uploads/variant-images/<%= img %>" alt="Thumbnail">
+                                    </div>
+                                    <% }) %>
+                                        <% } %>
+                        </div>
+                        <div class="main-image-wrapper">
+                            <!-- Note: The JS expects this ID to be 'mainImage' -->
+                            <img id="mainImage" src="/uploads/variant-images/<%= currentVariant.images[2] %>"
+                                alt="<%= product.name %>">
+                            <div class="zoom-lens"></div>
+                        </div>
+                    </div>
+
+                    <!-- Product Info Section -->
+                    <div class="product-info-column">
+                        <h1 class="product-title">
+                            <%= product.name %>
+                        </h1>
+                        <p class="brand-name">Brand: <span>
+                                <%= product.brandId.name %>
+                            </span></p>
+
+                        <div class="price-section">
+                            <span class="current-price">₹<span id="displayPrice">
+                                    <%= currentVariant.price %>
+                                </span></span>
+                            <% if (currentVariant.stock> 0) { %>
+                                <span class="stock-status in-stock">In Stock</span>
+                                <% } else { %>
+                                    <span class="stock-status out-of-stock">Out of Stock</span>
+                                    <% } %>
+                        </div>
+
+                        <div class="description-box">
+                            <p>
+                                <%= product.description %>
+                            </p>
+                        </div>
+
+                        <!-- [CHANGE] New Color Selector Section -->
+                        <div class="color-selector">
+                            <h3>Select Color</h3>
+                            <div class="color-options">
+                                <% uniqueColors.forEach((color, index)=> { %>
+                                    <!-- The 'active' class on the first one sets the default color -->
+                                    <div class="color-btn <%= index === 0 ? 'active' : '' %>"
+                                        onclick="filterByColor(this, '<%= color %>')">
+                                        <%= color %>
+                                    </div>
+                                    <% }) %>
+                            </div>
+                        </div>
+
+                        <!-- Variant Selection -->
+                        <div class="variant-selector">
+                            <h3>Select Size (UK/India)</h3>
+                            <div class="size-options">
+                                <% variants.forEach(v=> { %>
+                                    <!-- [CHANGE] Added data-color attribute to use for filtering -->
+                                    <div class="size-box <%= v._id.toString() === currentVariant._id.toString() ? 'selected' : '' %>"
+                                        data-price="<%= v.price %>" data-stock="<%= v.stock %>"
+                                        data-variant-id="<%= v._id %>" data-color="<%= v.color %>"
+                                        data-image="<%= v.images[0] %>">
+                                        <!-- [CHANGE] Important: We filter using this -->
+                                        <%= v.size %>
+                                    </div>
+                                    <% }) %>
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="selectedVariantId" value="<%= currentVariant._id %>">
+
+                        <div class="action-buttons">
+                            <button class="btn-add-cart" onclick="addToCart()">
+                                <i class="fa fa-shopping-cart"></i> Add to Cart
+                            </button>
+                            <button class="btn-buy-now">Buy Now</button>
+                            <button class="btn-wishlist"><i class="fa fa-heart"></i></button>
+                        </div>
+
+                        <div class="delivery-info">
+                            <div class="info-item">
+                                <i class="fa fa-truck"></i>
+                                <span>Free Delivery on orders above ₹1000</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fa fa-undo"></i>
+                                <span>7 Days Return Policy</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Related Products -->
+                <div class="related-products-section">
+                    <h2>You May Also Like</h2>
+                    <div class="related-grid">
+                        <% relatedProducts.forEach(p=> { %>
+                            <div class="product-card small">
+                                <a href="/product/<%= p._id %>">
+                                    <img src="/uploads/variant-images/<%= p.image %>" alt="<%= p.name %>">
+                                    <div class="info">
+                                        <h3>
+                                            <%= p.name %>
+                                        </h3>
+                                        <p class="price">₹<%= p.price %>
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            <% }) %>
+                    </div>
+                </div>
+            </div>
+
+            <%- include('../partials/footer') %>
+                <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+                <!-- Link to the JS file you created -->
+
+                <!-- Store data in a hidden element to avoid IDE syntax errors in script tags -->
+                <div id="variant-images-data" data-images='<%- JSON.stringify(variants.reduce((acc, v) => {
+                    acc[v.color] = v.images;
+                    return acc;
+                }, {})) %>' style="display: none;"></div>
+
+                <script>
+                    const dataElement = document.getElementById('variant-images-data');
+                    const variantImages = JSON.parse(dataElement.getAttribute('data-images'));
+                </script>
+
+                <script src="/js/user/productDetails.js"></script>
+</body>
+
+</html>

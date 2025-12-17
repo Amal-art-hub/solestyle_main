@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Men's Collection | SoleStyle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+   
+    <link rel="stylesheet" href="/css/user/homestyle.css">
+    <link rel="stylesheet" href="/css/user/mensProducts.css">
+</head>
+<body>
+    <%- include('../partials/header') %>
+    <div class="product-page-container">
+        
+        <!-- Sidebar Filters -->
+        <aside class="filters-sidebar">
+            <form action="/mens-products" method="GET">
+                <input type="hidden" name="category" value="<%= categoryId %>">
+                <input type="hidden" name="search" value="<%= search %>">
+                <input type="hidden" name="sort" value="<%= sort %>">
+                <h3>Filters</h3>
+                
+                <!-- Price Filter -->
+                <div class="filter-group">
+                    <h4>Price Range</h4>
+                    <input type="number" name="minPrice" placeholder="Min" value="<%= filters.minPrice %>">
+                    <input type="number" name="maxPrice" placeholder="Max" value="<%= filters.maxPrice %>">
+                </div>
+                <!-- Brand Filter -->
+                <div class="filter-group">
+                    <h4>Brands</h4>
+                    <% filterOptions.brands.forEach(brand => { %>
+                        <label>
+                            <input type="checkbox" name="brand" value="<%= brand._id %>" 
+                                <%= filters.brand === brand._id.toString() ? 'checked' : '' %>>
+                            <%= brand.name %>
+                        </label>
+                    <% }) %>
+                </div>
+                <div class="filter-actions">
+                    <button type="submit">Apply</button>
+                    <a href="/mens-products?category=<%= categoryId %>">Clear</a>
+                </div>
+            </form>
+        </aside>
+        <!-- Main Content -->
+        <main class="product-grid-section">
+            
+            <!-- Top Bar: Search & Sort -->
+            <div class="top-bar">
+                <form action="/mens-products" method="GET" class="search-form">
+                    <input type="hidden" name="category" value="<%= categoryId %>">
+                    <input type="text" name="search" placeholder="Search..." value="<%= search %>">
+                    <button type="submit">🔍</button>
+                </form>
+                <div class="sort-box">
+                    <label>Sort By:</label>
+                    <select onchange="location = this.value;">
+                        <!-- Helper to build URL with current params + new sort -->
+                        <% const buildUrl = (s) => `?category=${categoryId}&search=${search}&sort=${s}`; %>
+                        
+                        <option value="<%= buildUrl('newest') %>" <%= sort === 'newest' ? 'selected' : '' %>>Newest</option>
+                        <option value="<%= buildUrl('price-low') %>" <%= sort === 'price-low' ? 'selected' : '' %>>Price: Low to High</option>
+                        <option value="<%= buildUrl('price-high') %>" <%= sort === 'price-high' ? 'selected' : '' %>>Price: High to Low</option>
+                        <option value="<%= buildUrl('a-z') %>" <%= sort === 'a-z' ? 'selected' : '' %>>Name: A-Z</option>
+                        <option value="<%= buildUrl('z-a') %>" <%= sort === 'z-a' ? 'selected' : '' %>>Name: Z-A</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Products Grid -->
+            <div class="products-grid">
+                <% products.forEach(p => { %>
+                    <div class="product-card">
+                        <a href="/product/<%= p._id %>">
+                            <img src="/uploads/variant-images/<%= p.image %>" alt="<%= p.name %>">
+                            <div class="info">
+                                <h3><%= p.name %></h3>
+                                <p class="brand"><%= p.brandId.name %></p>
+                                <p class="price">₹<%= p.price.toLocaleString() %></p>
+                            </div>
+                        </a>
+                    </div>
+                <% }) %>
+            </div>
+            <!-- Pagination -->
+            <div class="pagination">
+                <% for(let i=1; i<=totalPages; i++) { %>
+                    <a href="?category=<%= categoryId %>&page=<%= i %>&search=<%= search %>&sort=<%= sort %>" 
+                       class="<%= currentPage == i ? 'active' : '' %>"><%= i %></a>
+                <% } %>
+            </div>
+        </main>
+    </div>
+    <%- include('../partials/footer') %>
+</body>
+</html>

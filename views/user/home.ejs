@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,368 +8,473 @@
 
     <!-- CSS -->
     <link rel="stylesheet" href="/css/user/homestyle.css">
- 
+
 
 </head>
 
 <body>
 
 
-<%- include('../partials/header') %>
+    <%- include('../partials/header') %>
 
-<!-- Hero Section -->
-<section class="hero">
-    <div class="hero-slider">
-        <div class="slide active">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-slider">
+                <div class="slide active">
+                    <div class="container">
+                        <div class="hero-content">
+                            <h1>Summer Vibes Sale.</h1>
+                            <p class="hero-discount">Up to 30% Off</p>
+                            <p class="hero-subtitle">All outdoor activities shoes. Find your best fit!</p>
+                            <div class="hero-buttons">
+                                <button class="btn-primary">Shop Sale</button>
+                                <button class="btn-secondary">View All</button>
+                            </div>
+                        </div>
+                        <div class="hero-image">👟</div>
+                    </div>
+                </div>
+            </div>
+            <button class="slider-nav prev" onclick="changeSlide(-1)">&#10094;</button>
+            <button class="slider-nav next" onclick="changeSlide(1)">&#10095;</button>
+            <div class="slider-dots">
+                <span class="dot active" onclick="goToSlide(0)"></span>
+                <span class="dot" onclick="goToSlide(1)"></span>
+                <span class="dot" onclick="goToSlide(2)"></span>
+            </div>
+        </section>
+
+        <!-- Experience Section -->
+        <section class="experience">
             <div class="container">
-                <div class="hero-content">
-                    <h1>Summer Vibes Sale.</h1>
-                    <p class="hero-discount">Up to 30% Off</p>
-                    <p class="hero-subtitle">All outdoor activities shoes. Find your best fit!</p>
-                    <div class="hero-buttons">
-                        <button class="btn-primary">Shop Sale</button>
-                        <button class="btn-secondary">View All</button>
-                    </div>
-                </div>
-                <div class="hero-image">👟</div>
-            </div>
-        </div>
-    </div>
-    <button class="slider-nav prev" onclick="changeSlide(-1)">&#10094;</button>
-    <button class="slider-nav next" onclick="changeSlide(1)">&#10095;</button>
-    <div class="slider-dots">
-        <span class="dot active" onclick="goToSlide(0)"></span>
-        <span class="dot" onclick="goToSlide(1)"></span>
-        <span class="dot" onclick="goToSlide(2)"></span>
-    </div>
-</section>
+                <h2>Experience SoleStyle</h2>
+                <p class="subtitle">Get behind the scenes and discover what makes us. Because it's more. This is our
+                    story - told by us to you.</p>
 
-<!-- Experience Section -->
-<section class="experience">
-    <div class="container">
-        <h2>Experience SoleStyle</h2>
-        <p class="subtitle">Get behind the scenes and discover what makes us. Because it's more. This is our story - told by us to you.</p>
-        
-        <div class="video-box">
-            <button class="play-btn">
-                <svg width="64" height="64" viewBox="0 0 24 24" fill="white">
-                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                </svg>
-            </button>
-            <div class="video-info">
-                <h3>The Art of the Sole</h3>
-                <p>Discover how we craft shoes that stand the test with innovative materials and meticulous artisanship.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- Current Trend Shoes -->
-<section class="products">
-    <div class="container">
-        <div class="section-header">
-            <div>
-                <h2>Current Trend Shoes</h2>
-                <p>See what all users are in for. Latest trends.</p>
-            </div>
-            <div class="nav-buttons">
-                <button class="nav-btn">&#10094;</button>
-                <button class="nav-btn">&#10095;</button>
-            </div>
-        </div>
-
-        <div class="product-grid">
-            <div class="product-card">
-                <span class="badge">30% OFF</span>
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x300?text=Shoe+1" alt="Urban Classic">
-                    <button class="wishlist-btn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                <div class="video-box">
+                    <button class="play-btn">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="white">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
                         </svg>
                     </button>
-                </div>
-                <div class="product-info">
-                    <h3>Urban Classic</h3>
-                    <p class="product-color">Just In</p>
-                    <div class="rating">
-                        <span>★</span>
-                        <span>4.5</span>
-                    </div>
-                    <div class="product-footer">
-                        <div class="price">
-                            <span class="current-price">$89</span>
-                            <span class="old-price">$120</span>
-                        </div>
-                        <button class="add-cart">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                                <path d="M9 2a1 1 0 0 1 1 1v1h4V3a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V3a1 1 0 0 1 1-1z"></path>
-                            </svg>
-                        </button>
+                    <div class="video-info">
+                        <h3>The Art of the Sole</h3>
+                        <p>Discover how we craft shoes that stand the test with innovative materials and meticulous
+                            artisanship.</p>
                     </div>
                 </div>
             </div>
+        </section>
 
-            <div class="product-card">
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x300?text=Shoe+2" alt="Oxford Haven">
-                    <button class="wishlist-btn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                        </svg>
-                    </button>
+       <!-- New 3-Column Grid -->
+<div class="category-grid-container" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 150px;">
+    
+    <!-- Column 1: Men -->
+    <div class="category-column">
+        <h3 style="text-align: center; margin-bottom: 15px;">Men's Trending</h3>
+        <% if (trending.men && trending.men.length > 0) { %>
+            <% trending.men.forEach(product => { %>
+                <!-- Reuse your existing product-card HTML here -->
+                <div class="product-card">
+                    <!-- ... Insert your Product Card Code ... -->
+                     <div class="product-image">
+                        <a href="/product/<%= product._id %>">
+                            <img src="/uploads/variant-images/<%= product.image %>" alt="<%= product.name %>" style="width: 100%; height: 250px; object-fit: cover;">
+                        </a>
+                     </div>
+                     <div class="product-info">
+                        <h4><%= product.name %></h4>
+                        <p>₹<%= product.price %></p>
+                     </div>
                 </div>
-                <div class="product-info">
-                    <h3>Oxford Haven</h3>
-                    <p class="product-color">Classic Brown</p>
-                    <div class="rating">
-                        <span>★</span>
-                        <span>4.8</span>
-                    </div>
-                    <div class="product-footer">
-                        <div class="price">
-                            <span class="current-price">$95</span>
-                        </div>
-                        <button class="add-cart">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                                <path d="M9 2a1 1 0 0 1 1 1v1h4V3a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V3a1 1 0 0 1 1-1z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="product-card">
-                <span class="badge">25% OFF</span>
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x300?text=Shoe+3" alt="Sporty Cool">
-                    <button class="wishlist-btn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                        </svg>
-                    </button>
-                </div>
-                <div class="product-info">
-                    <h3>Sporty Cool</h3>
-                    <p class="product-color">Athletic Gray</p>
-                    <div class="rating">
-                        <span>★</span>
-                        <span>4.6</span>
-                    </div>
-                    <div class="product-footer">
-                        <div class="price">
-                            <span class="current-price">$75</span>
-                            <span class="old-price">$100</span>
-                        </div>
-                        <button class="add-cart">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                                <path d="M9 2a1 1 0 0 1 1 1v1h4V3a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V3a1 1 0 0 1 1-1z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="product-card">
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x300?text=Shoe+4" alt="Classic Runner">
-                    <button class="wishlist-btn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                        </svg>
-                    </button>
-                </div>
-                <div class="product-info">
-                    <h3>Classic Runner</h3>
-                    <p class="product-color">Navy Blue</p>
-                    <div class="rating">
-                        <span>★</span>
-                        <span>4.7</span>
-                    </div>
-                    <div class="product-footer">
-                        <div class="price">
-                            <span class="current-price">$110</span>
-                        </div>
-                        <button class="add-cart">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                                <path d="M9 2a1 1 0 0 1 1 1v1h4V3a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V3a1 1 0 0 1 1-1z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+            <% }) %>
+        <% } %>
     </div>
-</section>
-
-<!-- Trending Chappals -->
-<section class="products light-bg">
-    <div class="container">
-        <div class="section-header">
-            <div>
-                <h2>Trending Chappals</h2>
-                <p>Step easy in style this summer</p>
-            </div>
-            <div class="nav-buttons">
-                <button class="nav-btn">&#10094;</button>
-                <button class="nav-btn">&#10095;</button>
-            </div>
-        </div>
-
-        <div class="product-grid">
-            <div class="product-card">
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x300?text=Chappal+1" alt="Breeze Slides">
-                    <button class="wishlist-btn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                        </svg>
-                    </button>
+    <!-- Column 2: Women -->
+    <div class="category-column">
+        <h3 style="text-align: center; margin-bottom: 15px;">Women's Trending</h3>
+        <% if (trending.women && trending.women.length > 0) { %>
+            <% trending.women.forEach(product => { %>
+                <!-- Reuse product-card HTML -->
+                <div class="product-card">
+                    <!-- ... Product Card Content ... -->
+                     <div class="product-image">
+                        <a href="/product/<%= product._id %>">
+                            <img src="/uploads/variant-images/<%= product.image %>" alt="<%= product.name %>" style="width: 100%; height: 250px; object-fit: cover;">
+                        </a>
+                     </div>
+                     <div class="product-info">
+                        <h4><%= product.name %></h4>
+                        <p>₹<%= product.price %></p>
+                     </div>
                 </div>
-                <div class="product-info">
-                    <h3>Breeze Slides</h3>
-                    <p class="product-color">Comfortable Gray</p>
-                    <div class="rating">
-                        <span>★</span>
-                        <span>4.3</span>
-                    </div>
-                    <div class="product-footer">
-                        <div class="price">
-                            <span class="current-price">$45</span>
-                        </div>
-                        <button class="add-cart">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                                <path d="M9 2a1 1 0 0 1 1 1v1h4V3a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V3a1 1 0 0 1 1-1z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="product-card">
-                <span class="badge">24% OFF</span>
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x300?text=Chappal+2" alt="Beach Walker">
-                    <button class="wishlist-btn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                        </svg>
-                    </button>
-                </div>
-                <div class="product-info">
-                    <h3>Beach Walker</h3>
-                    <p class="product-color">Summer White</p>
-                    <div class="rating">
-                        <span>★</span>
-                        <span>4.5</span>
-                    </div>
-                    <div class="product-footer">
-                        <div class="price">
-                            <span class="current-price">$38</span>
-                            <span class="old-price">$50</span>
-                        </div>
-                        <button class="add-cart">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                                <path d="M9 2a1 1 0 0 1 1 1v1h4V3a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V3a1 1 0 0 1 1-1z"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
+            <% }) %>
+        <% } %>
     </div>
-</section>
-
-<!-- Latest Crocs -->
-<section class="products">
-    <div class="container">
-        <div class="section-header">
-            <div>
-                <h2>Latest Crocs</h2>
-                <p>Comfort first makes it a rare fit.</p>
-            </div>
-            <div class="nav-buttons">
-                <button class="nav-btn">&#10094;</button>
-                <button class="nav-btn">&#10095;</button>
-            </div>
-        </div>
-
-        <div class="product-grid">
-            <div class="product-card">
-                <div class="product-image">
-                    <img src="https://via.placeholder.com/300x300?text=Crocs" alt="Classic Clog">
-                    <button class="wishlist-btn">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                        </svg>
-                    </button>
+    <!-- Column 3: Kids -->
+    <div class="category-column">
+        <h3 style="text-align: center; margin-bottom: 15px;">Kids' Trending</h3>
+        <% if (trending.kids && trending.kids.length > 0) { %>
+            <% trending.kids.forEach(product => { %>
+                <!-- Reuse product-card HTML -->
+                <div class="product-card">
+                    <!-- ... Product Card Content ... -->
+                     <div class="product-image">
+                        <a href="/product/<%= product._id %>">
+                            <img src="/uploads/variant-images/<%= product.image %>" alt="<%= product.name %>" style="width: 100%; height: 250px; object-fit: cover;">
+                        </a>
+                     </div>
+                     <div class="product-info">
+                        <h4><%= product.name %></h4>
+                        <p>₹<%= product.price %></p>
+                     </div>
                 </div>
-                <div class="product-info">
-                    <h3>Classic Clog</h3>
-                    <p class="product-color">Comfort Fit</p>
-                    <div class="rating">
-                        <span>★</span>
-                        <span>4.6</span>
-                    </div>
-                    <div class="product-footer">
-                        <div class="price">
-                            <span class="current-price">$55</span>
+            <% }) %>
+        <% } %>
+    </div>
+</div>
+                    <!-- <div class="product-card">
+                        <span class="badge">30% OFF</span>
+                        <div class="product-image">
+                            <img src="https://via.placeholder.com/300x300?text=Shoe+1" alt="Urban Classic">
+                            <button class="wishlist-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                    </path>
+                                </svg>
+                            </button>
                         </div>
-                        <button class="add-cart">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                                <path d="M9 2a1 1 0 0 1 1 1v1h4V3a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V3a1 1 0 0 1 1-1z"></path>
-                            </svg>
-                        </button>
+                        <div class="product-info">
+                            <h3>Urban Classic</h3>
+                            <p class="product-color">Just In</p>
+                            <div class="rating">
+                                <span>★</span>
+                                <span>4.5</span>
+                            </div>
+                            <div class="product-footer">
+                                <div class="price">
+                                    <span class="current-price">$89</span>
+                                    <span class="old-price">$120</span>
+                                </div>
+                                <button class="add-cart">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white"
+                                        stroke-width="2">
+                                        <path
+                                            d="M9 2a1 1 0 0 1 1 1v1h4V3a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V3a1 1 0 0 1 1-1z">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="https://via.placeholder.com/300x300?text=Shoe+2" alt="Oxford Haven">
+                            <button class="wishlist-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                    </path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Oxford Haven</h3>
+                            <p class="product-color">Classic Brown</p>
+                            <div class="rating">
+                                <span>★</span>
+                                <span>4.8</span>
+                            </div>
+                            <div class="product-footer">
+                                <div class="price">
+                                    <span class="current-price">$95</span>
+                                </div>
+                                <button class="add-cart">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white"
+                                        stroke-width="2">
+                                        <path
+                                            d="M9 2a1 1 0 0 1 1 1v1h4V3a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V3a1 1 0 0 1 1-1z">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <span class="badge">25% OFF</span>
+                        <div class="product-image">
+                            <img src="https://via.placeholder.com/300x300?text=Shoe+3" alt="Sporty Cool">
+                            <button class="wishlist-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                    </path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Sporty Cool</h3>
+                            <p class="product-color">Athletic Gray</p>
+                            <div class="rating">
+                                <span>★</span>
+                                <span>4.6</span>
+                            </div>
+                            <div class="product-footer">
+                                <div class="price">
+                                    <span class="current-price">$75</span>
+                                    <span class="old-price">$100</span>
+                                </div>
+                                <button class="add-cart">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white"
+                                        stroke-width="2">
+                                        <path
+                                            d="M9 2a1 1 0 0 1 1 1v1h4V3a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V3a1 1 0 0 1 1-1z">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="https://via.placeholder.com/300x300?text=Shoe+4" alt="Classic Runner">
+                            <button class="wishlist-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                    </path> -->
+                                <!-- </svg>
+                            </button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Classic Runner</h3>
+                            <p class="product-color">Navy Blue</p>
+                            <div class="rating">
+                                <span>★</span>
+                                <span>4.7</span>
+                            </div>
+                            <div class="product-footer">
+                                <div class="price">
+                                    <span class="current-price">$110</span>
+                                </div>
+                                <button class="add-cart">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white"
+                                        stroke-width="2">
+                                        <path
+                                            d="M9 2a1 1 0 0 1 1 1v1h4V3a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V3a1 1 0 0 1 1-1z">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
+        </section>
+
+        <!-- Trending Chappals -->
+        <section class="products light-bg">
+            <div class="container">
+                <div class="section-header">
+                    <div>
+                        <h2>Trending Chappals</h2>
+                        <p>Step easy in style this summer</p>
+                    </div>
+                    <div class="nav-buttons">
+                        <button class="nav-btn">&#10094;</button>
+                        <button class="nav-btn">&#10095;</button>
+                    </div>
+                </div>
+
+                <div class="product-grid">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="https://via.placeholder.com/300x300?text=Chappal+1" alt="Breeze Slides">
+                            <button class="wishlist-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                    </path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Breeze Slides</h3>
+                            <p class="product-color">Comfortable Gray</p>
+                            <div class="rating">
+                                <span>★</span>
+                                <span>4.3</span>
+                            </div>
+                            <div class="product-footer">
+                                <div class="price">
+                                    <span class="current-price">$45</span>
+                                </div>
+                                <button class="add-cart">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white"
+                                        stroke-width="2">
+                                        <path
+                                            d="M9 2a1 1 0 0 1 1 1v1h4V3a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V3a1 1 0 0 1 1-1z">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="product-card">
+                        <span class="badge">24% OFF</span>
+                        <div class="product-image">
+                            <img src="https://via.placeholder.com/300x300?text=Chappal+2" alt="Beach Walker">
+                            <button class="wishlist-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                    </path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Beach Walker</h3>
+                            <p class="product-color">Summer White</p>
+                            <div class="rating">
+                                <span>★</span>
+                                <span>4.5</span>
+                            </div>
+                            <div class="product-footer">
+                                <div class="price">
+                                    <span class="current-price">$38</span>
+                                    <span class="old-price">$50</span>
+                                </div>
+                                <button class="add-cart">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white"
+                                        stroke-width="2">
+                                        <path
+                                            d="M9 2a1 1 0 0 1 1 1v1h4V3a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V3a1 1 0 0 1 1-1z">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</section>
+        </section>
 
-<!-- Why Choose Section -->
-<section class="why-choose">
-    <div class="container">
-        <h2>Why Choose SoleStyle?</h2>
-        <p class="subtitle">We're not the first to do it, this. We, a pioneer of crafted, utility, art in style.</p>
-        
-        <div class="features-grid">
-            <div class="feature">
-                <div class="feature-icon blue">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="1" y="3" width="15" height="13"></rect>
-                        <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-                        <circle cx="5.5" cy="18.5" r="2.5"></circle>
-                        <circle cx="18.5" cy="18.5" r="2.5"></circle>
-                    </svg>
+        <!-- Latest Crocs -->
+        <section class="products">
+            <div class="container">
+                <div class="section-header">
+                    <div>
+                        <h2>Latest Crocs</h2>
+                        <p>Comfort first makes it a rare fit.</p>
+                    </div>
+                    <div class="nav-buttons">
+                        <button class="nav-btn">&#10094;</button>
+                        <button class="nav-btn">&#10095;</button>
+                    </div>
                 </div>
-                <h3>Comfort Technology</h3>
-                <p>We prioritize your comfort with advanced cushioning and ergonomic support in every step you take.</p>
-            </div>
 
-            <div class="feature">
-                <div class="feature-icon green">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M12 2a10 10 0 0 0-9.95 9h11.64L9.74 7.05a1 1 0 0 1 1.41-1.41l5.66 5.65a1 1 0 0 1 0 1.42l-5.66 5.65a1 1 0 0 1-1.41-1.41L13.69 13H2.05A10 10 0 1 0 12 2z"></path>
-                    </svg>
+                <div class="product-grid">
+                    <div class="product-card">
+                        <div class="product-image">
+                            <img src="https://via.placeholder.com/300x300?text=Crocs" alt="Classic Clog">
+                            <button class="wishlist-btn">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                    </path>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="product-info">
+                            <h3>Classic Clog</h3>
+                            <p class="product-color">Comfort Fit</p>
+                            <div class="rating">
+                                <span>★</span>
+                                <span>4.6</span>
+                            </div>
+                            <div class="product-footer">
+                                <div class="price">
+                                    <span class="current-price">$55</span>
+                                </div>
+                                <button class="add-cart">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white"
+                                        stroke-width="2">
+                                        <path
+                                            d="M9 2a1 1 0 0 1 1 1v1h4V3a1 1 0 1 1 2 0v1h1a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h1V3a1 1 0 0 1 1-1z">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <h3>Sustainable Materials</h3>
-                <p>Eco-friendly choices with recycled materials, reducing environmental impact without compromising on quality.</p>
             </div>
+        </section>
 
-            <div class="feature">
-                <div class="feature-icon purple">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <circle cx="12" cy="10" r="3"></circle>
-                        <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"></path>
-                    </svg>
+        <!-- Why Choose Section -->
+        <section class="why-choose">
+            <div class="container">
+                <h2>Why Choose SoleStyle?</h2>
+                <p class="subtitle">We're not the first to do it, this. We, a pioneer of crafted, utility, art in style.
+                </p>
+
+                <div class="features-grid">
+                    <div class="feature">
+                        <div class="feature-icon blue">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="1" y="3" width="15" height="13"></rect>
+                                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                            </svg>
+                        </div>
+                        <h3>Comfort Technology</h3>
+                        <p>We prioritize your comfort with advanced cushioning and ergonomic support in every step you
+                            take.</p>
+                    </div>
+
+                    <div class="feature">
+                        <div class="feature-icon green">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M12 2a10 10 0 0 0-9.95 9h11.64L9.74 7.05a1 1 0 0 1 1.41-1.41l5.66 5.65a1 1 0 0 1 0 1.42l-5.66 5.65a1 1 0 0 1-1.41-1.41L13.69 13H2.05A10 10 0 1 0 12 2z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3>Sustainable Materials</h3>
+                        <p>Eco-friendly choices with recycled materials, reducing environmental impact without
+                            compromising on quality.</p>
+                    </div>
+
+                    <div class="feature">
+                        <div class="feature-icon purple">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <circle cx="12" cy="10" r="3"></circle>
+                                <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"></path>
+                            </svg>
+                        </div>
+                        <h3>Artisan Designs</h3>
+                        <p>Unique designs crafted with attention to detail by skilled artisans creating footwear that
+                            stands out.</p>
+                    </div>
                 </div>
-                <h3>Artisan Designs</h3>
-                <p>Unique designs crafted with attention to detail by skilled artisans creating footwear that stands out.</p>
             </div>
-        </div>
-    </div>
-</section>
+        </section>
 
-<%- include('../partials/footer') %>
+        <%- include('../partials/footer') %>
