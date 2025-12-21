@@ -185,6 +185,71 @@ body {
 .btn-unlist:hover {
   background-color: #e0a800;
 }
+
+/* Search Box Styling */
+.search-container {
+    margin-bottom: 20px;
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.search-container form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.search-container input[type="text"] {
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 300px;
+    transition: width 0.3s ease;
+}
+
+.search-container input[type="text"]:focus {
+    width: 350px;
+    border-color: #3498db;
+    outline: none;
+}
+
+.search-container button {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.search-container button:hover {
+    background-color: #2980b9;
+}
+
+.clear-btn {
+    margin-left: 10px;
+    background-color: #95a5a6;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.clear-btn:hover {
+    background-color: #7f8c8d;
+}
 /* Responsive */
 @media (max-width: 768px) {
   .main-content {

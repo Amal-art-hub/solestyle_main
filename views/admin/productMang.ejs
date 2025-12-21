@@ -19,6 +19,18 @@
           <h1>Product Management</h1>
           <a href="/admin/products/add" class="btn btn-primary">+ Add New Product</a>
         </div>
+        <div class="search-container">
+            <!-- Action should be empty to submit to current page, or '/admin/products' -->
+            <form action="/admin/products" method="GET" style="display: flex; gap: 10px;">
+                <input type="text" name="search" placeholder="Search by Product Name..." value="<%= search %>">
+                <button type="submit">Search</button>
+            </form>
+            
+            <% if(search) { %>
+                <!-- Clear button must go back to products list -->
+                <a href="/admin/products" class="clear-btn" style="padding: 10px; background: #666; color: white; text-decoration: none; border-radius: 4px;">Clear</a>
+            <% } %>
+        </div>
         <div class="table-container">
           <table class="products-table">
             <thead>
@@ -69,23 +81,27 @@
           </table>
         </div>
         <!-- Pagination -->
-        <% if (totalPages> 1) { %>
-          <div class="pagination">
-            <% if (currentPage> 1) { %>
-              <a href="?page=<%= currentPage - 1 %>" class="page-link">← Previous</a>
-              <% } %>
+              <!-- Pagination -->
+        <% if (totalPages > 1) { %>
+            <div class="pagination">
+                <!-- Previous Button -->
+                <% if (currentPage > 1) { %>
+                    <a href="?page=<%= currentPage - 1 %>&search=<%= search %>" class="page-link">← Previous</a>
+                <% } %>
 
-                <% for(let i=1; i <=totalPages; i++) { %>
-                  <a href="?page=<%= i %>" class="page-link <%= currentPage == i ? 'active' : '' %>">
-                    <%= i %>
-                  </a>
-                  <% } %>
+                <!-- Page Numbers -->
+                <% for(let i=1; i <= totalPages; i++) { %>
+                    <a href="?page=<%= i %>&search=<%= search %>" class="page-link <%= currentPage == i ? 'active' : '' %>">
+                        <%= i %>
+                    </a>
+                <% } %>
 
-                    <% if (currentPage < totalPages) { %>
-                      <a href="?page=<%= currentPage + 1 %>" class="page-link">Next →</a>
-                      <% } %>
-          </div>
-          <% } %>
+                <!-- Next Button -->
+                <% if (currentPage < totalPages) { %>
+                    <a href="?page=<%= currentPage + 1 %>&search=<%= search %>" class="page-link">Next →</a>
+                <% } %>
+            </div>
+        <% } %>
       </main>
   </div>
   <script src="/js/admin/productManag.js"></script>

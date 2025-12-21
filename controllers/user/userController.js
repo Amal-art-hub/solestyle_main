@@ -124,7 +124,7 @@ const signup = async (req, res) => {
   }
 };
 
-// Resend OTP handler
+//------------------------------------------------------------------------------------------- Resend OTP handler
 const resendOtp = async (req, res) => {
   try {
     const result = await resendOtpService(req.session);

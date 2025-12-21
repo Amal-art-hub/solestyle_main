@@ -1,0 +1,160 @@
+/* Main Container similar to login/signup styling */
+body {
+    background-color: #f3f4f6; /* Light gray background */
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.otp-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.otp-container {
+    background: #ffffff;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+}
+
+/* Header Styling */
+.otp-container h2 {
+    color: #111827;
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.subtitle {
+    color: #6b7280;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 2rem;
+}
+
+.subtitle span.email-highlight {
+    color: #4f46e5;
+    font-weight: 600;
+}
+
+/* OTP Input Group */
+.otp-input-group {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.otp-input-group input {
+    width: 50px;
+    height: 60px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    background: #f9fafb;
+    transition: all 0.2s ease;
+    color: #1f2937;
+}
+
+.otp-input-group input:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    outline: none;
+    background: #fff;
+    transform: translateY(-2px);
+}
+
+.otp-input-group input::placeholder {
+    color: #d1d5db;
+}
+
+/* Buttons and Links */
+.btn-verify {
+    width: 100%;
+    padding: 0.875rem;
+    background-color: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-verify:hover {
+    background-color: #4338ca;
+}
+
+.btn-verify:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.links {
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.links a {
+    color: #4f46e5;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.links a:hover {
+    color: #4338ca;
+    text-decoration: underline;
+}
+
+#timer {
+    font-weight: 600;
+    color: #ef4444; /* Red color for timer */
+    margin-left: 5px;
+}
+
+.back-login {
+    display: inline-block;
+    margin-top: 1rem;
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+
+.back-login:hover {
+    color: #374151;
+}
+
+/* Error/Success Messages */
+.message-box {
+    margin-bottom: 1rem;
+    padding: 0.75rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    display: none;
+}
+
+.message-box.error {
+    background-color: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+    display: block;
+}
+
+.message-box.success {
+    background-color: #d1fae5;
+    color: #047857;
+    border: 1px solid #a7f3d0;
+    display: block;
+}

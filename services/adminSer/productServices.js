@@ -6,15 +6,22 @@ const Brand = require("../../models/brand");
 const getAllProducts = async (page = 1, limit = 10, search = "") => {
     try {
         const skip = (page - 1) * limit;
-        const query = {};
+        const query = {}
+                
         if (search) {
             query.name = { $regex: new RegExp(search, "i") };
         }
 
+
+        // const userData = await User.find(query).limit(limit * 1).skip((page - 1) * limit).sort({ createdAt: -1 });
+        // const count = await User.find(query).countDocuments();
+
+
+
         const products = await Product.find(query)
             .populate("categoryId", "name")
             .populate("brandId", "name")
-            .sort({ createAt: -1 })
+            .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
 
@@ -22,6 +29,7 @@ const getAllProducts = async (page = 1, limit = 10, search = "") => {
         const totalPages = Math.ceil(totalProducts / limit);
 
         return {
+         
             products,
             currentPage: page,
             totalPages,
@@ -71,6 +79,16 @@ const getCateAndBrands = async () => {
 const createProduct = async (Data) => {
     try {
         const { name, description, category, brand } = Data;
+
+
+         const categoryData = await Category.findOne({ _id: category, isListed: true });
+        const brandData = await Brand.findOne({ _id: brand, isListed: true });
+        if (!categoryData) {
+            throw new Error("This Category is Unlisted or Invalid. Cannot add product.");
+        }
+        if (!brandData) {
+            throw new Error("This Brand is Unlisted or Invalid. Cannot add product.");
+        }
 
         const newProduct = new Product({
             name,

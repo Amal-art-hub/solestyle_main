@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email Change | SoleStyle</title>
+    
+    <!-- Icons and Main Style -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/user/homestyle.css">
+    
+    <!-- Page Specific Style -->
+    <link rel="stylesheet" href="/css/changeEmailVerifyOtp.css">
+</head>
+<body>
+
+    <%- include("../partials/header") %>
+
+    <div class="otp-wrapper">
+        <div class="otp-container">
+            <div class="icon-header">
+                <i class="fas fa-envelope-open-text fa-3x" style="color: #4f46e5; margin-bottom: 20px;"></i>
+            </div>
+            
+            <h2>Verify Your New Email</h2>
+            <p class="subtitle">
+                Please enter the 6-digit code sent to<br>
+                <span class="email-highlight"><%= newEmail || 'your email' %></span>
+            </p>
+
+            <div id="messageBox" class="message-box"></div>
+
+            <form id="verifyOtpForm">
+                <div class="otp-input-group">
+                    <input type="text" maxlength="1" required autocomplete="off">
+                    <input type="text" maxlength="1" required autocomplete="off">
+                    <input type="text" maxlength="1" required autocomplete="off">
+                    <input type="text" maxlength="1" required autocomplete="off">
+                    <input type="text" maxlength="1" required autocomplete="off">
+                    <input type="text" maxlength="1" required autocomplete="off">
+                </div>
+
+                <button type="submit" class="btn-verify">Verify OTP</button>
+
+                <div class="links">
+                    <p>
+                        Didn't receive the code? 
+                        <a id="resendLink" href="javascript:void(0)">Resend OTP</a>
+                        <span id="timer"></span>
+                    </p>
+                    <a class="back-login" href="/user/profile">Back to Profile</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <%- include("../partials/footer") %>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/js/changeEmailVerifyOtp.js"></script>
+</body>
+</html>

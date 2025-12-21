@@ -10,7 +10,7 @@ const getProductList = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const search = req.query.search || "";
 
-    const data = await getAllProducts(page, 10, search);
+    const data = await getAllProducts(page, 5, search);
 
     res.render("productMang", {
       products: data.products,
@@ -20,6 +20,7 @@ const getProductList = async (req, res) => {
       activePage: "products",
       search: search,
     });
+
   } catch (error) {
     console.error("Error in getproductList:", error);
     res.status(500).send("Server Error");

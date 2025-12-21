@@ -1,9 +1,10 @@
 
-
+const User = require("../../models/user");
 const Product = require('../../models/product');
 const Variant = require('../../models/varient');
 const Brand = require('../../models/brand');
 const Category = require('../../models/category');
+const Feedback = require('../../models/feedback');
 
 
 
@@ -92,7 +93,8 @@ const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = 
 
 const getProductDetailService = async (productId) => {
 
-    const product = await Product.findById(productId)
+
+const product = await Product.findOne({ _id: productId, isListed: true })
         .populate("brandId")
         .populate("categoryId")
         .lean();
@@ -112,7 +114,20 @@ const getProductDetailService = async (productId) => {
         return { ...p, image: v?.images[2], price: v?.price };
     }));
 
-    return { product, variants, relatedProducts: relatedWithImage };
+
+
+const reviews = await Feedback.find({ product_id: product._id })
+    .populate('user_id', 'name')
+    .sort({ createdAt: -1 })
+    .lean();
+
+
+let avgRating = 0;
+if (reviews.length > 0) {
+    const sum = reviews.reduce((acc, curr) => acc + curr.rating, 0);
+    avgRating = (sum / reviews.length).toFixed(1);
+}
+   return { product, variants, relatedProducts: relatedWithImage, reviews, avgRating };
 
 
 }
@@ -142,7 +157,7 @@ const getTrendingProducts = async () => {
                 }
                 return null;
             }));
-            
+
             return processed.filter(p => p !== null);
         };
         // Fetch all 3 categories in parallel
@@ -158,8 +173,13 @@ const getTrendingProducts = async () => {
     }
 }
 
+
+
+
+
 module.exports = {
     getProductsByCategory,
     getProductDetailService,
-    getTrendingProducts
+    getTrendingProducts,
+    
 }

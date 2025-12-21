@@ -1,0 +1,57 @@
+<%- include('../partials/header') %>
+    <link rel="stylesheet" href="/css/user/profile-emailchange.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/user/homestyle.css">
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <div class="dashboard-container">
+        <div class="auth-card">
+            <div class="header-section">
+                <h2>Change Email Address</h2>
+                <p>Enter your new email address. We will send you a verification code.</p>
+            </div>
+
+            <form action="/user/profile/email" method="POST" onsubmit="return validateEmailForm(event)">
+                <div class="form-group">
+                    <label for="newEmail">New Email Address</label>
+                    <input type="email" name="newEmail" id="newEmail" placeholder="example@gmail.com" required>
+                </div>
+
+                <!-- Display Server Errors if any -->
+                <% if(locals.error) { %>
+                    <div class="alert-error"><i class="fas fa-exclamation-circle"></i>
+                        <%= error %>
+                    </div>
+                    <% } %>
+
+                        <div class="btn-group">
+                            <a href="/user/profile" class="btn-secondary">Cancel</a>
+                            <button type="submit" class="btn-primary">Send OTP</button>
+                        </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function validateEmailForm(e) {
+            const email = document.getElementById('newEmail').value;
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!emailRegex.test(email)) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Invalid Email',
+                    text: 'Please enter a valid email address.'
+                });
+                return false;
+            }
+            // Loading state
+            const btn = document.querySelector('button[type="submit"]');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+            btn.style.opacity = '0.7';
+        }
+    </script>
+    <%- include('../partials/footer') %>

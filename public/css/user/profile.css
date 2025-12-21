@@ -1,0 +1,183 @@
+/* Sticky Footer Setup */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Container */
+.dashboard-container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    font-family: sans-serif;
+    width: 100%;
+    flex: 1;
+    /* This pushes the footer to the bottom */
+}
+
+.profile-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.info-row {
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.label {
+    font-weight: bold;
+    width: 100px;
+    display: inline-block;
+    color: #555;
+}
+
+/* Buttons */
+.actions {
+    margin-bottom: 30px;
+}
+
+.btn-primary {
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.btn-secondary {
+    background: #eee;
+    color: #333;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.btn-link {
+    color: #000;
+    text-decoration: none;
+    margin-left: 10px;
+}
+
+/* Address Link Box */
+.address-section-link {
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px dashed #ccc;
+}
+
+.btn-outline {
+    display: inline-block;
+    border: 1px solid #000;
+    padding: 8px 16px;
+    text-decoration: none;
+    color: #000;
+    border-radius: 4px;
+    margin-top: 10px;
+}
+
+.btn-outline:hover {
+    background: #000;
+    color: #fff;
+}
+
+/* Modals */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 30px;
+    width: 90%;
+    max-width: 400px;
+    border-radius: 8px;
+    position: relative;
+    animation: slideDown 0.3s;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.close-btn {
+    position: absolute;
+    right: 15px;
+    top: 10px;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 8px;
+    padding-right: 35px;
+    /* Space for eye icon */
+    margin: 10px 0 20px;
+    border: 1px solid #ddd;
+    display: block;
+}
+
+.password-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-80%);
+    /* Adjusted because margin on input affects centering */
+    cursor: pointer;
+    color: #666;
+    z-index: 2;
+}
+
+.modal-actions {
+    text-align: right;
+}
+
+.btn-save {
+    background: #000;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-cancel {
+    background: transparent;
+    border: 1px solid #ddd;
+    padding: 8px 16px;
+    border-radius: 4px;
+    margin-right: 10px;
+    cursor: pointer;
+}

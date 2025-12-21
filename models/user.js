@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
   phone: { type: String, unique: true ,sparse:true,default:null},
   isVerified: { type: Boolean, default: false },
   isBlock: { type: Boolean, default: false },
-  address_ids: [{ type: mongoose.Schema.Types.ObjectId, ref: "Address" }],
+  // address_ids: [{ type: mongoose.Schema.Types.ObjectId, ref: "Address" }],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });

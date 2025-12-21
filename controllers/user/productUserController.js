@@ -1,7 +1,8 @@
 
 const {
     getProductsByCategory,
-    getProductDetailService
+    getProductDetailService,
+    
 } = require("../../services/userSer/productUserServices");
 
 
@@ -44,17 +45,19 @@ const getMensProducts = async (req, res) => {
 }
 
 
-const getProductDetails=async(req,res)=>{
+const getProductDetails = async (req, res) => {
     try {
-        const data=await getProductDetailService(req.params.id);
-        if(!data) return res.render(404);
+        const data = await getProductDetailService(req.params.id);
+        if (!data) return res.redirect("/");
 
-        res.render("productDetails",{
-            product:data.product,
-            variants:data.variants,
-            relatedProducts:data.relatedProducts,
+        res.render("productDetails", {
+            product: data.product,
+            variants: data.variants,
+            relatedProducts: data.relatedProducts,
             currentVariant: data.variants[0],
-             user: req.session.user
+            reviews: data.reviews,      // <--- Add this
+            avgRating: data.avgRating,
+            user: req.session.user
 
         });
     } catch (error) {
@@ -65,7 +68,7 @@ const getProductDetails=async(req,res)=>{
 
 
 
-const getWomenProducts=async(req,res)=>{
+const getWomenProducts = async (req, res) => {
     try {
         const categoryId = req.query.category;
 
@@ -106,7 +109,7 @@ const getWomenProducts=async(req,res)=>{
 
 
 
-const getKidsProducts=async(req,res)=>{
+const getKidsProducts = async (req, res) => {
     try {
         const categoryId = req.query.category;
 
@@ -143,6 +146,12 @@ const getKidsProducts=async(req,res)=>{
         res.status(500).send("Server Error");
     }
 }
+
+
+
+
+
+
 
 
 
@@ -150,5 +159,7 @@ module.exports = {
     getMensProducts,
     getProductDetails,
     getWomenProducts,
-    getKidsProducts
+    getKidsProducts,
+
+    
 }

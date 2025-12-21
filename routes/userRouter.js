@@ -3,6 +3,7 @@ const router = express.Router();
 const passport = require("passport");
 const userController = require("../controllers/user/userController");
 const productController = require("../controllers/user/productUserController");
+const profileController = require("../controllers/user/profileController")
 
 const { checkUserStatus } = require("../middlewares/user-mid/user-auth");
 const { loadCategories } = require("../middlewares/user-mid/categoryMiddleware");
@@ -20,15 +21,15 @@ router.post("/resend-otp", userController.resendOtp);
 router.get("/auth/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
 router.get("/auth/google/callback", passport.authenticate("google", { failureRedirect: "/signup" }), (req, res) => {
-      req.session.user = req.user; 
-        // save session ensuring it persists before redirect
-        req.session.save((err) => {
-            if(err){
-                console.log("Session save error", err);
-                return res.redirect("/login");
-            }
-            res.redirect("/");
-        });
+    req.session.user = req.user;
+    // save session ensuring it persists before redirect
+    req.session.save((err) => {
+        if (err) {
+            console.log("Session save error", err);
+            return res.redirect("/login");
+        }
+        res.redirect("/");
+    });
 })
 
 router.get("/login", userController.loadLogin);
@@ -46,15 +47,60 @@ router.get("/logout", userController.logout);
 
 
 //mens products showing area
-
-router.get("/mens-products", productController.getMensProducts);
-router.get("/product/:id", productController.getProductDetails);
+router.get("/mens-products", checkUserStatus, productController.getMensProducts);
+router.get("/product/:id", checkUserStatus, productController.getProductDetails);
 
 //Women products showing area
-router.get("/womens-products",productController.getWomenProducts);
+router.get("/womens-products", checkUserStatus, productController.getWomenProducts);
 
 //kids products showing
-router.get("/kids-products",productController.getKidsProducts);
+router.get("/kids-products", checkUserStatus, productController.getKidsProducts);
+
+
+
+//---------------------------------------------------------------------------------------------profile
+//opening profile 
+router.get("/user/profile", checkUserStatus, profileController.loadProfile);
+
+
+//--------------------------------------------submitting the edit profile
+
+router.post("/user/profile/edit",checkUserStatus,profileController.updateProfile);
+
+
+//---------------------------------------------------updating password
+router.post("/user/profile/password",checkUserStatus,profileController.updatePassword);
+//-----------------------------------email changing
+router.get("/user/profile/email",checkUserStatus,profileController.loadChangeEmail);
+//-------------------------------------sending email
+router.post("/user/profile/email",checkUserStatus,profileController.requestEmailOtp);
+//------------------------------submiting otp for verify
+router.post("/user/verify-email-otp",checkUserStatus,profileController.verifyEmailOtp);
+
+
+
+//----------------------------------------------------------------------------------------address list
+router.get("/user/addresses",checkUserStatus,profileController.loadAddressPage);
+
+router.post("/user/profile/addresses/add",checkUserStatus,profileController.addAddress);
+
+router.put("/user/profile/addresses/edit/:id", checkUserStatus, profileController.editAddress);
+
+router.delete("/user/profile/addresses/delete/:id",checkUserStatus,profileController.deleteAddress);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

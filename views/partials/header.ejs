@@ -12,67 +12,90 @@
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body> -->
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <!-- Logo -->
-                <div class="logo">
-                    <a href="/">👟 SoleStyle</a>
-                </div>
+<!-- Header -->
+<header class="header">
+    <div class="container">
+        <div class="header-content">
+            <!-- Logo -->
+            <div class="logo">
+                <a href="/">👟 SoleStyle</a>
+            </div>
 
-                <!-- Navigation -->
-                <nav class="main-nav">
+            <!-- Navigation -->
+            <!-- <nav class="main-nav">
     <a href="/mens-products?category=<%= menCategoryId %>">Men</a>
   <a href="/womens-products?category=<%= womenCategoryId %>">Women</a>
   <a href="/kids-products?category=<%= kidsCategoryId %>">Kids</a>
-                </nav>
+                </nav> -->
 
-                <!-- Search Bar -->
-                <div class="search-bar">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <path d="m21 21-4.35-4.35"></path>
-                    </svg>
-                    <input type="text" placeholder="Search products...">
-                </div>
+            <nav class="main-nav">
+                <% if(locals.menCategoryId) { %>
+                    <a href="/mens-products?category=<%= menCategoryId %>">Men</a>
+                    <% } %>
 
-                <!-- Right Side Icons -->
-                <div class="header-actions">
-                    <% if (typeof user !== 'undefined' && user) { %>
-                        <!-- Logged In: Show User Icon -->
-                        <button class="icon-btn user-menu-trigger" onclick="toggleUserMenu()">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="12" cy="7" r="4"></circle>
-                            </svg>
-                        </button>
-                        <div class="user-dropdown" id="userDropdown">
-                            <div class="user-info">
-                                <strong><%= user.name %></strong>
-                                <span><%= user.email %></span>
-                            </div>
-                            <hr>
-                            <a href="/user/profile">My Profile </a>
-                            <a href="/user/orders">My Orders</a>
-                            <a href="/user/settings">Settings</a>
-                            <a href="/user/settings">payment method</a>
-                            <a href="/user/settings">address book</a>
-                            <a href="/user/settings">wallet</a>
-                            <a href="/user/settings">Coupen</a>
-                               <a href="/user/settings">Refferals</a>
-                            <hr>
-                            <a href="/logout" class="logout-link">Logout</a>
-                        </div>
-                           <!-- Wishlist Icon -->
-                    <button class="icon-btn">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                        <% if(locals.womenCategoryId) { %>
+                            <a href="/womens-products?category=<%= womenCategoryId %>">Women</a>
+                            <% } %>
+
+                                <% if(locals.kidsCategoryId) { %>
+                                    <a href="/kids-products?category=<%= kidsCategoryId %>">Kids</a>
+                                    <% } %>
+            </nav>
+
+            <!-- Search Bar -->
+            <div class="search-bar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                </svg>
+                <input type="text" placeholder="Search products...">
+            </div>
+
+            <!-- Right Side Icons -->
+            <div class="header-actions">
+                <% if (typeof user !=='undefined' && user) { %>
+                    <!-- Logged In: Show User Icon -->
+                    <button class="icon-btn user-menu-trigger" onclick="toggleUserMenu()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
                         </svg>
                     </button>
-                         <!-- Cart Icon -->
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="user-info">
+                            <strong>
+                                <%= user.name %>
+                            </strong>
+                            <span>
+                                <%= user.email %>
+                            </span>
+                        </div>
+                        <hr>
+                        <a href="/user/profile">My Profile </a>
+                        <a href="/user/orders">My Orders</a>
+                        <a href="/user/settings">Settings</a>
+                        <a href="/user/settings">payment method</a>
+                        <a href="/user/settings">address book</a>
+                        <a href="/user/settings">wallet</a>
+                        <a href="/user/settings">Coupen</a>
+                        <a href="/user/settings">Refferals</a>
+                        <hr>
+                        <a href="/logout" class="logout-link">Logout</a>
+                    </div>
+                    <!-- Wishlist Icon -->
+                    <button class="icon-btn">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                            </path>
+                        </svg>
+                    </button>
+                    <!-- Cart Icon -->
                     <button class="icon-btn cart-btn">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
                             <circle cx="9" cy="21" r="1"></circle>
                             <circle cx="20" cy="21" r="1"></circle>
                             <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
@@ -80,17 +103,17 @@
                         <span class="cart-badge">3</span>
                     </button>
                     <% } else { %>
-                         <!-- Not Logged In: Show Login/Signup 
+                        <!-- Not Logged In: Show Login/Signup 
                         <button class="btn-text" onclick="openAuthModal('login')">Login</button>
                         <button class="btn-primary-small" onclick="openAuthModal('signup')">Sign Up</button>  -->
-                        <a href="/Login" class="btn-text" >Login</a>
-                        <a href="/signup" class="btn-primary-small" >Sign Up</a>
-                    <% } %>
+                        <a href="/Login" class="btn-text">Login</a>
+                        <a href="/signup" class="btn-primary-small">Sign Up</a>
+                        <% } %>
 
-                 
 
-               
-                </div>
+
+
             </div>
         </div>
-    </header>
+    </div>
+</header>

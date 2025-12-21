@@ -62,6 +62,13 @@
                         <p class="brand-name">Brand: <span>
                                 <%= product.brandId.name %>
                             </span></p>
+                            <!-- Rating Display -->
+<div class="product-rating" style="color: #ffc107; margin-bottom: 10px;">
+    <% for(let i=1; i<=5; i++) { %>
+        <i class="<%= i <= Math.round(avgRating || 0) ? 'fas' : 'far' %> fa-star"></i>
+    <% } %>
+    <span style="color: #666; font-size: 0.9em;">(<%= reviews ? reviews.length : 0 %> Reviews)</span>
+</div>
 
                         <div class="price-section">
                             <span class="current-price">₹<span id="displayPrice">
@@ -133,6 +140,31 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Reviews Section -->
+<div class="product-extra-details" style="margin: 40px 0; padding: 20px; background: #fff; border-radius: 8px;">
+    <h2>Customer Reviews</h2>
+    <div class="reviews-list" style="margin-top: 20px;">
+        <% if(reviews && reviews.length > 0) { %>
+            <% reviews.forEach(r => { %>
+                <div class="review-item" style="border-bottom: 1px solid #eee; padding: 15px 0;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <strong><%= r.user_id ? r.user_id.name : 'Anonymous' %></strong>
+                        <div style="color: #ffc107;">
+                            <% for(let i=1; i<=5; i++) { %>
+                                <i class="<%= i <= r.rating ? 'fas' : 'far' %> fa-star"></i>
+                            <% } %>
+                        </div>
+                    </div>
+                    <p style="color: #555; margin: 5px 0;"><%= r.description %></p>
+                    <small style="color: #999;"><%= new Date(r.createdAt).toDateString() %></small>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <p>No reviews yet.</p>
+        <% } %>
+    </div>
+</div>
 
                 <!-- Related Products -->
                 <div class="related-products-section">
