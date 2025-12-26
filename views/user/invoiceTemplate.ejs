@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice #<%= order.order_id %></title>
+    <!-- INJECT CSS DIRECTLY FOR PDF RELIABILITY -->
+    <style>
+        <%- include('../../public/css/user/invoice.css'); %>
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">SOLESTYLE</div>
+        <div class="company-details">
+            <p>SoleStyle Inc.</p>
+            <p>123 Shoe Street, Fashion City</p>
+            <p>support@solestyle.com</p>
+        </div>
+    </div>
+
+    <div class="info-section">
+        <div class="info-col">
+            <h3>Bill To</h3>
+            <p><strong><%= order.shipping_address_snapshot.name %></strong></p>
+            <p><%= order.shipping_address_snapshot.address_line1 %></p>
+            <p><%= order.shipping_address_snapshot.city %>, <%= order.shipping_address_snapshot.state %></p>
+            <p><%= order.shipping_address_snapshot.postal_code %></p>
+            <p>Phone: <%= order.shipping_address_snapshot.phone %></p>
+        </div>
+        <div class="info-col text-right">
+            <h1 class="invoice-title">INVOICE</h1>
+            <p>Order ID: #<%= order.order_id %></p>
+            <p>Date: <%= new Date(order.order_date).toLocaleDateString() %></p>
+            <p>Status: <span style="text-transform: capitalize;"><%= order.status %></span></p>
+            <p>Payment: <%= order.payment_id ? 'Online' : 'Cash on Delivery' %></p>
+        </div>
+    </div>
+
+    <table class="items-table">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th class="text-right">Price</th>
+                <th class="text-right">Qty</th>
+                <th class="text-right">Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% order.items.forEach(item => { %>
+                <% if(item.status !== 'canceled') { %>
+                <tr>
+                    <td>
+                        <strong><%= item.name_snapshot %></strong><br>
+                        <small style="color:#7f8c8d">Size: <%= item.variant_snapshot || 'N/A' %></small>
+                    </td>
+                    <td class="text-right">₹<%= item.unit_price %></td>
+                    <td class="text-right"><%= item.quantity %></td>
+                    <td class="text-right">₹<%= item.total_amount %></td>
+                </tr>
+                <% } %>
+            <% }) %>
+        </tbody>
+    </table>
+
+    <div class="summary-section">
+        <table class="summary-table">
+            <tr>
+                <td>Subtotal</td>
+                <td class="text-right">₹<%= order.subtotal %></td>
+            </tr>
+            <tr>
+                <td>Discount</td>
+                <td class="text-right">- ₹<%= order.discount_amount %></td>
+            </tr>
+            <tr>
+                <td>Shipping</td>
+                <td class="text-right">Free</td>
+            </tr>
+            <tr>
+                <td class="total-row">Grand Total</td>
+                <td class="total-row text-right">₹<%= order.final_total %></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="footer">
+        <p>Thank you for your business!</p>
+        <p>For any questions, please contact support@solestyle.com</p>
+    </div>
+
+    <!-- INJECT JS DIRECTLY -->
+    <script>
+        < %- include('../../public/js/user/invoice.js'); % >
+    </script>
+</body>
+</html>

@@ -7,7 +7,8 @@ const {
 
 
 const statusCode = require("../../utils/statusCodes");
-const PDFDocument = require('pdfkit');                
+const puppeteer = require('puppeteer');
+const ejs = require('ejs');
 const fs = require('fs');                             
 const path = require('path');
 
@@ -98,54 +99,26 @@ const returnOrder = async (req, res) => {
 
 
 
+
+
 const downloadInvoice = async (req, res) => {
     try {
         const { orderId } = req.params;
-
         const order = await getOrderDetailsService(orderId, req.session.user);
-        const doc = new PDFDocument({ margin: 50 });
-
-
+        // 1. Render the EJS template to HTML string
+        const templatePath = path.join(__dirname, '../../views/user/invoiceTemplate.ejs');
+        const html = await ejs.renderFile(templatePath, { order });
+        // 2. Launch Puppeteer
+        const browser = await puppeteer.launch({ headless: 'new' });
+        const page = await browser.newPage();
+        // 3. Set content and generate PDF
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+        const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+        await browser.close();
+        // 4. Send PDF to user
         res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename=invoice-${order.order_number}.pdf`);
-        doc.pipe(res);
-
-        doc.fontSize(20).text('INVOICE', { align: 'center' });
-        doc.moveDown();
-        doc.fontSize(12).text(`Order ID: ${order.order_number}`);
-        doc.text(`Date: ${new Date(order.order_date).toLocaleDateString()}`);
-        doc.text(`Status: ${order.status}`);
-        doc.moveDown();
-
-        doc.text(`Bill To: ${order.shipping_address_snapshot.name}`);
-        doc.text(order.shipping_address_snapshot.address_line1);
-        doc.text(`${order.shipping_address_snapshot.city}, ${order.shipping_address_snapshot.state} - ${order.shipping_address_snapshot.postal_code}`);
-        doc.moveDown();
-
-        let y = doc.y;
-        doc.text('Item', 50, y, { width: 250 });
-        doc.text('Qty', 300, y, { width: 50, align: 'center' });
-        doc.text('Price', 350, y, { width: 100, align: 'right' });
-        doc.text('Total', 450, y, { width: 100, align: 'right' });
-        doc.moveTo(50, y + 15).lineTo(550, y + 15).stroke();
-        doc.moveDown();
-
-        order.items.forEach(item => {
-            if (item.status !== 'canceled') {
-                let y = doc.y;
-                doc.text(item.name_snapshot, 50, y, { width: 250 });
-                doc.text(item.quantity, 300, y, { width: 50, align: 'center' });
-                doc.text(item.unit_price, 350, y, { width: 100, align: 'right' });
-                doc.text(item.total_amount, 450, y, { width: 100, align: 'right' });
-                doc.moveDown();
-            }
-        });
-        doc.moveDown();
-        doc.moveTo(50, doc.y).lineTo(550, doc.y).stroke();
-        doc.moveDown();
-
-        doc.fontSize(14).text(`Grand Total: Rs. ${order.final_total}`, { align: 'right' });
-        doc.end();
+        res.setHeader('Content-Disposition', `attachment; filename=invoice-${order.order_id}.pdf`);
+        res.send(pdfBuffer);
     } catch (error) {
         console.error("Invoice Error:", error);
         res.status(500).send("Could not generate invoice");

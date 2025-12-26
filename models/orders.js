@@ -53,7 +53,7 @@ const orderSchema = new mongoose.Schema({
       name_snapshot: { type: String },
       variant_snapshot: { type: String },
 
-       status: {
+      status: {
         type: String,
         enum: ["pending", "processing", "shipped", "delivered", "canceled", "returned"],
         default: "pending"
