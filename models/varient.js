@@ -6,12 +6,12 @@ const variantSchema = new mongoose.Schema({
     ref: "Product",
     required: true
   },
-  size: { 
+  size: {
     type: String,
     required: true
   },
-  
-  color: { 
+
+  color: {
     type: String,
     required: true
   },
@@ -35,15 +35,15 @@ const variantSchema = new mongoose.Schema({
     default: true
   },
   images: {
-  type: [String], 
-  default: [],
-  validate: {
-    validator: function(images) {
-      return images.length >= 3 && images.length <= 10;
-    },
-    message: 'Variant must have between 3 and 10 images'
-  }
-},
+    type: [String],
+    default: [],
+    validate: {
+      validator: function (images) {
+        return images.length >= 3 && images.length <= 10;
+      },
+      message: 'Variant must have between 3 and 10 images'
+    }
+  },
 }, { timestamps: true });
 variantSchema.index({ productId: 1, color: 1, size: 1 }, { unique: true });
 module.exports = mongoose.model("Variant", variantSchema);

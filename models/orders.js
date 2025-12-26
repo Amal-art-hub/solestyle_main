@@ -51,7 +51,15 @@ const orderSchema = new mongoose.Schema({
       total_amount: { type: Number, required: true },
       unit_price: { type: Number, required: true },
       name_snapshot: { type: String },
-      variant_snapshot: { type: String }
+      variant_snapshot: { type: String },
+
+       status: {
+        type: String,
+        enum: ["pending", "processing", "shipped", "delivered", "canceled", "returned"],
+        default: "pending"
+      },
+      cancellation_reason: { type: String },
+      return_reason: { type: String }
     }
   ],
 

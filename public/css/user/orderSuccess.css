@@ -1,0 +1,169 @@
+/* Font & Base */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+body {
+    background-color: #f4f6f8;
+    color: #111;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+}
+
+.success-container {
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.success-card {
+    background: white;
+    padding: 60px 40px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+    max-width: 500px;
+    width: 100%;
+    transform: translateY(20px);
+    animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideUp {
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Success Icon */
+.icon-circle {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    /* Vivid green gradient */
+    color: white;
+    /* White icon */
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 48px;
+    margin: 0 auto 32px;
+    box-shadow: 0 10px 25px rgba(46, 204, 113, 0.4);
+    /* Colored shadow glow */
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) 0.3s forwards;
+    transform: scale(0);
+}
+
+.checkmark-svg {
+    width: 50px;
+    height: 50px;
+}
+
+.checkmark-path {
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24;
+    animation: drawCheck 0.4s 0.8s ease forwards;
+}
+
+@keyframes drawCheck {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes popIn {
+    to {
+        transform: scale(1);
+    }
+}
+
+.success-card h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #111;
+}
+
+.success-card p {
+    color: #666;
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+}
+
+.order-id {
+    display: inline-block;
+    background: #f3f4f6;
+    padding: 8px 16px;
+    border-radius: 8px;
+    color: #555 !important;
+    font-size: 0.95rem !important;
+    font-family: monospace;
+    margin-top: 10px;
+    margin-bottom: 40px !important;
+    border: 1px dashed #ccc;
+}
+
+.order-id span {
+    color: #000;
+    font-weight: 700;
+}
+
+/* Buttons */
+.action-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-continue,
+.btn-orders {
+    padding: 14px 28px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.2s;
+    min-width: 160px;
+}
+
+.btn-orders {
+    background: #111;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-orders:hover {
+    background: #333;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.btn-continue {
+    background: white;
+    color: #111;
+    border: 1px solid #e5e5e5;
+}
+
+.btn-continue:hover {
+    border-color: #999;
+    background: #f9f9f9;
+}
+
+/* Mobile */
+@media (max-width: 500px) {
+    .success-card {
+        padding: 40px 24px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .btn-continue,
+    .btn-orders {
+        width: 100%;
+        box-sizing: border-box;
+    }
+}

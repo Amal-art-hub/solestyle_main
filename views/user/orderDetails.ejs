@@ -1,0 +1,243 @@
+<%- include('../partials/header') %>
+    <link rel="stylesheet" href="/css/user/orderDetails.css">
+    <link rel="stylesheet" href="/css/user/homestyle.css">
+
+    <div class="order-details-container">
+        <a href="/user/orders" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Orders</a>
+        <% if (order) { %>
+            <!-- HEADER -->
+            <div class="order-header">
+                <div>
+                    <h1>Order Details</h1>
+                    <span class="badge" style="background:#eee; padding:5px 10px; border-radius:4px;">#<%=
+                            order.order_id %></span>
+                </div>
+                <div class="order-meta">
+                    <p>Placed on: <strong>
+                            <%= new Date(order.order_date).toLocaleDateString() %>
+                        </strong></p>
+                    <p>Total: <strong>₹<%= order.final_total %></strong></p>
+                </div>
+            </div>
+            <!-- TRACKING TIMELINE -->
+            <div class="tracking-wrapper">
+                <div class="track-line-container">
+                    <!-- Dynamic Width Logic -->
+                    <% let progress=0; if (order.status==='delivered' ) progress=100; else if (order.shipped_date)
+                        progress=50; else if (order.status !=='canceled' ) progress=0; %>
+                        <div class="track-line-bg"></div>
+                        <div class="track-line-active" style="width: <%= progress %>%"></div>
+                        <!-- STEP 1: Confirmed -->
+                        <div class="track-step active">
+                            <div class="dot"><i class="fas fa-check"></i></div>
+                            <h4>Confirmed</h4>
+                            <p>
+                                <%= new Date(order.order_date).toLocaleDateString() %>
+                            </p>
+                        </div>
+                        <!-- STEP 2: Shipped -->
+                        <div class="track-step <%= order.shipped_date || order.status==='delivered' ? 'active' : '' %>">
+                            <div class="dot"><i class="fas fa-truck"></i></div>
+                            <h4>Shipped</h4>
+                            <% if(order.shipped_date) { %>
+                                <p>
+                                    <%= new Date(order.shipped_date).toLocaleDateString() %>
+                                </p>
+                                <% } else { %>
+                                    <p>Estimated</p>
+                                    <% } %>
+                        </div>
+                        <!-- STEP 3: Delivered -->
+                        <div class="track-step <%= order.status==='delivered' ? 'active' : '' %>">
+                            <div class="dot"><i class="fas fa-box-open"></i></div>
+                            <h4>Delivered</h4>
+                            <% if(order.status==='delivered' ) { %>
+                                <p>
+                                    <%= new Date(order.updatedAt).toLocaleDateString() %>
+                                </p>
+                                <% } else if(order.shipped_date) { %>
+                                    <p>Coming Soon</p>
+                                    <% } %>
+                        </div>
+                </div>
+                <!-- Delivery Agent Note (Only if shipped/out for delivery) -->
+                <% if(order.shipped_date && order.status !=='delivered' ) { %>
+                    <div class="delivery-agent-note">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Update:</strong> Your order is on the way! Our delivery executive will contact you
+                        shortly on the registered phone number.
+                    </div>
+                    <% } %>
+            </div>
+            <!-- GRID LAYOUT -->
+            <div class="order-content-grid">
+                <!-- LEFT: Items -->
+                <div class="left-col">
+                    <div class="card">
+                        <h3>Items in this Order</h3>
+                        <% order.items.forEach(function(item) { %>
+                            <div class="order-item">
+                                <!-- Logic to show image from snapshot OR live variant data if snapshot missing -->
+                                <% let imgSrc='/uploads/variant-images/default.jpg' ; if(item.image_snapshot) {
+                                    imgSrc='/uploads/variant-images/' + item.image_snapshot; } else if(item.variant_id
+                                    && item.variant_id.images && item.variant_id.images.length> 0) {
+                                    // Fallback to current variant image
+                                    imgSrc = '/uploads/variant-images/' + item.variant_id.images[0];
+                                    }
+                                    %>
+                                    <img src="<%= imgSrc %>" alt="Product">
+                                 <div class="item-info">
+    <h4><%= item.name_snapshot %></h4>
+    <p>Size: <%= item.variant_snapshot || 'N/A' %></p>
+    <p>Qty: <%= item.quantity %> x ₹<%= item.unit_price %></p>
+    <p style="color:#27ae60; font-weight:600;">₹<%= item.total_amount %></p>
+
+    <!-- <p style="color: red; font-size: 20px; font-weight: bold;">DEBUG: [<%= item.status %>]</p> -->
+
+    <!-- Item Status Badge -->
+   <!-- Item Status Badge -->
+<!-- <p class="mb-1">Status: 
+    <% 
+        // SAFETY CHECK: Default to 'pending' if status is missing
+        let safeStatus = (item.status && item.status.toString().trim()) || 'pending';
+        
+        let badgeColor = '#f0f0f0'; 
+        let textColor = '#333';
+        
+        if (safeStatus === 'canceled') { badgeColor = '#ffebee'; textColor = '#c0392b'; }
+        else if (safeStatus === 'delivered') { badgeColor = '#e8f8f5'; textColor = '#27ae60'; }
+        else if (safeStatus === 'returned') { badgeColor = '#fff3e0'; textColor = '#f39c12'; }
+    %>
+    <span class="badge" style="background-color: <%= badgeColor %>; color: <%= textColor %>; border: 1px solid <%= badgeColor %>; padding: 5px 10px; border-radius: 4px;">
+        <%= safeStatus.charAt(0).toUpperCase() + safeStatus.slice(1) %>
+    </span>
+</p> -->
+
+<p class="mb-1">Status: 
+    <% 
+        let rawStatus = item.status;
+        let finalStatus = 'pending';
+        
+        if (rawStatus && rawStatus.toString().trim() !== '') {
+            finalStatus = rawStatus.toString().trim();
+        }
+
+        let bColor = '#f0f0f0'; // Gray
+        let tColor = '#333333'; // Black
+        
+        if (finalStatus === 'canceled') { bColor = '#ffebee'; tColor = '#c0392b'; }
+        else if (finalStatus === 'delivered') { bColor = '#e8f8f5'; tColor = '#27ae60'; }
+        else if (finalStatus === 'returned') { bColor = '#fff3e0'; tColor = '#f39c12'; }
+        
+        let displayText = finalStatus.charAt(0).toUpperCase() + finalStatus.slice(1);
+    %>
+
+    <span class="status-badge" style="background-color: <%= bColor %>; color: <%= tColor %> !important; border: 1px solid <%= bColor %>; padding: 5px 10px; border-radius: 4px; font-weight: bold;">
+        <%= displayText %>
+    </span>
+</p>
+    <!-- [1] Cancel Item Button (For Pending/Processing) -->
+    <% if (['pending', 'processing'].includes(order.status) && ['pending', 'processing'].includes(item.status)) { %>
+        <button onclick="cancelOrderItem('<%= order._id %>', '<%= item._id %>')" 
+                class="btn-sm" 
+                style="background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-top: 5px;">
+            Cancel Item
+        </button>
+    <% } %>
+
+    <!-- [2] Return Item Button (For Delivered) [NEW] -->
+    <% if (order.status === 'delivered' && item.status === 'delivered') { %>
+        <button onclick="returnOrderItem('<%= order._id %>', '<%= item._id %>')" 
+                class="btn-sm" 
+                style="background: #f39c12; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-top: 5px;">
+            Return Item
+        </button>
+    <% } %>
+</div>
+                            </div>
+                            <% }) %>
+                    </div>
+                </div>
+                <!-- RIGHT: Summary & Address -->
+                <div class="right-col">
+                    <div class="card">
+                        <h3>Shipping Address</h3>
+                        <p><strong>
+                                <%= order.shipping_address_snapshot.name %>
+                            </strong></p>
+                        <p>
+                            <%= order.shipping_address_snapshot.address_line1 %>
+                        </p>
+                        <p>
+                            <%= order.shipping_address_snapshot.city %>, <%= order.shipping_address_snapshot.state %>
+                        </p>
+                        <p>Phone: <%= order.shipping_address_snapshot.phone %>
+                        </p>
+                    </div>
+                    <div class="card">
+                        <h3>Payment Summary</h3>
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span>₹<%= order.subtotal %></span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Discount</span>
+                            <span>- ₹<%= order.discount_amount %></span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Shipping</span>
+                            <span>Free</span>
+                        </div>
+                        <div class="summary-row total-row">
+                            <span>Grand Total</span>
+                            <span>₹<%= order.final_total %></span>
+                        </div>
+                        <p style="margin-top:10px; font-size:0.85rem; color:#666;">
+                            Payment Method: <strong>
+                                <%= order.payment_id ? 'Online' : 'Cash on Delivery' %>
+                            </strong>
+                        </p>
+                    </div>
+
+                    <!-- ACTIONS CARD -->
+<% if (order.status !== 'canceled' && order.status !== 'returned') { %>
+<div class="card actions-card">
+    <h3>Order Actions</h3>
+    <div class="action-buttons">
+        <% if (['pending', 'processing'].includes(order.status)) { %>
+            <!-- Show Cancel Button for Pending/Processing Orders -->
+            <button class="btn-action btn-cancel" onclick="cancelOrder('<%= order._id %>')">
+                <i class="fas fa-times-circle"></i> Cancel Order
+            </button>
+        <% } %>
+        <% if (order.status === 'delivered') { %>
+            <!-- Show Return Button for Delivered Orders -->
+            <button class="btn-action btn-return" onclick="returnOrder('<%= order._id %>')">
+                <i class="fas fa-undo"></i> Return Order
+            </button>
+        <% } %>
+        
+        <% if (order.status === 'shipped') { %>
+             <p class="status-note">Order is in transit and cannot be cancelled.</p>
+        <% } %>
+        
+<% if (order.status === 'delivered') { %>
+    <a href="/user/orders/invoice/<%= order._id %>" class="btn-action btn-invoice" style="background-color: #34495e; color: white; text-decoration: none; padding: 10px 15px; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+        <i class="fas fa-file-download"></i> Download Invoice
+    </a>
+<% } %>
+    </div>
+</div>
+<% } %>
+
+
+                </div>
+            </div>
+            <% } else { %>
+                <p>Order not found.</p>
+                <% } %>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+       <script src="/js/user/orderDetail.js"></script>
+    <%- include('../partials/footer') %>

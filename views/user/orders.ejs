@@ -1,0 +1,69 @@
+<%- include('../partials/header') %>
+<link rel="stylesheet" href="/css/user/orders.css">
+    <link rel="stylesheet" href="/css/user/homestyle.css">
+<div class="container order-listing-container">
+    <h2>My Orders</h2>
+    
+    <!-- Search Bar -->
+    <form action="/user/orders" method="GET" class="order-search-bar">
+        <input type="text" name="search" placeholder="Search by Order ID or Product..." value="<%= searchQuery %>">
+        <button type="submit">Search</button>
+        <% if(searchQuery) { %>
+            <a href="/user/orders" class="btn-clear">Clear</a>
+        <% } %>
+    </form>
+    <div class="order-list">
+        <% if(orders.length > 0) { %>
+            <% orders.forEach(order => { %>
+                <div class="order-card">
+                    <div class="order-card-body">
+                         <!-- Image Section (Show first item's image) -->
+                         <div class="order-image">
+                            <% 
+                                let imgSrc = '/uploads/variant-images/default.jpg';
+                                if(order.items[0].variant_id && order.items[0].variant_id.images && order.items[0].variant_id.images.length > 0) {
+                                    imgSrc = '/uploads/variant-images/' + order.items[0].variant_id.images[2];
+                                }
+                            %>
+                            <img src="<%= imgSrc %>" alt="Product Image">
+                         </div>
+                         <!-- Details Section -->
+                         <div class="order-info">
+                            <div class="order-header-row">
+                                <h5>Order #<%= order.order_number %></h5>
+                                <span class="status-badge status-<%= order.status %>"><%= order.status.toUpperCase() %></span>
+                            </div>
+                            <p class="order-date"><%= new Date(order.order_date).toLocaleDateString() %></p>
+                            
+                            <!-- Show First Product Name + Count if more -->
+                            <p class="product-name">
+                                <%= order.items[0].name_snapshot || order.items[0].product_id.name %>
+                                <% if(order.items.length > 1) { %>
+                                    <span class="more-items">(+<%= order.items.length - 1 %> others)</span>
+                                <% } %>
+                            </p>
+                        </div>
+                        <!-- Action Button -->
+                        <div class="order-actions-minimal">
+                            <a href="/orders/<%= order._id %>" class="btn-view-details">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+            
+            <!-- Pagination Controls -->
+            <div class="pagination">
+                <% for(let i=1; i<=totalPages; i++) { %>
+                    <a href="/user/orders?page=<%= i %>&search=<%= searchQuery %>" class="<%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+                <% } %>
+            </div>
+        <% } else { %>
+            <div class="no-orders">
+                <p>No orders found.</p>
+                <a href="/mens-products" class="btn-shop">Start Shopping</a>
+            </div>
+        <% } %>
+    </div>
+</div>
+<script src="/js/user/orders.js"></script>
+<%- include('../partials/footer') %>

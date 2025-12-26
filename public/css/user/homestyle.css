@@ -19,7 +19,7 @@ body {
 /* Header */
 .header {
     background: #fff;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -153,7 +153,7 @@ body {
     top: 110%;
     right: 0;
     background: #fff;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     border-radius: 8px;
     min-width: 200px;
     padding: 10px 0;
@@ -284,7 +284,7 @@ body {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(255,255,255,0.3);
+    background: rgba(255, 255, 255, 0.3);
     border: none;
     color: #fff;
     width: 40px;
@@ -296,7 +296,7 @@ body {
 }
 
 .slider-nav:hover {
-    background: rgba(255,255,255,0.5);
+    background: rgba(255, 255, 255, 0.5);
 }
 
 .slider-nav.prev {
@@ -320,7 +320,7 @@ body {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.5);
+    background: rgba(255, 255, 255, 0.5);
     cursor: pointer;
     transition: all 0.3s;
 }
@@ -360,7 +360,7 @@ body {
 }
 
 .play-btn {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255, 255, 255, 0.2);
     border: none;
     width: 80px;
     height: 80px;
@@ -452,7 +452,7 @@ body {
 
 .product-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
 .badge {
@@ -694,7 +694,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.7);
+    background: rgba(0, 0, 0, 0.7);
     z-index: 2000;
     align-items: center;
     justify-content: center;
@@ -737,7 +737,7 @@ body {
     margin-bottom: 10px;
 }
 
-.modal-content > p {
+.modal-content>p {
     color: #666;
     margin-bottom: 30px;
 }
@@ -880,24 +880,30 @@ body {
 
 .video-box {
     width: 100%;
-    height: 500px; /* increase height if you want */
-    border-radius: 0; /* remove rounded corners if full width */
+    height: 500px;
+    /* increase height if you want */
+    border-radius: 0;
+    /* remove rounded corners if full width */
 }
 
 a.btn-text,
 a.btn-primary-small {
-    text-decoration: none; /* underline നീക്കം ചെയ്യുന്നു */
+    text-decoration: none;
+    /* underline നീക്കം ചെയ്യുന്നു */
     /* color: inherit; ബട്ടൺ നിറം ഉപയോഗിക്കാൻ */
 }
 
 
 @media (max-width: 768px) {
     .category-grid-container {
-        grid-template-columns: 1fr !important; /* Stack for mobile */
+        grid-template-columns: 1fr !important;
+        /* Stack for mobile */
     }
 }
+
 .category-column .product-card {
-    margin-bottom: 20px; /* Spacing between rows */
+    margin-bottom: 20px;
+    /* Spacing between rows */
 }
 
 
@@ -906,29 +912,29 @@ a.btn-primary-small {
     .main-nav {
         display: none;
     }
-    
+
     .search-bar {
         display: none;
     }
-    
+
     .hero h1 {
         font-size: 32px;
     }
-    
+
     .hero-discount {
         font-size: 36px;
     }
-    
+
     .hero-image {
         font-size: 120px;
         right: 20px;
     }
-    
+
     .product-grid {
         grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
         gap: 20px;
     }
-    
+
     .footer-bottom {
         flex-direction: column;
         gap: 20px;

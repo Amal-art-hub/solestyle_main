@@ -3,7 +3,13 @@ const router = express.Router();
 const passport = require("passport");
 const userController = require("../controllers/user/userController");
 const productController = require("../controllers/user/productUserController");
-const profileController = require("../controllers/user/profileController")
+const profileController = require("../controllers/user/profileController");
+const cartController = require("../controllers/user/cartController");
+const checkoutController = require("../controllers/user/checkoutController");
+const orderDetailController = require("../controllers/user/orderDetailController");
+const ordersController = require("../controllers/user/ordersController");
+
+console.log(cartController);
 
 const { checkUserStatus } = require("../middlewares/user-mid/user-auth");
 const { loadCategories } = require("../middlewares/user-mid/categoryMiddleware");
@@ -65,34 +71,72 @@ router.get("/user/profile", checkUserStatus, profileController.loadProfile);
 
 //--------------------------------------------submitting the edit profile
 
-router.post("/user/profile/edit",checkUserStatus,profileController.updateProfile);
+router.post("/user/profile/edit", checkUserStatus, profileController.updateProfile);
 
 
 //---------------------------------------------------updating password
-router.post("/user/profile/password",checkUserStatus,profileController.updatePassword);
+router.post("/user/profile/password", checkUserStatus, profileController.updatePassword);
 //-----------------------------------email changing
-router.get("/user/profile/email",checkUserStatus,profileController.loadChangeEmail);
+router.get("/user/profile/email", checkUserStatus, profileController.loadChangeEmail);
 //-------------------------------------sending email
-router.post("/user/profile/email",checkUserStatus,profileController.requestEmailOtp);
+router.post("/user/profile/email", checkUserStatus, profileController.requestEmailOtp);
 //------------------------------submiting otp for verify
-router.post("/user/verify-email-otp",checkUserStatus,profileController.verifyEmailOtp);
+router.post("/user/verify-email-otp", checkUserStatus, profileController.verifyEmailOtp);
 
 
 
 //----------------------------------------------------------------------------------------address list
-router.get("/user/addresses",checkUserStatus,profileController.loadAddressPage);
+router.get("/user/addresses", checkUserStatus, profileController.loadAddressPage);
 
-router.post("/user/profile/addresses/add",checkUserStatus,profileController.addAddress);
+router.post("/user/profile/addresses/add", checkUserStatus, profileController.addAddress);
 
 router.put("/user/profile/addresses/edit/:id", checkUserStatus, profileController.editAddress);
 
-router.delete("/user/profile/addresses/delete/:id",checkUserStatus,profileController.deleteAddress);
+router.delete("/user/profile/addresses/delete/:id", checkUserStatus, profileController.deleteAddress);
 
 
 
+//-----------------------------------------------------------------------------------------cart list
+router.get("/user/cart", checkUserStatus, cartController.loadCartPage);
+
+
+router.post("/cart/add", checkUserStatus, cartController.addToCart);
+
+router.patch("/cart/update", checkUserStatus, cartController.updateCartQty);
+
+router.delete("/cart/remove/:itemId", checkUserStatus, cartController.removeCartItem);
 
 
 
+//------------------------------------------------------------------------------------------checkout
+
+router.get("/checkout", checkUserStatus, checkoutController.loadCheckout);
+
+router.post("/checkout/place-order", checkUserStatus, checkoutController.placeOrder);
+
+router.get('/order-success/:id', checkUserStatus, checkoutController.orderSuccess);
+
+router.get("/orders/:id", orderDetailController.getOrderDetails);
+
+
+//------------------------------------------------------------------------------------------------orders
+
+router.get("/user/orders", checkUserStatus, ordersController.listOrder);
+
+
+//---------------------------------------------------------------------------------------------------canceling
+router.put("/user/orders/cancel-item/:orderId/:itemId", checkUserStatus, orderDetailController.cancelOrderItem);
+router.put("/user/orders/cancel/:orderId", checkUserStatus, orderDetailController.cancelOrder);
+
+
+
+//--------------------------------------------------------------------------------------------returning
+router.put("/user/orders/return-item/:orderId/:itemId",checkUserStatus,orderDetailController.returnOrderItem);
+
+router.put("/user/orders/return/:orderId", checkUserStatus, orderDetailController.returnOrder);
+
+//-----------------------------------------------------------------------------------------invoice
+router.get("/user/orders/invoice/:orderId", checkUserStatus, orderDetailController.downloadInvoice);
 
 
 

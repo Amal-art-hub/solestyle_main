@@ -1,0 +1,58 @@
+<%- include("../partials/header") %>
+
+    <link rel="stylesheet" href="/css/user/orderSuccess.css">
+    <link rel="stylesheet" href="/css/user/homestyle.css">
+
+    <div class="success-container">
+        <div class="success-card">
+            <div class="icon-circle">
+                <svg viewBox="0 0 24 24" class="checkmark-svg">
+                    <path class="checkmark-path" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"
+                        stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+
+            <h1>Order Confirmed!</h1>
+            <p>Thank you for shopping with us.</p>
+            <p>Your order has been placed successfully.</p>
+
+            <div class="order-id">
+                Order ID: <span>
+                    <%= orderId %>
+                </span>
+            </div>
+
+            <div class="action-buttons">
+                <a href="/" class="btn-continue">Continue Shopping</a>
+                <a href="/orders/<%= orderId %>" class="btn-orders"> manage order </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+      
+        window.addEventListener('load', () => {
+            const duration = 3000;
+            const animationEnd = Date.now() + duration;
+            const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            const random = (min, max) => Math.random() * (max - min) + min;
+
+            const interval = setInterval(function () {
+                const timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                const particleCount = 50 * (timeLeft / duration);
+
+                // multiple origins to spread it out
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: random(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: random(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        });
+    </script>
+
+    <%- include("../partials/footer") %>

@@ -1,0 +1,136 @@
+<%- include('../partials/header') %>
+    <!-- Custom CSS -->
+
+    <link rel="stylesheet" href="/css/user/homestyle.css">
+    <link rel="stylesheet" href="/css/user/cart.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <div class="cart-container" style="min-height: 60vh; display: flex; flex-direction: column;">
+        <div class="cart-header">
+            <h1>Shopping Cart</h1>
+            <!-- Valid Items Count -->
+            <span class="item-count">
+                <%= cart && cart.items ? cart.items.length : 0 %> Items
+            </span>
+        </div>
+
+        <% if (cart && cart.items.length> 0) { %>
+            <div class="cart-content">
+                <!-- Left: Items List -->
+                <div class="cart-items">
+                    <% cart.items.forEach(item=> { %>
+                        <!-- Rule: Check Status -->
+                        <% const isOutOfStock=item.variant_id.stock===0; %>
+                            <% const isBlocked=item.product_id.isDeleted || !item.product_id.isListed; %>
+                                <% const isDisabled=isOutOfStock || isBlocked; %>
+
+                                    <div class="cart-item <%= isDisabled ? 'disabled-item' : '' %>">
+                                        <div class="item-image">
+                                            <img src="/uploads/variant-images/<%= item.image_snapshot %>"
+                                                alt="<%= item.name_snapshot %>">
+                                        </div>
+
+                                        <div class="item-details">
+                                            <h3>
+                                                <%= item.name_snapshot %>
+                                            </h3>
+                                            <p class="variant-info">Size: <%= item.variant_id.size %> | Color: <%=
+                                                        item.variant_id.color %>
+                                            </p>
+
+                                            <!-- Price & Status -->
+                                            <% if (isOutOfStock) { %>
+                                                <p class="status-msg error">Out of Stock</p>
+                                                <% } else if (isBlocked) { %>
+                                                    <p class="status-msg error">Unavailable</p>
+                                                    <% } else { %>
+                                                        <p class="price">₹<%= item.variant_id.price %>
+                                                        </p>
+                                                        <% if(item.variant_id.stock < 5) { %>
+                                                            <p class="status-msg warning">Only <%= item.variant_id.stock
+                                                                    %> left!</p>
+                                                            <% } %>
+                                                                <% } %>
+                                        </div>
+
+                                        <div class="item-actions">
+                                            <% if (!isDisabled) { %>
+                                                <div class="quantity-control">
+                                                    <button class="qty-btn"
+                                                        onclick="updateQty('<%= item._id %>', 'decrement')">
+                                                        <i class="fa fa-minus"></i>
+                                                    </button>
+                                                    <span class="qty-display">
+                                                        <%= item.quantity %>
+                                                    </span>
+                                                    <button class="qty-btn"
+                                                        onclick="updateQty('<%= item._id %>', 'increment')">
+                                                        <i class="fa fa-plus"></i>
+                                                    </button>
+                                                </div>
+                                                <% } %>
+
+                                                    <button class="remove-btn" onclick="removeItem('<%= item._id %>')">
+                                                        <i class="fa fa-trash"></i> Remove
+                                                    </button>
+                                        </div>
+                                    </div>
+                                    <% }) %>
+                </div>
+
+                <!-- Right: Summary Box -->
+                <div class="cart-summary">
+                    <h2>Order Summary</h2>
+
+                    <!-- Rule: Calculate Total only for Valid Items -->
+                    <% const validItems=cart.items.filter(item=>
+                        item.variant_id.stock >= item.quantity &&
+                        !item.product_id.isDeleted &&
+                        item.product_id.isListed
+                        );
+                        const total = validItems.reduce((acc, item) => acc + (item.quantity * item.variant_id.price),
+                        0);
+                        const hasInvalidItems = cart.items.length !== validItems.length;
+                        %>
+
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span>₹<%= total %></span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Delivery</span>
+                            <span style="color: green;">Free</span>
+                        </div>
+                        <hr>
+                        <div class="summary-total">
+                            <span>Total</span>
+                            <span>₹<%= total %></span>
+                        </div>
+
+                        <% if (hasInvalidItems) { %>
+                            <p class="summary-warning">
+                                <i class="fa fa-info-circle"></i> Some items are unavailable and not included in total.
+                            </p>
+                            <% } %>
+
+                                <button class="checkout-btn" <%=validItems.length===0 ? 'disabled' : '' %>
+                                    onclick="proceedToCheckout()">
+                                    Proceed to Checkout
+                                </button>
+                </div>
+            </div>
+            <% } else { %>
+                <!-- Empty State -->
+                <div class="empty-cart">
+                    <i class="fa fa-shopping-bag"></i>
+                    <h2>Your cart is empty</h2>
+                    <p>Looks like you haven't added anything to your cart yet.</p>
+                    <a href="/" class="btn-continue">Continue Shopping</a>
+                </div>
+                <% } %>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/user/cart.js"></script>
+    <%- include('../partials/footer') %>
