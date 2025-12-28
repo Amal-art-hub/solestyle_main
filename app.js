@@ -5,6 +5,7 @@ const session = require("express-session")
 const MongoStore = require('connect-mongo').default;
 const passport = require("passport");     // ✔️ import passport library
 require("./config/passport");
+const errorHandler = require("./middlewares/errorHandler");
 
 const path = require("path")
 const db = require("./config/db");
@@ -50,7 +51,17 @@ app.set("views", [
 
 
 app.use("/", userRouter);
-app.use("/admin", adminRouter)
+app.use("/admin", adminRouter);
+
+
+app.use("/test-error",(req,res,next)=>{
+  const err=new Error("This is a deliberate test error");
+  err.statusCode=418;
+  next(err);
+})
+
+
+app.use(errorHandler);
 
 
 const PORT = process.env.PORT || 5000;

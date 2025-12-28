@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Order Management</title>
+    <!-- Common Dashboard CSS -->
+    <link rel="stylesheet" href="/css/admin/dashboard-side.css">
+    <!-- Page Specific CSS -->
+    <link rel="stylesheet" href="/css/admin/orderList.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <%- include("../partials/adminSideBar") %>
+
+            <div class="main-content">
+                <section class="content-main">
+                    <div class="content-header">
+                        <div>
+                            <h2 class="content-title card-title">Order Management</h2>
+                        </div>
+
+                        <!-- Search & Filter -->
+                        <div class="search-container">
+                            <form action="/admin/orders" method="GET" class="filter-form">
+                                <input type="text" name="search" placeholder="Search Order ID..." class="search-input"
+                                    value="<%= search %>">
+
+                                <select name="status" class="status-filter">
+                                    <option value="">All Statuses</option>
+                                    <option value="pending" <%=status==='pending' ? 'selected' : '' %>>Pending</option>
+                                    <option value="shipped" <%=status==='shipped' ? 'selected' : '' %>>Shipped</option>
+                                    <option value="out for delivery" <%=status==='out for delivery' ? 'selected' : '' %>
+                                        >Out for Delivery</option>
+                                    <option value="delivered" <%=status==='delivered' ? 'selected' : '' %>>Delivered
+                                    </option>
+                                    <option value="canceled" <%=status==='canceled' ? 'selected' : '' %>>Canceled
+                                    </option>
+                                    <option value="returned" <%=status==='returned' ? 'selected' : '' %>>Returned
+                                    </option>
+                                </select>
+
+                                <button type="submit" class="btn-search">Search</button>
+                                <% if(search || status) { %>
+                                    <a href="/admin/orders" class="btn-clear">Clear</a>
+                                    <% } %>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date</th>
+                                    <th>Customer</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (orders && orders.length> 0) { %>
+                                    <% orders.forEach(order=> { %>
+                                        <tr>
+                                            <td>#<%= order.order_number %>
+                                            </td>
+                                            <td>
+                                                <%= new Date(order.order_date).toLocaleDateString() %>
+                                            </td>
+                                            <td>
+                                                <div class="customer-info">
+                                                    <span class="name">
+                                                        <%= order.user_id ? order.user_id.name : 'Unknown' %>
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td>₹<%= order.final_total.toFixed(2) %>
+                                            </td>
+                                            <td>
+                                                <select
+                                                    class="status-badge status-<%= order.status.replace(/\s+/g, '-') %>"
+                                                    onchange="updateStatus('<%= order._id %>', this.value)"
+                                                    data-order-id="<%= order._id %>">
+                                                    <option value="pending" <%=order.status==='pending' ? 'selected'
+                                                        : '' %>>Pending</option>
+                                                    <option value="shipped" <%=order.status==='shipped' ? 'selected'
+                                                        : '' %>>Shipped</option>
+                                                    <option value="out for delivery"
+                                                        <%=order.status==='out for delivery' ? 'selected' : '' %>>Out
+                                                        for Delivery</option>
+                                                    <option value="delivered" <%=order.status==='delivered' ? 'selected'
+                                                        : '' %>>Delivered</option>
+                                                    <option value="canceled" <%=order.status==='canceled' ? 'selected'
+                                                        : '' %>>Canceled</option>
+                                                    <option value="returned" <%=order.status==='returned' ? 'selected'
+                                                        : '' %>>Returned</option>
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <button class="action-btn btn-view"
+                                                    onclick="viewOrderDetails('<%= order._id %>')">
+                                                    <i class="fas fa-eye"></i> View
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <% }); %>
+                                            <% } else { %>
+                                                <tr>
+                                                    <td colspan="6" class="text-center">No orders found</td>
+                                                </tr>
+                                                <% } %>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination">
+                        <% if (currentPage> 1) { %>
+                            <a
+                                href="/admin/orders?page=<%= currentPage - 1 %>&search=<%= search %>&status=<%= status %>">Previous</a>
+                            <% } %>
+
+                                <% for(let i=1; i <=totalPages; i++) { %>
+                                    <a href="/admin/orders?page=<%= i %>&search=<%= search %>&status=<%= status %>"
+                                        class="<%= i === currentPage ? 'active' : '' %>">
+                                        <%= i %>
+                                    </a>
+                                    <% } %>
+
+                                        <% if (currentPage < totalPages) { %>
+                                            <a
+                                                href="/admin/orders?page=<%= currentPage + 1 %>&search=<%= search %>&status=<%= status %>">Next</a>
+                                            <% } %>
+                    </div>
+
+                </section>
+            </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div id="modalBody">
+                <div class="loading-spinner">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/js/admin/orderList.js"></script>
+</body>
+
+</html>

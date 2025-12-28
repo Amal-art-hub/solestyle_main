@@ -1,0 +1,277 @@
+/* --- Main Layout & Header --- */
+.content-header {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.content-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+}
+
+/* --- Search & Filter Section --- */
+.search-container {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filter-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.search-input {
+    padding: 10px 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    width: 280px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+.search-input:focus {
+    border-color: #3BB77E;
+    outline: none;
+}
+
+.status-filter {
+    padding: 10px 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    background-color: #fff;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* --- Buttons (Matching Category Theme) --- */
+.btn-search {
+    background-color: #3BB77E;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+.btn-search:hover { opacity: 0.9; }
+
+.btn-clear {
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: 500;
+    font-size: 14px;
+}
+.btn-clear:hover { background-color: #5a6268; color: white; }
+
+/* --- Table Styles --- */
+.table-responsive {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05); /* Softer, professional shadow */
+    margin-top: 20px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #e9ecef;
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table tbody td {
+    padding: 16px 15px;
+    border-bottom: 1px solid #f1f3f5;
+    vertical-align: middle;
+    color: #212529;
+    font-size: 15px;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* --- Status Badges (Select Dropdowns) --- */
+.status-badge {
+    padding: 6px 12px;
+    border-radius: 30px; /* Pill shape */
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    appearance: none; /* Removes default dropdown arrow in some browsers for cleaner look */
+    outline: none;
+    width: 130px;
+}
+
+/* Status Colors */
+.status-pending { background-color: #FFF8E1; color: #F57F17; } /* Warm Yellow */
+.status-shipped { background-color: #E3F2FD; color: #1565C0; } /* Blue */
+.status-out-for-delivery { background-color: #E0F7FA; color: #006064; } /* Cyan */
+.status-delivered { background-color: #E8F5E9; color: #2E7D32; } /* Green (Success) */
+.status-canceled { background-color: #FFEBEE; color: #C62828; } /* Red (Danger) */
+.status-returned { background-color: #F5F5F5; color: #616161; } /* Grey */
+
+/* --- Action Buttons --- */
+.action-btn {
+    padding: 8px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+    background: transparent;
+    color: #3BB77E;
+    border: 1px solid #3BB77E;
+}
+.action-btn:hover {
+    background-color: #3BB77E;
+    color: white;
+}
+
+/* --- Pagination (Exact Match) --- */
+.pagination {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.pagination a {
+    padding: 8px 14px;
+    border: 1px solid #dee2e6;
+    text-decoration: none;
+    color: #333;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    background: white;
+}
+
+.pagination a:hover {
+    background-color: #f8f9fa;
+    border-color: #caced1;
+}
+
+.pagination a.active {
+    background-color: #3BB77E; /* Theme Green */
+    color: white;
+    border-color: #3BB77E;
+}
+
+/* --- Modal Styles --- */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1050;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(2px); /* Modern blur effect */
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 0; /* Removing padding from container to use header/body split */
+    border-radius: 12px;
+    width: 60%;
+    max-width: 900px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    overflow: hidden;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.close-modal {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #adb5bd;
+    cursor: pointer;
+    z-index: 10;
+}
+.close-modal:hover { color: #333; }
+
+/* --- Modal Inner Content --- */
+#modalBody {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.detail-group {
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+}
+
+.detail-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #dee2e6;
+    padding-bottom: 5px;
+}
+
+.item-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.item:last-child {
+    border-bottom: none;
+}
+
+.item img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 5px;
+    border: 1px solid #dee2e6;
+}

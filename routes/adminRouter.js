@@ -6,6 +6,7 @@ const categoryController = require("../controllers/admin/categoryController");
 const brandController = require("../controllers/admin/brandController");
 const productController = require("../controllers/admin/productController");
 const variantController = require("../controllers/admin/variantController");
+const orderController=require("../controllers/admin/orderController");
 const { upload, variantUpload } = require("../middlewares/admin-mid/multer");
 const { isAdminLoggedIn } = require("../middlewares/admin-mid/admin-auth");
 
@@ -52,6 +53,15 @@ router.post("/products/:productId/variants", isAdminLoggedIn, variantUpload.arra
 router.post("/variants/:id/edit", isAdminLoggedIn, variantUpload.array("newImages", 10), variantController.editVariant);
 router.patch("/variants/:id/toggle-listing", isAdminLoggedIn, variantController.toggleVariantStatus);
 router.delete("/variants/:id", isAdminLoggedIn, variantController.removeVariant);
+
+
+
+//order managment
+
+router.get("/orders",isAdminLoggedIn,orderController.getOrderList);
+router.patch("/orders/update-status",isAdminLoggedIn,orderController.changeStatus);
+router.get('/orders/details/:id', isAdminLoggedIn, orderController.getOrderDetails);
+
 
 
 
