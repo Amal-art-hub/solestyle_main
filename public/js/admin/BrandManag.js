@@ -1,23 +1,23 @@
 async function toggleStatus(id) {
     try {
+        
         const response = await fetch(`/admin/blockBrand?id=${id}`, {
-            method: 'GET'
+            method: 'PATCH'
         });
-        const data = await response.json(); // Note: blockBrand in controller returns redirect or nothing usually, but let's check
-        // Ideally should be JSON. Assuming I will fix controller to return JSON or handle redirect.
-        // Actually, blockBrand in guide was 'res.redirect'. Fetch doesn't handle redirect well for page reload.
-        // Better to reload page if status is 200.
-        if (response.ok) {
+
+        const data = await response.json(); 
+        
+        if (data.success) { 
             location.reload();
         } else {
-            alert("Failed to change status");
+            alert("Failed to change status: " + (data.message || "Unknown error"));
         }
     } catch (error) {
         console.error("Error:", error);
         alert("An error occurred");
     }
 }
-// Add Brand Form Handler
+
 document.getElementById('addBrandForm')?.addEventListener('submit', async function (e) {
     e.preventDefault();
 

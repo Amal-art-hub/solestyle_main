@@ -4,6 +4,7 @@ const {
     toggleBrandStatus,
     editBrand
 } = require("../../services/adminSer/brandServices");
+const statusCode = require("../../utils/statusCodes.js");
 
 
 const getBrandPage = async (req, res) => {
@@ -21,7 +22,7 @@ const getBrandPage = async (req, res) => {
         });
     } catch (error) {
         console.log(error);
-        res.status(500).send("Server Error");
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send("Server Error");
     }
 };
 
@@ -30,12 +31,12 @@ const addBrand = async (req, res) => {
         // req.body.name is available
         const result = await createBrand(req.body.name);
         if (!result.success) {
-            return res.status(400).json(result);
+            return res.status(statusCode.BAD_REQUEST).json(result);
         }
-        res.status(200).json(result);
+        res.status(statusCode.OK).json(result);
     } catch (error) {
         // console.error(error);
-        res.status(500).json({ success: false, message: "Server error" });
+        res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
     }
 };
 
@@ -44,20 +45,20 @@ const editBrandController = async (req, res) => {
         const { id, name, description } = req.body;
         const result = await editBrand(id, name, description);
         if (!result.success) {
-            return res.status(400).json(result);
+            return res.status(statusCode.BAD_REQUEST).json(result);
         }
-        res.status(200).json(result);
+        res.status(statusCode.OK).json(result);
     } catch (error) {
-        res.status(500).json({ success: false, message: "Server error" });
+        res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
     }
 };
 
 const blockBrand = async (req, res) => {
     try {
         await toggleBrandStatus(req.query.id);
-        res.status(200).json({ success: true, message: "Brand status updated" });
+        res.status(statusCode.OK).json({ success: true, message: "Brand status updated" });
     } catch (error) {
-        res.status(500).json({ success: false, message: "Error blocking brand" });
+        res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Error blocking brand" });
     }
 };
 

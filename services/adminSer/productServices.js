@@ -3,7 +3,7 @@ const Variant = require("../../models/varient");
 const Category = require("../../models/category");
 const Brand = require("../../models/brand");
 
-const getAllProducts = async (page = 1, limit = 10, search = "") => {
+const getAllProducts = async (page = 1, limit = 10, search = "",sort="newest") => {
     try {
         const skip = (page - 1) * limit;
         const query = {}
@@ -13,15 +13,21 @@ const getAllProducts = async (page = 1, limit = 10, search = "") => {
         }
 
 
-        // const userData = await User.find(query).limit(limit * 1).skip((page - 1) * limit).sort({ createdAt: -1 });
-        // const count = await User.find(query).countDocuments();
+
+         let sortOptions = {}; 
+        if (sort === "oldest") {
+            sortOptions = { createdAt: 1 }; 
+        } else {
+            sortOptions = { createdAt: -1 };
+        }
+
 
 
 
         const products = await Product.find(query)
             .populate("categoryId", "name")
             .populate("brandId", "name")
-            .sort({ createdAt: -1 })
+            .sort(sortOptions)
             .skip(skip)
             .limit(limit);
 

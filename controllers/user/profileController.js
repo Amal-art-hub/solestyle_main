@@ -120,37 +120,37 @@ const validateAddress = (data) => {
     return { isValid: Object.keys(errors).length === 0, errors };
 }
 
-const loadAddressPage=async(req,res)=>{
-try {
-    const addresses=await getAddressByUserId(req.session.user._id);
-    res.render("addresses",{addresses,user:req.session.user});
-} catch (error) {
-    console.error(error);
-    res.status(500).render("page-404")
-    
+const loadAddressPage = async (req, res) => {
+    try {
+        const addresses = await getAddressByUserId(req.session.user._id);
+        res.render("addresses", { addresses, user: req.session.user });
+    } catch (error) {
+        console.error(error);
+        res.status(statusCode.INTERNAL_SERVER_ERROR).render("page-404")
+
+    }
 }
-}
 
-const addAddress=async(req,res)=>{
-         try {
-            const validation=validateAddress(req.body);
-            if(!validation.isValid){
-                return res.status(statusCode.BAD_REQUEST).json({
-                    success:false,
-                    message:"Validation Failed",
-                    errors:validation.errors
-                });
-            }
+const addAddress = async (req, res) => {
+    try {
+        const validation = validateAddress(req.body);
+        if (!validation.isValid) {
+            return res.status(statusCode.BAD_REQUEST).json({
+                success: false,
+                message: "Validation Failed",
+                errors: validation.errors
+            });
+        }
 
-            const userId=req.session.user._id;
-            const data=req.body;
+        const userId = req.session.user._id;
+        const data = req.body;
 
-            await addAddressService(userId,data);
-            res.status(statusCode.OK).json({success:true,message:"Address added successfully"});
-         } catch (error) {
-            console.error("Add address error:",error);
-            res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server Error" });
-         }
+        await addAddressService(userId, data);
+        res.status(statusCode.OK).json({ success: true, message: "Address added successfully" });
+    } catch (error) {
+        console.error("Add address error:", error);
+        res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server Error" });
+    }
 }
 
 
@@ -158,17 +158,17 @@ const editAddress = async (req, res) => {
     try {
         const validation = validateAddress(req.body);
         if (!validation.isValid) {
-            return res.status(statusCode.BAD_REQUEST).json({ 
-                success: false, 
-                message: "Validation Failed", 
-                errors: validation.errors 
+            return res.status(statusCode.BAD_REQUEST).json({
+                success: false,
+                message: "Validation Failed",
+                errors: validation.errors
             });
         }
         const userId = req.session.user._id;
         const addressId = req.params.id;
         const data = req.body;
         await editAddressService(addressId, userId, data);
-        
+
         res.status(statusCode.OK).json({ success: true, message: "Address updated successfully" });
     } catch (error) {
         console.error("Edit Address Error:", error);
@@ -181,7 +181,7 @@ const deleteAddress = async (req, res) => {
         const userId = req.session.user._id;
         const addressId = req.params.id;
         await deleteAddressServic(addressId, userId);
-        
+
         res.status(statusCode.OK).json({ success: true, message: "Address deleted successfully" });
     } catch (error) {
         console.error("Delete Address Error:", error);

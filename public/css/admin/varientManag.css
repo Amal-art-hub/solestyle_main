@@ -281,6 +281,40 @@ body {
   border-top: 1px solid #ecf0f1;
 }
 
+
+
+/* --- Pagination (Same as Order List) --- */
+.pagination {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding-bottom: 20px; /* Added padding for spacing at bottom */
+}
+
+.pagination a {
+    padding: 8px 14px;
+    border: 1px solid #dee2e6;
+    text-decoration: none;
+    color: #333;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    background: white;
+}
+
+.pagination a:hover {
+    background-color: #f8f9fa;
+    border-color: #caced1;
+}
+
+.pagination a.active {
+    background-color: #3BB77E; /* Theme Green */
+    color: white;
+    border-color: #3BB77E;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .main-content {

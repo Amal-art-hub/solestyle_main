@@ -19,18 +19,24 @@
           <h1>Product Management</h1>
           <a href="/admin/products/add" class="btn btn-primary">+ Add New Product</a>
         </div>
-        <div class="search-container">
-            <!-- Action should be empty to submit to current page, or '/admin/products' -->
-            <form action="/admin/products" method="GET" style="display: flex; gap: 10px;">
-                <input type="text" name="search" placeholder="Search by Product Name..." value="<%= search %>">
-                <button type="submit">Search</button>
-            </form>
-            
-            <% if(search) { %>
-                <!-- Clear button must go back to products list -->
-                <a href="/admin/products" class="clear-btn" style="padding: 10px; background: #666; color: white; text-decoration: none; border-radius: 4px;">Clear</a>
-            <% } %>
-        </div>
+       <div class="search-container">
+    <form action="/admin/products" method="GET" style="display: flex; gap: 10px; align-items: center;">
+        <!-- Keeps search value -->
+        <input type="text" name="search" placeholder="Search by Product Name..." value="<%= search %>">
+
+        <!-- Adds Sort Dropdown -->
+        <select name="sort" onchange="this.form.submit()" style="padding: 10px; border-radius: 4px; border: 1px solid #ccc; cursor: pointer;">
+            <option value="newest" <%= typeof sort !== 'undefined' && sort === 'newest' ? 'selected' : '' %>>Newest First</option>
+            <option value="oldest" <%= typeof sort !== 'undefined' && sort === 'oldest' ? 'selected' : '' %>>Oldest First</option>
+        </select>
+
+        <button type="submit" class="btn-search">Search</button>
+        
+        <% if(search || (typeof sort !== 'undefined' && sort !== 'newest')) { %>
+            <a href="/admin/products" class="clear-btn" style="padding: 10px; background: #666; color: white; text-decoration: none; border-radius: 4px;">Clear</a>
+        <% } %>
+    </form>
+</div>
         <div class="table-container">
           <table class="products-table">
             <thead>

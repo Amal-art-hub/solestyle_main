@@ -59,7 +59,7 @@
                   <tr data-id="<%= variant._id %>">
                     <td>
                       <% if (variant.images && variant.images.length> 0) { %>
-                        <img src="/uploads/variant-images/<%= variant.images[0] %>" alt="<%= variant.color %>"
+                        <img src="/uploads/variant-images/<%= variant.images[2] %>" alt="<%= variant.color %>"
                           style="width:60px;height:60px;object-fit:cover;">
                         <% } else { %>
                           <span class="no-image">No Image</span>
@@ -107,6 +107,26 @@
             </tbody>
           </table>
         </div>
+
+
+<!-- Pagination -->
+<div class="pagination">
+    <% if (currentPage > 1) { %>
+        <a href="?page=<%= currentPage - 1 %>">Previous</a>
+    <% } %>
+
+    <% for(let i = 1; i <= totalPages; i++) { %>
+        <a href="?page=<%= i %>" class="<%= i === currentPage ? 'active' : '' %>">
+            <%= i %>
+        </a>
+    <% } %>
+
+    <% if (currentPage < totalPages) { %>
+        <a href="?page=<%= currentPage + 1 %>">Next</a>
+    <% } %>
+</div>
+
+
       </main>
   </div>
   <!-- Add Variant Modal -->

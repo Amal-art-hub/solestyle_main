@@ -4,6 +4,7 @@ const {
   editCategoryService,
   toggleCategoryStatus
 } = require("../../services/adminSer/categoryServices");
+const statusCode = require("../../utils/statusCodes.js");
 
 const categoryInfo = async (req, res) => {
   try {
@@ -28,12 +29,12 @@ const addCategory = async (req, res) => {
   try {
     const result = await createCategory(req.body);
     if (!result.success) {
-      return res.status(400).json(result);
+      return res.status(statusCode.BAD_REQUEST).json(result);
     }
-    res.status(200).json(result);
+    res.status(statusCode.OK).json(result);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
   }
 };
 
@@ -41,26 +42,26 @@ const editCategory = async (req, res) => {
   try {
     const result = await editCategoryService(req.body);
     if (!result.sucess) {
-      return res.status(400).json(result);
+      return res.status(statusCode.BAD_REQUEST).json(result);
     }
-    res.status(200).json(result);
+    res.status(statusCode.OK).json(result);
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, message: "server error" });
+    res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "server error" });
   }
 };
 
-const   getListStatus=async(req,res)=>{
-    try {
-        const result=await toggleCategoryStatus(req.query.id);
-        if(!result.success){
-            return res.status(400).json(result);
-        }
-        res.status(200).json(result);
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({success:false,message:"Server error"});
+const getListStatus = async (req, res) => {
+  try {
+    const result = await toggleCategoryStatus(req.query.id);
+    if (!result.success) {
+      return res.status(statusCode.BAD_REQUEST).json(result);
     }
+    res.status(statusCode.OK).json(result);
+  } catch (error) {
+    console.log(error);
+    res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
+  }
 };
 
 

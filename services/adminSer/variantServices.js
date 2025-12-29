@@ -1,7 +1,7 @@
 const Variant = require("../../models/varient");
 const Product = require("../../models/product");
 
-const getVariantsByProduct = async (productId) => {
+const getVariantsByProduct = async (productId,page=1,limit=10) => {
     try {
         const product = await Product.findById(productId)
             .populate("categoryId", "name")
@@ -11,9 +11,23 @@ const getVariantsByProduct = async (productId) => {
             throw new Error("Product not found");
         }
 
-        const variants = await Variant.find({ productId }).sort({ createdAt: -1 });
+        
+        const skip = (page - 1) * limit;
 
-        return { product, variants };
+        const variants = await Variant.find({ productId })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+
+        const totalVariants=await Variant.countDocuments({productId});
+        const totalPages=Math.ceil(totalVariants/limit)
+
+        return { product,
+             variants,
+             currentPage:page,
+             totalPages,
+             totalVariants  
+            };
     } catch (error) {
         throw new Error("Error fetching variants: " + error.message);
     }
@@ -23,7 +37,6 @@ const createVariant = async (productId, data, files) => {
     try {
         const { size, color, price, stock } = data;
 
-        // Map uploaded files to filenames
         const images = files.map(file => file.filename);
 
         const newVariant = new Variant({
@@ -54,14 +67,13 @@ const updateVariant = async (id, data, files) => {
         variant.price = data.price;
         variant.stock = data.stock;
 
-        // Start with current images
+  
         let currentImages = [...variant.images];
 
-        // Handle image deletions
         if (data.deletedImages) {
             try {
                 const deletedImages = JSON.parse(data.deletedImages);
-                // Remove deleted images
+                
                 currentImages = currentImages.filter(img => !deletedImages.includes(img));
                 console.log('After deletion:', currentImages.length, 'images remaining');
             } catch (e) {
@@ -69,15 +81,15 @@ const updateVariant = async (id, data, files) => {
             }
         }
 
-        // Add new images if uploaded
+    
         if (files && files.length > 0) {
             const newImages = files.map(file => file.filename);
             currentImages = [...currentImages, ...newImages];
             console.log('After adding new images:', currentImages.length, 'total images');
         }
 
-        // Validate image count
-        if (currentImages.length < 3 || currentImages.length > 10) {
+        
+        if (currentImages.length < 1|| currentImages.length > 10) {
             throw new Error(`Variant must have between 3 and 10 images. Currently: ${currentImages.length}`);
         }
 

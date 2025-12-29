@@ -45,14 +45,23 @@ const updateOrderStatus = async (orderId, newStatus) => {
 
     order.status = newStatus;
 
-
+    // Update individual items' status to match order status
     if (newStatus === "delivered") {
       order.delivered_date = new Date();
+      order.items.forEach(item => {
+        if (item.status !== 'canceled' && item.status !== 'returned') {
+          item.status = 'delivered';
+        }
+      });
     }
     
-   
     if (newStatus === "shipped") {
       order.shipped_date = new Date();
+      order.items.forEach(item => {
+        if (item.status !== 'canceled' && item.status !== 'returned') {
+          item.status = 'shipped';
+        }
+      });
     }
 
     await order.save();

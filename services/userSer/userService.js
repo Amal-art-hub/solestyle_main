@@ -1,6 +1,7 @@
 const User = require("../../models/user.js");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
+const statusCode = require("../../utils/statusCodes.js");
 
 const getHomepageDate = () => {
   return {
@@ -63,39 +64,39 @@ async function createUser({ firstName, lastName, email, phone, password }) {
 async function verifyOtpService(session, otp) {
   try {
     if (!session.userOtp) {
-      return { 
-        success: false, 
-        status: 400,
-        message: "Session expired. Please signup again." 
+      return {
+        success: false,
+        status: statusCode.BAD_REQUEST,
+        message: "Session expired. Please signup again."
       };
     }
 
     if (otp !== session.userOtp) {
-      return { 
-        success: false, 
-        status: 400,
-        message: "Invalid OTP. Please try again." 
+      return {
+        success: false,
+        status: statusCode.BAD_REQUEST,
+        message: "Invalid OTP. Please try again."
       };
     }
 
     // OTP is correct – create user
     const { firstName, lastName, email, phone, password } = session.userData;
     await createUser({ firstName, lastName, email, phone, password });
-    
+
     // Clean up session
     session.userOtp = null;
     session.userData = null;
-    
-    return { 
-      success: true, 
-      redirectUrl: "/login" 
+
+    return {
+      success: true,
+      redirectUrl: "/login"
     };
   } catch (error) {
     console.error('Error in verifyOtpService:', error);
-    return { 
-      success: false, 
-      status: 500,
-      message: "Server error during verification" 
+    return {
+      success: false,
+      status: statusCode.INTERNAL_SERVER_ERROR,
+      message: "Server error during verification"
     };
   }
 }
@@ -103,42 +104,42 @@ async function verifyOtpService(session, otp) {
 // Resend OTP service
 async function resendOtpService(session) {
   if (!session.userData || !session.userData.email) {
-    return { 
-      success: false, 
-      status: 400,
-      message: "Session expired. Please sign up again." 
+    return {
+      success: false,
+      status: statusCode.BAD_REQUEST,
+      message: "Session expired. Please sign up again."
     };
   }
 
   const { email } = session.userData;
   const otp = generateOtp();
-  
+
   // Log for debugging
   console.log('========== RESEND OTP SERVICE ==========');
   console.log('Resending OTP to:', email);
   console.log('New OTP:', otp);
-  
+
   // Send the new OTP via email
   const emailSent = await sendVerificationEmail(email, otp);
-  
+
   if (!emailSent) {
     console.error('Failed to send OTP email to:', email);
-    return { 
-      success: false, 
-      status: 500,
-      message: "Failed to send verification email. Please try again." 
+    return {
+      success: false,
+      status: statusCode.INTERNAL_SERVER_ERROR,
+      message: "Failed to send verification email. Please try again."
     };
   }
-  
+
   // Update the OTP in the session
   session.userOtp = otp;
-  
+
   console.log('OTP resent successfully to:', email);
   console.log('======================================');
-  
-  return { 
+
+  return {
     success: true,
-    message: "A new OTP has been sent to your email." 
+    message: "A new OTP has been sent to your email."
   };
 }
 
@@ -151,35 +152,35 @@ async function loginUser(email, password) {
 
     // Find user by email
     const user = await User.findOne({ email });
-    
+
     // If user is an admin, redirect to admin login
     if (user?.isAdmin === 1) {
       throw new Error("Please use admin login");
     }
-    
+
     // Check if user exists
     if (!user) {
       throw new Error("Invalid email or password");
     }
-    
+
     // Check if user is blocked
     if (user.isBlock) {
       throw new Error("Your account has been blocked. Please contact support.");
     }
-    
+
     // Verify password
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
       throw new Error("Invalid email or password");
     }
-    
+
     // Return user data without password
     const { password: _, ...userData } = user.toObject();
     return {
       success: true,
       user: userData
     };
-    
+
   } catch (error) {
     console.error('Login service error:', error);
     return {
@@ -189,124 +190,124 @@ async function loginUser(email, password) {
   }
 }
 
-const resentfortgotService=async(session)=>{
+const resentfortgotService = async (session) => {
   try {
-    const email=session.resetEmail;
-    if(!email){
-      return{
-        success:false,
-        status:400,
-        message:"Session expired,please start again."
+    const email = session.resetEmail;
+    if (!email) {
+      return {
+        success: false,
+        status: statusCode.BAD_REQUEST,
+        message: "Session expired,please start again."
       };
     }
 
-    const newOtp=generateOtp();
+    const newOtp = generateOtp();
 
-    session.resetOtp=newOtp;
-    session.resetOtpExpiry=Date.now()+3*60*1000;
+    session.resetOtp = newOtp;
+    session.resetOtpExpiry = Date.now() + 3 * 60 * 1000;
 
-    console.log("Resent password otp for:",email);
-    console.log("New otp is:",newOtp);
+    console.log("Resent password otp for:", email);
+    console.log("New otp is:", newOtp);
 
 
-    const emailSent=await sendVerificationEmail(email,newOtp);
+    const emailSent = await sendVerificationEmail(email, newOtp);
 
-    if(!emailSent){
+    if (!emailSent) {
       console.error("Failed to send reset password OTP email");
       return {
-        success:false,
-        status:500,
-        message:"failed to send email.please try again"
+        success: false,
+        status: statusCode.INTERNAL_SERVER_ERROR,
+        message: "failed to send email.please try again"
       }
     }
 
 
     return {
-      success:true,
-      message:"New OTP has been sent to your email"
+      success: true,
+      message: "New OTP has been sent to your email"
     };
 
 
 
   } catch (error) {
-    console.error("Error in resentfortgotService:",error);
-    return{
-      success:false,
-      message:500,
-      message:"Server error"
+    console.error("Error in resentfortgotService:", error);
+    return {
+      success: false,
+      status: statusCode.INTERNAL_SERVER_ERROR,
+      message: "Server error"
     };
   }
 }
 
 
-const verifyResetOtpService=async(session,otp)=>{
+const verifyResetOtpService = async (session, otp) => {
   try {
-    const storedOtp=session.resetOtp;
-    const email=session.resetEmail;
-    const otpExpiry=session.resetOtpExpiry;
+    const storedOtp = session.resetOtp;
+    const email = session.resetEmail;
+    const otpExpiry = session.resetOtpExpiry;
 
-    if(!storedOtp||!email){
-      return{
-        success:true,
-        status:500,
-        message:"Otp not found.Please request a new one",
+    if (!storedOtp || !email) {
+      return {
+        success: true,
+        status: statusCode.INTERNAL_SERVER_ERROR,
+        message: "Otp not found.Please request a new one",
       };
     }
 
-    if(storedOtp !==otp){
+    if (storedOtp !== otp) {
       return {
-        success:false,
-        status:400,
-        message:"Invalid OTP.Please try again"
+        success: false,
+        status: statusCode.BAD_REQUEST,
+        message: "Invalid OTP.Please try again"
       }
     }
 
-    session.otpVerified=true;
+    session.otpVerified = true;
     return {
-      success:true,
-      message:"otp verified successfully"
+      success: true,
+      message: "otp verified successfully"
     }
   } catch (error) {
-    console.error("Error in verifyResetOtpService:",error);
-    return{
-      success:false,
-      status:500,
-      message:"Server error"
+    console.error("Error in verifyResetOtpService:", error);
+    return {
+      success: false,
+      status: statusCode.INTERNAL_SERVER_ERROR,
+      message: "Server error"
     }
   }
 }
 
 
-const checkPassword=async(session,newPassword)=>{
+const checkPassword = async (session, newPassword) => {
   try {
-    const email=session.resetEmail;
-    const otpVerified=session.otpVerified;
+    const email = session.resetEmail;
+    const otpVerified = session.otpVerified;
 
-    if(!otpVerified||!email){
+    if (!otpVerified || !email) {
       return {
-        success:false,
-        status:403,
-        message:"Unauthorized.Please verify OTP first"
+        success: false,
+        status: statusCode.FORBIDDEN,
+        message: "Unauthorized.Please verify OTP first"
       }
     }
 
-    const hashedPassword=await bcrypt.hash(newPassword,10);
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    await User.findOneAndUpdate({email:email},{password:hashedPassword});
+    await User.findOneAndUpdate({ email: email }, { password: hashedPassword });
 
-    session.resetOtp=null;
-    session.resetEmail=null;
-    session.resetOtpExpiry=null;
-    session.otpVerified=null;
+    session.resetOtp = null;
+    session.resetEmail = null;
+    session.resetOtpExpiry = null;
+    session.otpVerified = null;
     return {
-      success:true,
-      message:"Paassword",
+      success: true,
+      message: "Paassword",
     };
   } catch (error) {
-       console.error("Error in updateUserPasswordService:", error);
+    console.error("Error in updateUserPasswordService:", error);
     return {
       success: false,
-      status: 500,
+      status: statusCode.INTERNAL_SERVER_ERROR,
       message: "Server error",
     };
   }

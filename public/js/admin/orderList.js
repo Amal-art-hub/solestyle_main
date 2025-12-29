@@ -24,9 +24,9 @@ async function updateStatus(orderId, newStatus) {
 
             if (data.success) {
                 await Swal.fire('Updated!', 'Order status has been updated.', 'success');
-                // Update class for color change
+                
                 const selectElement = document.querySelector(`select[data-order-id="${orderId}"]`);
-                selectElement.className = `status-badge ${newStatus.replace(/\s+/g, '-')}`;
+                selectElement.className = `status-badge status-${newStatus.replace(/\s+/g, '-')}`;
             } else {
                 throw new Error(data.message);
             }

@@ -18,23 +18,25 @@ const User = require("../../models/user");
 
 const env = require("dotenv").config();
 
+const statusCode = require("../../utils/statusCodes.js");
+
 const pageNotFound = (req, res) => {
-  res.status(404).render("page-404");
+  res.status(statusCode.NOT_FOUND).render("page-404");
 };
 
 // Load home page
 const loadHomepage = async (req, res) => {
   try {
     const data = getHomepageDate();
-    const trendingData  = await getTrendingProducts();
+    const trendingData = await getTrendingProducts();
     return res.render("home", {
       ...data,
-       trending: trendingData,
+      trending: trendingData,
       user: req.session.user || null, // ← send logged-in user to EJS
     });
   } catch (error) {
     console.log("Home page not found");
-    res.status(500).send("Server error");
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send("Server error");
   }
 };
 
@@ -44,7 +46,7 @@ const loadSignup = async (req, res) => {
     return res.render("signup");
   } catch (error) {
     console.log("signup page error :", error);
-    res.status(500).send("Server Error");
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send("Server Error");
   }
 };
 
@@ -61,7 +63,7 @@ const verifyOtp = async (req, res) => {
     const result = await verifyOtpService(req.session, otp);
 
     if (!result.success) {
-      return res.status(result.status || 500).json({
+      return res.status(result.status || statusCode.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: result.message,
       });
@@ -73,7 +75,7 @@ const verifyOtp = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in verifyOtp controller:", error);
-    res.status(500).json({
+    res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "An error occurred during OTP verification.",
     });
@@ -120,7 +122,7 @@ const signup = async (req, res) => {
     return res.json({ success: true, redirect: "/verify-otp" });
   } catch (error) {
     console.error("signup error", error);
-    res.status(500).json({ message: "Server error during signup" });
+    res.status(statusCode.INTERNAL_SERVER_ERROR).json({ message: "Server error during signup" });
   }
 };
 
@@ -130,7 +132,7 @@ const resendOtp = async (req, res) => {
     const result = await resendOtpService(req.session);
 
     if (!result.success) {
-      return res.status(result.status || 500).json({
+      return res.status(result.status || statusCode.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: result.message,
       });
@@ -142,7 +144,7 @@ const resendOtp = async (req, res) => {
     });
   } catch (error) {
     console.error("Error in resendOtp controller:", error);
-    res.status(500).json({
+    res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "An error occurred while processing your request.",
     });
@@ -171,13 +173,13 @@ const login = async (req, res) => {
 
     if (!result.success) {
       // Determine appropriate status code based on the error message
-      const statusCode = result.message.includes("blocked")
-        ? 403
+      const code = result.message.includes("blocked")
+        ? statusCode.FORBIDDEN
         : result.message.includes("invalid")
-          ? 401
-          : 400;
+          ? statusCode.UNAUTHORIZED
+          : statusCode.BAD_REQUEST;
 
-      return res.status(statusCode).json({
+      return res.status(code).json({
         success: false,
         message: result.message,
       });
@@ -189,7 +191,7 @@ const login = async (req, res) => {
     req.session.regenerate((err) => {
       if (err) {
         console.error("Session regeneration error:", err);
-        return res.status(500).json({
+        return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
           success: false,
           message: "Session error. Please try again.",
         });
@@ -206,14 +208,14 @@ const login = async (req, res) => {
       req.session.save((err) => {
         if (err) {
           console.error("Session save error:", err);
-          return res.status(500).json({
+          return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: "Session error. Please try again.",
           });
         }
 
         console.log("Login successful, sending response");
-        return res.status(200).json({
+        return res.status(statusCode.OK).json({
           success: true,
           message: "Login successful",
           redirectUrl: "/",
@@ -222,7 +224,7 @@ const login = async (req, res) => {
     });
   } catch (error) {
     console.error("Login error:", error);
-    return res.status(500).json({
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
       message:
         error.message || "An error occurred during login. Please try again.",
@@ -260,7 +262,7 @@ const forgEmailSend = async (req, res) => {
     const user = await User.findOne({ email: email });
 
     if (!user) {
-      return res.status(404).json({
+      return res.status(statusCode.NOT_FOUND).json({
         success: false,
         message: "Email not registered",
       });
@@ -274,19 +276,19 @@ const forgEmailSend = async (req, res) => {
     console.log("Reset otp for ", email, ":", otp);
     const emailSent = await sendVerificationEmail(email, otp);
     if (!emailSent) {
-      return res.status(500).json({
+      return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: "Failed to send OTP email",
       });
     }
 
-    return res.status(200).json({
+    return res.status(statusCode.OK).json({
       success: true,
       message: "otp sent to your emai",
     });
   } catch (error) {
     console.error("Forgot password error:", error);
-    return res.status(500).json({
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "Server error",
     });
@@ -306,18 +308,18 @@ const resendForgotOtp = async (req, res) => {
     const result = await resentfortgotService(req.session);
 
     if (!result.success) {
-      return res.status(result.status || 500).json({
+      return res.status(result.status || statusCode.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: result.message,
       });
     }
-    res.status(200).json({
+    res.status(statusCode.OK).json({
       success: true,
       message: result.message,
     });
   } catch (error) {
     console.error("Error in resendForgotOtp controller:", error);
-    res.status(500).json({
+    res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "Server error",
     });
@@ -329,18 +331,18 @@ const verifyForgotOtp = async (req, res) => {
     const { otp } = req.body;
     const result = await verifyResetOtpService(req.session, otp);
     if (!result.success) {
-      return res.status(result.status || 500).json({
+      return res.status(result.status || statusCode.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: result.message,
       });
     }
-    return res.status(200).json({
+    return res.status(statusCode.OK).json({
       success: true,
       message: result.message,
     });
   } catch (error) {
     console.error("Error in verifyForgotOtp controller:", error);
-    res.status(500).json({
+    res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "Server error",
     });
@@ -365,20 +367,20 @@ const resetPassword = async (req, res) => {
     const result = await checkPassword(req.session, newPassword);
 
     if (!result.success) {
-      return res.status(result.status || 500).json({
+      return res.status(result.status || statusCode.INTERNAL_SERVER_ERROR).json({
         success: false,
         message: result.message
 
       });
     }
 
-    res.status(200).json({
+    res.status(statusCode.OK).json({
       success: true,
       message: result.message,
     });
   } catch (error) {
     console.error("error in reset password:", error);
-    res.status(500).json({
+    res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "server error"
     })

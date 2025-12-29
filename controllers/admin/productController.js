@@ -4,13 +4,16 @@ const {
   createProduct,
   toggleProductListing
 } = require("../../services/adminSer/productServices");
+const statusCode = require("../../utils/statusCodes.js");
 
 const getProductList = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const search = req.query.search || "";
+    const sort = req.query.sort || "newest";
 
-    const data = await getAllProducts(page, 5, search);
+
+    const data = await getAllProducts(page, 5, search,sort);
 
     res.render("productMang", {
       products: data.products,
@@ -19,11 +22,12 @@ const getProductList = async (req, res) => {
       totalProducts: data.totalProducts,
       activePage: "products",
       search: search,
+      sort: sort
     });
 
   } catch (error) {
     console.error("Error in getproductList:", error);
-    res.status(500).send("Server Error");
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send("Server Error");
   }
 };
 
@@ -31,12 +35,12 @@ const toggleListing = async (req, res) => {
   try {
     const result = await toggleProductListing(req.query.id);
     if (!result.success) {
-      return res.status(404).json(result);
+      return res.status(statusCode.NOT_FOUND).json(result);
     }
-    res.status(200).json(result);
+    res.status(statusCode.OK).json(result);
   } catch (error) {
     console.error("Error toggling product listing:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+    res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
   }
 };
 
@@ -47,7 +51,7 @@ const getAddProduct = async (req, res) => {
     res.render("addProduct", { categories, brands, activePage: 'products' });
   } catch (error) {
     console.log(error);
-    res.status(500).send("Internal error");
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send("Internal error");
   }
 };
 
@@ -61,7 +65,7 @@ const addProducts = async (req, res) => {
   } catch (error) {
     console.error("Error in addProducts:", error);
     console.error("Error stack:", error.stack);
-    res.status(500).json({ success: false, message: "server error", error: error.message });
+    res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "server error", error: error.message });
   }
 }
 
@@ -76,7 +80,7 @@ const getEditProduct = async (req, res) => {
       .populate("brandId");
 
     if (!product) {
-      return res.status(404).send("Product not found");
+      return res.status(statusCode.NOT_FOUND).send("Product not found");
     }
 
     res.render("editProduct", {
@@ -87,7 +91,7 @@ const getEditProduct = async (req, res) => {
     });
   } catch (error) {
     console.error("Error getting edit product:", error);
-    res.status(500).send("Internal error");
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send("Internal error");
   }
 };
 
@@ -100,7 +104,7 @@ const updateProduct = async (req, res) => {
     const product = await Product.findById(id);
 
     if (!product) {
-      return res.status(404).send("Product not found");
+      return res.status(statusCode.NOT_FOUND).send("Product not found");
     }
 
     product.name = name;
@@ -112,7 +116,7 @@ const updateProduct = async (req, res) => {
     res.redirect("/admin/products");
   } catch (error) {
     console.error("Error updating product:", error);
-    res.status(500).send("Internal error");
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send("Internal error");
   }
 };
 

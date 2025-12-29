@@ -1,3 +1,48 @@
+// Auto-refresh order status every 5 seconds
+const startOrderStatusRefresh = () => {
+    const orderId = window.location.pathname.split('/').pop();
+    setInterval(async () => {
+        try {
+            const response = await fetch(`/user/orders/${orderId}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            if (response.ok) {
+                const html = await response.text();
+                // Parse the new HTML and update order details
+                const parser = new DOMParser();
+                const newDoc = parser.parseFromString(html, 'text/html');
+                
+                // Update tracking section
+                const newTrackingSection = newDoc.querySelector('.tracking-wrapper');
+                const currentTrackingSection = document.querySelector('.tracking-wrapper');
+                if (newTrackingSection && currentTrackingSection) {
+                    currentTrackingSection.innerHTML = newTrackingSection.innerHTML;
+                }
+                
+                // Update items section (left-col with order items)
+                const newItemsSection = newDoc.querySelector('.left-col');
+                const currentItemsSection = document.querySelector('.left-col');
+                if (newItemsSection && currentItemsSection) {
+                    currentItemsSection.innerHTML = newItemsSection.innerHTML;
+                }
+                
+                // Update actions card (right side buttons)
+                const newActionsCard = newDoc.querySelector('.actions-card');
+                const currentActionsCard = document.querySelector('.actions-card');
+                if (newActionsCard && currentActionsCard) {
+                    currentActionsCard.innerHTML = newActionsCard.innerHTML;
+                }
+            }
+        } catch (error) {
+            console.error('Error refreshing order status:', error);
+        }
+    }, 5000); // Refresh every 5 seconds
+};
+
+// Start refresh when page loads
+window.addEventListener('load', startOrderStatusRefresh);
+
 const cancelOrderItem = async (orderId, itemId) => {
     const { value: reason } = await Swal.fire({
         title: 'Cancel this item?',

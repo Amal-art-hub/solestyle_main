@@ -1,42 +1,43 @@
 
-const{
+const {
   OrdersListService
 } = require("../../services/userSer/ordersService");
+const statusCode = require("../../utils/statusCodes.js");
 
-const pdf=require("html-pdf");
-const ejs=require("ejs");
-const path=require("path");
+const pdf = require("html-pdf");
+const ejs = require("ejs");
+const path = require("path");
 const user = require("../../models/user");
 
 
 
 
-const listOrder=async(req,res)=>{
-      try {
-        const userId=req.session.user;
-        const page=parseInt(req.query.page) ||1;
-        const limit=5;
-        const searchQuery=req.query.search||"";
-        const result=await OrdersListService(userId,page,limit,searchQuery);
+const listOrder = async (req, res) => {
+  try {
+    const userId = req.session.user;
+    const page = parseInt(req.query.page) || 1;
+    const limit = 5;
+    const searchQuery = req.query.search || "";
+    const result = await OrdersListService(userId, page, limit, searchQuery);
 
-        res.render("orders",{
-          orders:result.orders,
-          currentPage:page,
-          totalPages:result.totalPages,
-          searchQuery,
-          user
-        })
-      } catch (error) {
-        console.error(error);
-        res.status(500).render(page-404);
-      }
+    res.render("orders", {
+      orders: result.orders,
+      currentPage: page,
+      totalPages: result.totalPages,
+      searchQuery,
+      user
+    })
+  } catch (error) {
+    console.error(error);
+    res.status(statusCode.INTERNAL_SERVER_ERROR).render(page - 404);
+  }
 }
 
 
-const cancelOrderItem=async(req,res)=>{
+const cancelOrderItem = async (req, res) => {
 
 }
 
-module.exports={
+module.exports = {
   listOrder
 }

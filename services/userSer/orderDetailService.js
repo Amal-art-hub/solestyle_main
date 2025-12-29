@@ -46,6 +46,13 @@ const cancelOrderItemService = async (orderId, itemId, reason) => {
 
         await Variant.findByIdAndUpdate(item.variant_id, { $inc: { stock: item.quantity } });
 
+        // Check if all items are canceled
+        const allItemsCanceled = order.items.every(itm => itm.status === 'canceled');
+        if (allItemsCanceled) {
+            order.status = 'canceled';
+            order.cancellation_reason = reason;
+        }
+
         await order.save();
         return { success: true, message: "Item canceled successfully" };
     } catch (error) {

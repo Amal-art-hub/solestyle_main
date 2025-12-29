@@ -2,8 +2,9 @@
 const {
     getProductsByCategory,
     getProductDetailService,
-    
+
 } = require("../../services/userSer/productUserServices");
+const statusCode = require("../../utils/statusCodes.js");
 
 
 const getMensProducts = async (req, res) => {
@@ -40,7 +41,7 @@ const getMensProducts = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        res.status(500).send("Server Error");
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send("Server Error");
     }
 }
 
@@ -54,7 +55,10 @@ const getProductDetails = async (req, res) => {
             product: data.product,
             variants: data.variants,
             relatedProducts: data.relatedProducts,
-            currentVariant: data.variants[0],
+            // currentVariant: data.variants[0],
+                        currentVariant: req.query.variantId 
+                ? data.variants.find(v => v._id.toString() === req.query.variantId) || data.variants[0] 
+                : data.variants[0],
             reviews: data.reviews,      // <--- Add this
             avgRating: data.avgRating,
             user: req.session.user
@@ -62,7 +66,7 @@ const getProductDetails = async (req, res) => {
         });
     } catch (error) {
         console.error(error);
-        res.status(400).send("Server error");
+        res.status(statusCode.BAD_REQUEST).send("Server error");
     }
 }
 
@@ -102,7 +106,7 @@ const getWomenProducts = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        res.status(500).send("Server Error");
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send("Server Error");
     }
 }
 
@@ -143,7 +147,7 @@ const getKidsProducts = async (req, res) => {
 
     } catch (error) {
         console.error(error);
-        res.status(500).send("Server Error");
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send("Server Error");
     }
 }
 
@@ -161,5 +165,5 @@ module.exports = {
     getWomenProducts,
     getKidsProducts,
 
-    
+
 }

@@ -2,6 +2,7 @@ const path = require('path');
 const Admin = require(path.join(__dirname, '../../models/admin'));
 const bcrypt = require("bcrypt");
 const { loginAdmin } = require("../../services/adminSer/adminServices"); // if you have service
+const statusCode = require("../../utils/statusCodes.js");
 
 
 const loadLogin = (req, res) => {
@@ -12,7 +13,7 @@ const loadLogin = (req, res) => {
     return res.render("adminlogin", { message: null });
   } catch (error) {
     console.error("Admin login page load error:", error);
-    return res.status(500).send("Server error");
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).send("Server error");
   }
 };
 
@@ -24,7 +25,7 @@ const login = async (req, res) => {
     const result = await loginAdmin(email, password);
 
     if (!result.success) {
-      return res.status(400).json({
+      return res.status(statusCode.BAD_REQUEST).json({
         success: false,
         message: result.message
       });
@@ -35,7 +36,7 @@ const login = async (req, res) => {
     req.session.regenerate((err) => {
       if (err) {
         console.error("Session regeneration error:", err);
-        return res.status(500).json({
+        return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
           success: false,
           message: "Session error. Please try again."
         });
@@ -51,14 +52,14 @@ const login = async (req, res) => {
       req.session.save((err) => {
         if (err) {
           console.error("Session save error:", err);
-          return res.status(500).json({
+          return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: "Failed to save session"
           });
         }
 
         console.log("Login successful");
-        return res.status(200).json({
+        return res.status(statusCode.OK).json({
           success: true,
           message: "Login successful",
           redirectUrl: "/admin/dashboard"
@@ -68,7 +69,7 @@ const login = async (req, res) => {
 
   } catch (error) {
     console.error("Login error:", error);
-    return res.status(500).json({
+    return res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: error.message || "An unexpected error occurred"
     });
@@ -78,27 +79,27 @@ const login = async (req, res) => {
 
 const loadDashboard = (req, res) => {
 
-    try {
-      res.render("dashboard")
-    } catch (error) {
-      console.error("Error rendering admin  dashboard:", error);
-      return res.redirect("/page-404")
-    }
- 
+  try {
+    res.render("dashboard")
+  } catch (error) {
+    console.error("Error rendering admin  dashboard:", error);
+    return res.redirect("/page-404")
+  }
+
 }
 
 
-const logout=(req,res)=>{
+const logout = (req, res) => {
   try {
-    req.session.destroy(err=>{
-      if(err){
-        console.log("Error destroying session",err);
+    req.session.destroy(err => {
+      if (err) {
+        console.log("Error destroying session", err);
         return res.redirect("/pageerror")
       }
       res.redirect("adminlogin")
     })
   } catch (error) {
-    console.log(("unexpected error during logout",error));
+    console.log(("unexpected error during logout", error));
     res.redirect("page-404")
   }
 }
@@ -112,5 +113,5 @@ module.exports = {
   login,
   loadDashboard,
   logout,
- 
+
 };

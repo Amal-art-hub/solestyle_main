@@ -17,8 +17,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
   secret: process.env.SESSION_SECRET,
-  resave: false,
+  resave: true,
   saveUninitialized: true,
+  rolling: true,
   store: MongoStore.create({
     mongoUrl: process.env.MONGODB_URI,
     ttl: 72 * 60 * 60

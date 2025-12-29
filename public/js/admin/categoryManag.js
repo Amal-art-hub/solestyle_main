@@ -1,12 +1,13 @@
 async function toggleStatus(id) {
     try {
+     
         const response = await fetch(`/admin/listCategory?id=${id}`, {
-            method: 'GET'
+            method: 'PATCH' 
         });
         const data = await response.json();
         
         if (data.success) {
-            location.reload(); // Simple reload to show new status
+            location.reload(); 
         } else {
             alert("Failed to change status: " + data.message);
         }
@@ -15,7 +16,9 @@ async function toggleStatus(id) {
         alert("An error occurred");
     }
 }
-// Add Category Form Handler
+
+
+
 document.getElementById('addCategoryForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
     
@@ -40,10 +43,10 @@ document.getElementById('addCategoryForm')?.addEventListener('submit', async fun
         alert("Error adding category");
     }
 });
-// Edit Modal Functions
+
 function openEditModal(id, name, description) {
     const modal = document.getElementById('editCategoryModal');
-    // Populate form
+   
     document.getElementById('edit-id').value = id;
     document.getElementById('edit-name').value = name;
     document.getElementById('edit-description').value = description;
@@ -53,14 +56,14 @@ function openEditModal(id, name, description) {
 function closeEditModal() {
     document.getElementById('editCategoryModal').style.display = "none";
 }
-// Close modal if clicking outside
+
 window.onclick = function(event) {
     const modal = document.getElementById('editCategoryModal');
     if (event.target == modal) {
         modal.style.display = "none";
     }
 }
-// Edit Form Submission
+
 document.getElementById('editCategoryForm')?.addEventListener('submit', async function(e) {
     e.preventDefault();
     const id = document.getElementById('edit-id').value;

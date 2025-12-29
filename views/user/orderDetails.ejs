@@ -23,8 +23,14 @@
             <div class="tracking-wrapper">
                 <div class="track-line-container">
                     <!-- Dynamic Width Logic -->
-                    <% let progress=0; if (order.status==='delivered' ) progress=100; else if (order.shipped_date)
-                        progress=50; else if (order.status !=='canceled' ) progress=0; %>
+                    <% let progress=0; 
+                    if (order.status==='delivered' || order.status==='returned') { 
+                        progress=100; 
+                    } else if (order.shipped_date || order.status==='shipped' || order.status==='out for delivery') {
+                        progress=50; 
+                    } else if (order.status !=='canceled' ) { 
+                        progress=25; 
+                    } %>
                         <div class="track-line-bg"></div>
                         <div class="track-line-active" style="width: <%= progress %>%"></div>
                         <!-- STEP 1: Confirmed -->
@@ -36,7 +42,7 @@
                             </p>
                         </div>
                         <!-- STEP 2: Shipped -->
-                        <div class="track-step <%= order.shipped_date || order.status==='delivered' ? 'active' : '' %>">
+                        <div class="track-step <%= order.shipped_date || ['shipped', 'out for delivery', 'delivered', 'returned'].includes(order.status) ? 'active' : '' %>">
                             <div class="dot"><i class="fas fa-truck"></i></div>
                             <h4>Shipped</h4>
                             <% if(order.shipped_date) { %>
@@ -48,10 +54,10 @@
                                     <% } %>
                         </div>
                         <!-- STEP 3: Delivered -->
-                        <div class="track-step <%= order.status==='delivered' ? 'active' : '' %>">
+                        <div class="track-step <%= ['delivered', 'returned'].includes(order.status) ? 'active' : '' %>">
                             <div class="dot"><i class="fas fa-box-open"></i></div>
                             <h4>Delivered</h4>
-                            <% if(order.status==='delivered' ) { %>
+                            <% if(['delivered', 'returned'].includes(order.status)) { %>
                                 <p>
                                     <%= new Date(order.updatedAt).toLocaleDateString() %>
                                 </p>
@@ -60,8 +66,18 @@
                                     <% } %>
                         </div>
                 </div>
-                <!-- Delivery Agent Note (Only if shipped/out for delivery) -->
-                <% if(order.shipped_date && order.status !=='delivered' ) { %>
+                <!-- Status Message Section -->
+                <% if (order.status === 'returned') { %>
+                    <div class="delivery-agent-note" style="background-color: #fff3e0; border-left: 4px solid #f39c12;">
+                        <i class="fas fa-undo"></i>
+                        <strong style="color: #f39c12;">Return Submitted:</strong> Your return request has been submitted. We will process it shortly.
+                    </div>
+                <% } else if (order.status === 'canceled') { %>
+                    <div class="delivery-agent-note" style="background-color: #ffebee; border-left: 4px solid #c0392b;">
+                        <i class="fas fa-times-circle"></i>
+                        <strong style="color: #c0392b;">Order Canceled:</strong> This order has been canceled.
+                    </div>
+                <% } else if(order.shipped_date && order.status !=='delivered' ) { %>
                     <div class="delivery-agent-note">
                         <i class="fas fa-info-circle"></i>
                         <strong>Update:</strong> Your order is on the way! Our delivery executive will contact you
@@ -204,18 +220,30 @@
 <div class="card actions-card">
     <h3>Order Actions</h3>
     <div class="action-buttons">
-        <% if (['pending', 'processing'].includes(order.status)) { %>
-            <!-- Show Cancel Button for Pending/Processing Orders -->
-            <button class="btn-action btn-cancel" onclick="cancelOrder('<%= order._id %>')">
-                <i class="fas fa-times-circle"></i> Cancel Order
-            </button>
-        <% } %>
-        <% if (order.status === 'delivered') { %>
-            <!-- Show Return Button for Delivered Orders -->
-            <button class="btn-action btn-return" onclick="returnOrder('<%= order._id %>')">
-                <i class="fas fa-undo"></i> Return Order
-            </button>
-        <% } %>
+      <% 
+    // Check if all items are in terminal states
+    let allItemsCanceled = order.items.every(item => item.status === 'canceled');
+    let allItemsReturned = order.items.every(item => item.status === 'returned');
+    let allItemsFinal = allItemsCanceled || allItemsReturned;
+%>
+
+<% if (['pending', 'processing'].includes(order.status) && !allItemsCanceled) { %>
+    <!-- Show Cancel Button ONLY if not all canceled -->
+    <button class="btn-action btn-cancel" onclick="cancelOrder('<%= order._id %>')">
+        <i class="fas fa-times-circle"></i> Cancel Order
+    </button>
+<% } %>
+
+<% if (order.status === 'delivered' && !allItemsReturned && !allItemsCanceled) { %>
+    <!-- Show Return Button ONLY if no items are returned/canceled -->
+    <button class="btn-action btn-return" onclick="returnOrder('<%= order._id %>')">
+        <i class="fas fa-undo"></i> Return Order
+    </button>
+<% } %>
+
+<% if (allItemsFinal) { %>
+    <p style="color: #666; font-weight: bold;">No further actions available</p>
+<% } %>
         
         <% if (order.status === 'shipped') { %>
              <p class="status-note">Order is in transit and cannot be cancelled.</p>

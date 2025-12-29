@@ -94,7 +94,7 @@ const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = 
 const getProductDetailService = async (productId) => {
 
 
-const product = await Product.findOne({ _id: productId, isListed: true })
+    const product = await Product.findOne({ _id: productId, isListed: true })
         .populate("brandId")
         .populate("categoryId")
         .lean();
@@ -111,23 +111,23 @@ const product = await Product.findOne({ _id: productId, isListed: true })
 
     const relatedWithImage = await Promise.all(related.map(async (p) => {
         const v = await Variant.findOne({ productId: p._id }).sort({ price: 1 });
-        return { ...p, image: v?.images[2], price: v?.price };
+        return { ...p, image: v?.images[2], price: v?.price,variantId: v?._id };
     }));
 
 
 
-const reviews = await Feedback.find({ product_id: product._id })
-    .populate('user_id', 'name')
-    .sort({ createdAt: -1 })
-    .lean();
+    const reviews = await Feedback.find({ product_id: product._id })
+        .populate('user_id', 'name')
+        .sort({ createdAt: -1 })
+        .lean();
 
 
-let avgRating = 0;
-if (reviews.length > 0) {
-    const sum = reviews.reduce((acc, curr) => acc + curr.rating, 0);
-    avgRating = (sum / reviews.length).toFixed(1);
-}
-   return { product, variants, relatedProducts: relatedWithImage, reviews, avgRating };
+    let avgRating = 0;
+    if (reviews.length > 0) {
+        const sum = reviews.reduce((acc, curr) => acc + curr.rating, 0);
+        avgRating = (sum / reviews.length).toFixed(1);
+    }
+    return { product, variants, relatedProducts: relatedWithImage, reviews, avgRating };
 
 
 }
@@ -181,5 +181,5 @@ module.exports = {
     getProductsByCategory,
     getProductDetailService,
     getTrendingProducts,
-    
+
 }

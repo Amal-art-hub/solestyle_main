@@ -1,6 +1,4 @@
-// Variant Management JavaScript
 
-// Track images to delete
 let imagesToDelete = [];
 let currentVariantImages = [];
 
@@ -101,19 +99,18 @@ function displayCurrentImages(images) {
   });
 }
 
-// Toggle image deletion
+
 function toggleImageDelete(imageName) {
   const index = imagesToDelete.indexOf(imageName);
 
   if (index > -1) {
-    // Restore image
+   
     imagesToDelete.splice(index, 1);
   } else {
-    // Mark for deletion
+
     const remainingImages = currentVariantImages.length - imagesToDelete.length;
 
-    // Check if we would go below minimum 3 images
-    if (remainingImages <= 3) {
+    if (remainingImages <= 1) {
       alert('Cannot delete this image. You must keep at least 3 images.');
       return;
     }
@@ -121,14 +118,14 @@ function toggleImageDelete(imageName) {
     imagesToDelete.push(imageName);
   }
 
-  // Update hidden field
+  
   document.getElementById('deletedImages').value = JSON.stringify(imagesToDelete);
 
-  // Refresh display
+
   displayCurrentImages(currentVariantImages);
 }
 
-// Close Edit Modal
+
 function closeEditModal() {
   imagesToDelete = [];
   currentVariantImages = [];
@@ -392,7 +389,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const remainingImages = currentVariantImages.length - imagesToDelete.length;
       const totalImages = remainingImages + newImagesCount;
 
-      if (totalImages < 3) {
+      if (totalImages < 1) {
         alert(`Total images must be at least 3. Currently: ${remainingImages} existing - ${imagesToDelete.length} to delete + ${newImagesCount} new = ${totalImages} total`);
         return;
       }

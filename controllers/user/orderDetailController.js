@@ -2,14 +2,15 @@ const {
     getOrderDetailsService,
     cancelOrderItemService,
     cancelOrderService,
-    returnOrderItemService
+    returnOrderItemService,
+    returnOrderService
 } = require("../../services/userSer/orderDetailService");
 
 
 const statusCode = require("../../utils/statusCodes");
 const puppeteer = require('puppeteer');
 const ejs = require('ejs');
-const fs = require('fs');                             
+const fs = require('fs');
 const path = require('path');
 
 
@@ -25,9 +26,9 @@ const getOrderDetails = async (req, res) => {
     } catch (error) {
         console.error("Error fetching order details:", error);
         if (error.message === "Order not found or access denied") {
-            return res.status(404).render("user/404");
+            return res.status(statusCode.NOT_FOUND).render("page-404");
         }
-        res.status(500).render("user/500");
+        res.status(statusCode.INTERNAL_SERVER_ERROR).render("user/500");
     }
 };
 
@@ -39,7 +40,7 @@ const cancelOrderItem = async (req, res) => {
         const result = await cancelOrderItemService(orderId, itemId, reason);
         res.json(result);
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
     }
 };
 
@@ -53,7 +54,7 @@ const cancelOrder = async (req, res) => {
         const result = await cancelOrderService(orderId, reason);
         res.json(result);
     } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
+        res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
     }
 };
 
@@ -71,15 +72,6 @@ const returnOrderItem = async (req, res) => {
             message: error.message
         });
     }
-
-
-}
-
-module.exports = {
-    getOrderDetails,
-    cancelOrderItem,
-    cancelOrder,
-    returnOrderItem
 };
 
 const returnOrder = async (req, res) => {
@@ -97,6 +89,12 @@ const returnOrder = async (req, res) => {
     }
 };
 
+module.exports = {
+    getOrderDetails,
+    cancelOrderItem,
+    cancelOrder,
+    returnOrderItem
+};
 
 
 
@@ -121,7 +119,7 @@ const downloadInvoice = async (req, res) => {
         res.send(pdfBuffer);
     } catch (error) {
         console.error("Invoice Error:", error);
-        res.status(500).send("Could not generate invoice");
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send("Could not generate invoice");
     }
 };
 

@@ -20,21 +20,21 @@ router.get("/logout", adminController.logout)
 
 router.get("/dashboard", isAdminLoggedIn, adminController.loadDashboard);
 router.get("/users", isAdminLoggedIn, customerController.getCustomers);
-router.get("/unblockCustomer", isAdminLoggedIn, customerController.unblockCoustomer);
-router.get("/blockCustomer", isAdminLoggedIn, customerController.blockCustomer);
+router.patch("/unblockCustomer", isAdminLoggedIn, customerController.unblockCoustomer);
+router.patch("/blockCustomer", isAdminLoggedIn, customerController.blockCustomer);
 
 
 
 router.get("/Category", isAdminLoggedIn, categoryController.categoryInfo);
 router.post("/addCategory", isAdminLoggedIn, categoryController.addCategory);
 router.post("/editCategory", isAdminLoggedIn, categoryController.editCategory);
-router.get("/listCategory", isAdminLoggedIn, categoryController.getListStatus);
+router.patch("/listCategory", isAdminLoggedIn, categoryController.getListStatus);
 
 
 router.get("/Brands", isAdminLoggedIn, brandController.getBrandPage);
 router.post("/addBrand", isAdminLoggedIn, brandController.addBrand);
 router.post("/editBrand", isAdminLoggedIn, brandController.editBrand);
-router.get("/blockBrand", isAdminLoggedIn, brandController.blockBrand);
+router.patch("/blockBrand", isAdminLoggedIn, brandController.blockBrand);
 
 
 //product management
