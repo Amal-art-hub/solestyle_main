@@ -35,7 +35,7 @@ const creditWallet = async (userId, amount, description) => {
         throw new Error("Error crediting wallet");
     }
 };
-// Deduct Money (Payments) - Prepared for future
+
 const debitWallet = async (userId, amount, description) => {
     try {
         let wallet = await getWallet(userId);

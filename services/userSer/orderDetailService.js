@@ -98,9 +98,10 @@ const returnOrderItemService = async (orderId, itemId, reason) => {
         const item = order.items.id(itemId);
         if (item.status === "returned") throw new Error("Item already returned");
 
-        item.status = "returned";
+        item.status = "Return Request";
         item.return_reason = reason;
-        await Variant.findByIdAndUpdate(item.variant_id, { $inc: { stock: item.quantity } });
+
+        // await Variant.findByIdAndUpdate(item.variant_id, { $inc: { stock: item.quantity } });
 
         await order.save();
         return { success: true, message: "Item returned succesfully" };
@@ -124,19 +125,19 @@ const returnOrderService = async (orderId, reason) => {
         for (const item of order.items) {
 
             if (item.status === 'delivered') {
-                item.status = 'returned';
+                item.status = 'Return Request';
                 item.return_reason = reason;
 
 
-                await Variant.findByIdAndUpdate(item.variant_id, { $inc: { stock: item.quantity } });
+                // await Variant.findByIdAndUpdate(item.variant_id, { $inc: { stock: item.quantity } });
             }
         }
 
-        order.status = 'returned';
+        order.status = 'Return Request';
         order.return_reason = reason;
 
         await order.save();
-        return { success: true, message: "Order returned successfully" };
+        return { success: true, message: "Return requested successfully" };
     } catch (error) {
         console.error("SERVICE ERROR:", error);
         throw error;
