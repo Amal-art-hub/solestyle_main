@@ -5,12 +5,59 @@ const Variant = require('../../models/varient');
 const Brand = require('../../models/brand');
 const Category = require('../../models/category');
 const Feedback = require('../../models/feedback');
+const Offers=require("../../models/offers");
+
+
 
 
 
 const getFilterOptions = async () => {
     const brands = await Brand.find({ isListed: true }).sort({ name: 1 });
     return { brands };
+};
+
+
+
+
+const calculateFinalPrice = async (product, originalPrice) => {
+    const today = new Date();
+
+
+    const activeOffers = await Offers.find({
+        status: 'active',
+        start_date: { $lte: today },
+        end_date: { $gte: today }
+    });
+
+    let bestDiscount = 0;
+
+
+    for (const offer of activeOffers) {
+        
+        if (offer.type === 'product' && offer.product_ids.includes(product._id)) {
+            if (offer.discount_percentage > bestDiscount) {
+                bestDiscount = offer.discount_percentage;
+            }
+        }
+      
+        const catId = product.categoryId._id ? product.categoryId._id.toString() : product.categoryId.toString();
+        
+        if (offer.type === 'category' && offer.category_ids.map(id => id.toString()).includes(catId)) {
+            if (offer.discount_percentage > bestDiscount) {
+                bestDiscount = offer.discount_percentage;
+            }
+        }
+    }
+
+  
+    if (bestDiscount > 0) {
+        const discountAmount = (originalPrice * bestDiscount) / 100;
+        const finalPrice = Math.round(originalPrice - discountAmount);
+        return { finalPrice, bestDiscount };
+    }
+
+    
+    return { finalPrice: originalPrice, bestDiscount: 0 };
 };
 
 const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = '', sort = 'newest', filters = {}) => {
@@ -46,30 +93,33 @@ const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = 
         let processedProducts = await Promise.all(products.map(async (p) => {
             const variants = await Variant.find({ productId: p._id, isListed: true }).sort({ price: 1 });
 
-            if (!variants.length) return null; // Skip if no variants
-
+            if (!variants.length) return null; 
+            const basePrice = variants[0].price;
+            const { finalPrice, bestDiscount } = await calculateFinalPrice(p, basePrice);
             return {
                 ...p,
-                image: variants[0].images[2], // First image of cheapest variant
-                price: variants[0].price,     // Starts at this price
-                stock: variants.reduce((acc, v) => acc + v.stock, 0) // Total stock
+                image: variants[0].images[2], 
+                price: finalPrice,  
+                originalPrice: basePrice,   
+                discount: bestDiscount,
+                stock: variants.reduce((acc, v) => acc + v.stock, 0) 
             };
         }));
-        // Filter out nulls (products with no variants)
+       
         processedProducts = processedProducts.filter(p => p !== null);
-        // 7. Apply Price Filter (Done in JS because price is in Variant)
+        
         if (filters.minPrice || filters.maxPrice) {
             const min = parseFloat(filters.minPrice) || 0;
             const max = parseFloat(filters.maxPrice) || Infinity;
             processedProducts = processedProducts.filter(p => p.price >= min && p.price <= max);
         }
-        // 8. Apply Price Sorting (Done in JS)
+        
         if (sort === 'price-low') {
             processedProducts.sort((a, b) => a.price - b.price);
         } else if (sort === 'price-high') {
             processedProducts.sort((a, b) => b.price - a.price);
         }
-        // 9. Manual Pagination (since we filtered array in JS)
+    
         const totalProducts = processedProducts.length;
         const finalProducts = processedProducts.slice(skip, skip + limit);
         return {
@@ -100,7 +150,17 @@ const getProductDetailService = async (productId) => {
         .lean();
 
     if (!product) return null;
-    const variants = await Variant.find({ productId: product._id, isListed: true }).sort({ price: 1 }).lean();
+    let variants = await Variant.find({ productId: product._id, isListed: true }).sort({ price: 1 }).lean();
+
+      variants = await Promise.all(variants.map(async (v) => {
+        const { finalPrice, bestDiscount } = await calculateFinalPrice(product, v.price);
+        return {
+            ...v,
+            discountedPrice: finalPrice,  
+            basePrice: v.price,
+            offerPercentage: bestDiscount
+        };
+    }));
 
     const related = await Product.find({
         categoryId: product.categoryId._id,
@@ -111,7 +171,14 @@ const getProductDetailService = async (productId) => {
 
     const relatedWithImage = await Promise.all(related.map(async (p) => {
         const v = await Variant.findOne({ productId: p._id }).sort({ price: 1 });
-        return { ...p, image: v?.images[2], price: v?.price,variantId: v?._id };
+        const basePrice = v?.price || 0;
+        const { finalPrice, bestDiscount } = await calculateFinalPrice(p, basePrice);
+        return { ...p,
+             image: v?.images[2],
+              price: finalPrice,
+            originalPrice: basePrice,
+            discount: bestDiscount,
+              variantId: v?._id };
     }));
 
 
@@ -135,16 +202,16 @@ const getProductDetailService = async (productId) => {
 
 const getTrendingProducts = async () => {
     try {
-        // Helper to fetch 3 products from a specific category
+       
         const fetchByCategory = async (categoryName) => {
-            // Find the category ID first
+            
             const category = await Category.findOne({ name: categoryName, isListed: true });
             if (!category) return [];
             const products = await Product.find({ categoryId: category._id, isListed: true })
                 .sort({ createdAt: -1 })
-                .limit(3) // Limit to 3 items per column
+                .limit(3)
                 .lean();
-            // Process variants for images/prices
+            
             const processed = await Promise.all(products.map(async (p) => {
                 const variant = await Variant.findOne({ productId: p._id, isListed: true }).sort({ price: 1 });
                 if (variant) {
@@ -160,13 +227,13 @@ const getTrendingProducts = async () => {
 
             return processed.filter(p => p !== null);
         };
-        // Fetch all 3 categories in parallel
+        
         const [men, women, kids] = await Promise.all([
-            fetchByCategory('Men'),   // Ensure these names match your DB exactly
+            fetchByCategory('Men'),   
             fetchByCategory('Women'),
             fetchByCategory('Kids')
         ]);
-        // Return an object with named arrays
+  
         return { men, women, kids };
     } catch (error) {
         throw error;

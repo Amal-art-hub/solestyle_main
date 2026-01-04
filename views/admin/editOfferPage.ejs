@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Edit Offer</title>
+    <link rel="stylesheet" href="/css/admin/dashboard-side.css">
+    <!-- Reuse the same CSS for consistent theme -->
+    <link rel="stylesheet" href="/css/admin/offerList.css?v=2"> 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <%- include("../partials/adminSideBar", { activePage: 'offers' }) %>
+        
+        <div class="main-content">
+            <section class="content-main">
+                <div class="content-header">
+                    <h2 class="content-title">Edit Offer</h2>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Form submits to the EDIT route with Offer ID -->
+                        <form action="/admin/offers/edit/<%= offer._id %>" method="POST">
+                            
+                            <!-- Offer Name -->
+                            <div class="form-group">
+                                <label>Offer Name</label>
+                                <input type="text" name="name" class="form-control" value="<%= offer.name %>" >
+                            </div>
+
+                            <div class="row">
+                                <!-- Discount -->
+                                <div class="col-6">
+                                    <label>Discount Percentage (%)</label>
+                                    <input type="number" name="discount_percentage" class="form-control" min="1" max="99" value="<%= offer.discount_percentage %>" >
+                                </div>
+                                <!-- Type Selector -->
+                                <div class="col-6">
+                                    <label>Offer Type</label>
+                                    <select name="type" class="form-control" id="offerType" onchange="toggleSelection()" >
+                                        <option value="product" <%= offer.type === 'product' ? 'selected' : '' %>>Product Offer</option>
+                                        <option value="category" <%= offer.type === 'category' ? 'selected' : '' %>>Category Offer</option>
+                                        <option value="referral" <%= offer.type === 'referral' ? 'selected' : '' %>>Referral Offer</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Product Selection Logic -->
+                            <!-- We check if type is 'product' to show it initially -->
+                            <div id="productSelect" class="selection-section" style="display: <%= offer.type === 'product' ? 'block' : 'none' %>;">
+                                <label>Select Products</label>
+                                <select name="product_ids" class="form-control" multiple>
+                                    <% products.forEach(p => { %>
+                                        <!-- Check if this product ID is in the offer's product_ids array -->
+                                        <option value="<%= p._id %>" 
+                                            <%= offer.product_ids.some(id => id.toString() === p._id.toString()) ? 'selected' : '' %>>
+                                            <%= p.name %>
+                                        </option>
+                                    <% }) %>
+                                </select>
+                                <small>Hold Ctrl (Windows) to select multiple</small>
+                            </div>
+
+                            <!-- Category Selection Logic -->
+                            <div id="categorySelect" class="selection-section" style="display: <%= offer.type === 'category' ? 'block' : 'none' %>;">
+                                <label>Select Categories</label>
+                                <select name="category_ids" class="form-control" multiple>
+                                    <% categories.forEach(c => { %>
+                                        <option value="<%= c._id %>" 
+                                            <%= offer.category_ids.some(id => id.toString() === c._id.toString()) ? 'selected' : '' %>>
+                                            <%= c.name %>
+                                        </option>
+                                    <% }) %>
+                                </select>
+                            </div>
+
+                            <!-- Date Logic -->
+                            <div class="row">
+                                <div class="col-6">
+                                    <label>Start Date</label>
+                                    <!-- Format Date to YYYY-MM-DD for input value -->
+                                    <input type="date" name="start_date" class="form-control" 
+                                           value="<%= new Date(offer.start_date).toISOString().split('T')[0] %>" >
+                                </div>
+                                <div class="col-6">
+                                    <label>End Date</label>
+                                    <input type="date" name="end_date" class="form-control" 
+                                           value="<%= new Date(offer.end_date).toISOString().split('T')[0] %>" >
+                                </div>
+                            </div>
+
+                            <br>
+                            <button type="submit" class="btn btn-primary">Update Offer</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Link to the JS logic -->
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/admin/offerForm.js"></script>
+</body>
+</html>

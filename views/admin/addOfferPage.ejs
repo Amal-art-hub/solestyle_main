@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Add Offer</title>
+    <link rel="stylesheet" href="/css/admin/dashboard-side.css">
+    <link rel="stylesheet" href="/css/admin/offerList.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <%- include("../partials/adminSideBar",{activePage: 'offers' }) %>
+        
+        <div class="main-content">
+            <section class="content-main">
+                <div class="content-header">
+                    <h2 class="content-title">Create New Offer</h2>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <form action="/admin/offers/add" method="POST" id="addOfferForm">
+                            <div class="form-group">
+                                <label>Offer Name</label>
+                                <input type="text" name="name" class="form-control" >
+                            </div>
+
+                            <div class="row">
+                                <div class="col-6">
+                                    <label>Discount Percentage (%)</label>
+                                    <input type="number" name="discount_percentage" class="form-control" min="1" max="99" >
+                                </div>
+                                <div class="col-6">
+                                    <label>Offer Type</label>
+                                    <select name="type" class="form-control" id="offerType" onchange="toggleSelection()" >
+                                        <option value="product">Product Offer</option>
+                                        <option value="category">Category Offer</option>
+                                        <option value="referral">Referral Offer</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Dynamic Selection Sections -->
+                            <div id="productSelect" class="selection-section">
+                                <label>Select Products</label>
+                                <select name="product_ids" class="form-control" multiple>
+                                    <% products.forEach(p => { %>
+                                        <option value="<%= p._id %>"><%= p.name %></option>
+                                    <% }) %>
+                                </select>
+                                <small>Hold Ctrl (Windows) to select multiple</small>
+                            </div>
+
+                            <div id="categorySelect" class="selection-section" style="display:none;">
+                                <label>Select Categories</label>
+                                <select name="category_ids" class="form-control" multiple>
+                                    <% categories.forEach(c => { %>
+                                        <option value="<%= c._id %>"><%= c.name %></option>
+                                    <% }) %>
+                                </select>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-6">
+                                    <label>Start Date</label>
+                                    <input type="date" name="start_date" class="form-control" >
+                                </div>
+                                <div class="col-6">
+                                    <label>End Date</label>
+                                    <input type="date" name="end_date" class="form-control" >
+                                </div>
+                            </div>
+
+                            <br>
+                            <button type="submit" class="btn btn-primary">Create Offer</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+  
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/js/admin/offerForm.js"></script>
+</body>
+</html>

@@ -1,0 +1,288 @@
+/* --- Main Layout & Header --- */
+.content-header {
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.content-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #333;
+}
+
+/* --- Search & Filter Section --- */
+.search-container {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    background: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Soft Shadow like Order Page */
+    margin-bottom: 20px;
+}
+
+.filter-form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    width: 100%;
+}
+
+.search-input {
+    padding: 10px 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    width: 300px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.search-input:focus {
+    border-color: #3BB77E;
+    outline: none;
+}
+
+.btn-search {
+    background-color: #0bc242;
+    color: white;
+    border: none;
+    padding: 10px 15px; 
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: opacity 0.2s;
+    font-size: 14px;
+}
+
+.btn-search:hover { opacity: 0.9; }
+
+/* --- Table Styles (Exact Match) --- */
+.table-responsive {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    margin-top: 20px;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table thead th {
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #e9ecef;
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #495057;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table tbody td {
+    padding: 16px 15px;
+    border-bottom: 1px solid #f1f3f5;
+    vertical-align: middle;
+    color: #212529;
+    font-size: 15px;
+}
+
+.table tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* --- Badges --- */
+.badge {
+    padding: 6px 12px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.badge-type {
+    background-color: #E3F2FD;
+    color: #1565C0;
+}
+
+/* --- Buttons --- */
+.btn-primary {
+    background-color: #3BB77E;
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 500;
+}
+
+.btn-edit {
+    color: #3bb75a;
+    font-size: 18px;
+    margin-right: 15px;
+    transition: transform 0.2s;
+    display: inline-block;
+}
+
+.btn-delete {
+    color: #dc3545; /* Red for delete */
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-edit:hover, .btn-delete:hover {
+    transform: scale(1.1);
+}
+
+/* --- Pagination (Exact Match) --- */
+.pagination {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.pagination a {
+    padding: 8px 14px;
+    border: 1px solid #dee2e6;
+    text-decoration: none;
+    color: #333;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s;
+    background: white;
+}
+
+.pagination a:hover {
+    background-color: #f8f9fa;
+    border-color: #caced1;
+}
+
+.pagination a.active {
+    background-color: #3BB77E;
+    color: white;
+    border-color: #3BB77E;
+}
+
+/* --- Form Styles (Add/Edit Offer) --- */
+
+/* The Card Container for the Form */
+.card-body {
+    background: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Labels */
+.form-group label, .row label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 8px;
+    display: block;
+    font-size: 14px;
+}
+
+/* Inputs & Selects */
+.form-control {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+    transition: all 0.2s ease-in-out;
+    background-color: #f8f9fa; /* Slight grey background */
+}
+
+.form-control:focus {
+    background-color: #fff;
+    border-color: #3BB77E; /* Theme Green */
+    box-shadow: 0 0 0 3px rgba(59, 183, 126, 0.1);
+    outline: none;
+}
+
+/* Grouping Helper */
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* Row (2 columns) spacing */
+.row {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.col-6 {
+    flex: 1;
+}
+
+/* Section for Dynamic Selects (Products/Categories) */
+.selection-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 20px;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.selection-section label {
+    color: #3BB77E; /* Green Title for this section */
+    font-size: 15px;
+}
+
+/* Multi-select styling */
+select[multiple] {
+    height: 150px; /* Taller box */
+    padding: 10px;
+}
+
+/* Helper Text */
+small {
+    display: block;
+    margin-top: 5px;
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* Submit Button */
+/* button[type="submit"] { */
+
+    .card-body button[type="submit"] { 
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 10px;
+    background: #3BB77E;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    box-shadow: 0 4px 15px rgba(59, 183, 126, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 183, 126, 0.4);
+}
+
+/* Animation for showing/hiding sections */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

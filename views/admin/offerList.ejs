@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Offer Management</title>
+    <link rel="stylesheet" href="/css/admin/dashboard-side.css">
+    <link rel="stylesheet" href="/css/admin/offerList.css?v=2">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <%- include("../partials/adminSideBar",{activePage: 'offers' }) %>
+        
+        <div class="main-content">
+            <section class="content-main">
+                <div class="content-header">
+                    <div>
+                        <h2 class="content-title card-title">Offer Management</h2>
+                    </div>
+                    <div>
+                        <a href="/admin/offers/add" class="btn btn-primary"><i class="fas fa-plus"></i> Create New Offer</a>
+                    </div>
+                </div>
+
+                <div class="search-container">
+                    <form action="/admin/offers" method="GET" class="filter-form">
+                        <input type="text" name="search" placeholder="Search offers..." class="search-input" value="<%= search %>">
+                        <button type="submit" class="btn-search">Search</button>
+                    </form>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Discount</th>
+                                <th>Valid Until</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (offers && offers.length > 0) { %>
+                                <% offers.forEach(offer => { %>
+                                    <tr>
+                                        <td><b><%= offer.name %></b></td>
+                                        <td><span class="badge badge-type"><%= offer.type %></span></td>
+                                        <td><%= offer.discount_percentage %>%</td>
+                                        <td><%= new Date(offer.end_date).toLocaleDateString() %></td>
+                                        <td>
+                                            <a href="/admin/offers/edit/<%= offer._id %>" class="btn-edit"><i class="fas fa-edit"></i></a>
+                                            <button class="btn-delete" onclick="deleteOffer('<%= offer._id %>')"><i class="fas fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            <% } else { %>
+                                <tr><td colspan="5" class="text-center">No active offers</td></tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination Logic Here (Same as your OrderList) -->
+                <div class="pagination">
+    <!-- Previous Button -->
+    <% if (currentPage > 1) { %>
+        <a href="/admin/offers?page=<%= currentPage - 1 %>&search=<%= search %>">Previous</a>
+    <% } %>
+
+    <!-- Page Numbers -->
+    <% for(let i = 1; i <= totalPages; i++) { %>
+        <a href="/admin/offers?page=<%= i %>&search=<%= search %>" 
+           class="<%= i === currentPage ? 'active' : '' %>">
+           <%= i %>
+        </a>
+    <% } %>
+
+    <!-- Next Button -->
+    <% if (currentPage < totalPages) { %>
+        <a href="/admin/offers?page=<%= currentPage + 1 %>&search=<%= search %>">Next</a>
+    <% } %>
+</div>
+
+            </section>
+        </div>
+    </div>
+    <script src="/js/admin/offerList.js"></script>
+</body>
+</html>

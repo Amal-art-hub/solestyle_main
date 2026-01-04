@@ -53,11 +53,17 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // === 3. VARIANT SELECTION (SIZE) ===
-    document.querySelectorAll('.size-box').forEach(box => {
-        box.addEventListener('click', function () {
-            selectVariant(this.dataset.variantId, this.dataset.price, parseInt(this.dataset.stock));
-        });
+   document.querySelectorAll('.size-box').forEach(box => {
+    box.addEventListener('click', function () {
+        selectVariant(
+            this.dataset.variantId, 
+            this.dataset.price, 
+            parseInt(this.dataset.stock),
+            this.dataset.originalPrice, 
+            this.dataset.discount
+        );
     });
+});
 
     // === 4. COLOR SELECTION (INITIAL) ===
     const activeColorBtn = document.querySelector('.color-btn.active');
@@ -82,15 +88,45 @@ function changeImage(element, imageName) {
     }
 }
 
-function selectVariant(variantId, price, stock) {
+function selectVariant(variantId, price, stock, originalPrice, discount) {
+    // 1. Update Hidden ID
     document.getElementById('selectedVariantId').value = variantId;
 
+    // 2. Update Box Selection
     document.querySelectorAll('.size-box').forEach(el => {
         el.classList.remove('selected');
         if (el.dataset.variantId === variantId) el.classList.add('selected');
     });
 
-    document.getElementById('displayPrice').textContent = price;
+    // 3. Update Price Display
+    const displayPrice = document.getElementById('displayPrice');
+    const displayOriginal = document.getElementById('displayOriginalPrice');
+    const displayBadge = document.getElementById('displayBadge');
+
+    // Always update current price
+    displayPrice.textContent = price;
+
+    if (discount > 0) {
+        // --- SHOW OFFER ---
+        displayPrice.parentElement.style.color = '#d9534f'; 
+
+        if (displayOriginal) {
+            displayOriginal.style.display = 'inline';
+            displayOriginal.textContent = '₹' + originalPrice;
+        }
+        if (displayBadge) {
+            displayBadge.style.display = 'inline-block';
+            displayBadge.textContent = discount + '% OFF';
+        }
+    } else {
+        // --- HIDE OFFER (Regular Price) ---
+        displayPrice.parentElement.style.color = '#333';
+
+        if (displayOriginal) displayOriginal.style.display = 'none';
+        if (displayBadge) displayBadge.style.display = 'none';
+    }
+
+    // 4. Update Stock Status
     currentStock = stock;
     const stockStatus = document.querySelector('.stock-status');
 

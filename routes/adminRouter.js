@@ -7,6 +7,8 @@ const brandController = require("../controllers/admin/brandController");
 const productController = require("../controllers/admin/productController");
 const variantController = require("../controllers/admin/variantController");
 const orderController=require("../controllers/admin/orderController");
+const offerController=require("../controllers/admin/offerController");
+const coupenController=require("../controllers/admin/coupenController");
 const { upload, variantUpload } = require("../middlewares/admin-mid/multer");
 const { isAdminLoggedIn } = require("../middlewares/admin-mid/admin-auth");
 
@@ -61,6 +63,29 @@ router.delete("/variants/:id", isAdminLoggedIn, variantController.removeVariant)
 router.get("/orders",isAdminLoggedIn,orderController.getOrderList);
 router.patch("/orders/update-status",isAdminLoggedIn,orderController.changeStatus);
 router.get('/orders/details/:id', isAdminLoggedIn, orderController.getOrderDetails);
+
+
+
+//offer management
+
+router.get("/offers",isAdminLoggedIn,offerController.getOfferList);
+router.get("/offers/add",isAdminLoggedIn,offerController.getAddOffer);
+router.post("/offers/add", isAdminLoggedIn, offerController.addOffer);
+
+
+router.get("/offers/edit/:id",isAdminLoggedIn,offerController.getEditOffer);
+router.post("/offers/edit/:id",isAdminLoggedIn,offerController.updateOffer);
+
+router.delete("/offers/:id",isAdminLoggedIn,offerController.deleteOffer);
+
+
+
+//coupen managment
+router.get("/coupons",isAdminLoggedIn,coupenController.getCoupenList);
+router.post("/coupons/add",isAdminLoggedIn,coupenController.addCoupon);
+router.post("/coupons/edit/:id",isAdminLoggedIn,coupenController.editCoupen);
+router.delete("/coupons/:id",isAdminLoggedIn,coupenController.deleteCoupen);
+
 
 
 
