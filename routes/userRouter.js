@@ -8,6 +8,7 @@ const cartController = require("../controllers/user/cartController");
 const checkoutController = require("../controllers/user/checkoutController");
 const orderDetailController = require("../controllers/user/orderDetailController");
 const ordersController = require("../controllers/user/ordersController");
+const walletController = require("../controllers/user/walletController");
 
 console.log(cartController);
 
@@ -137,6 +138,13 @@ router.put("/user/orders/return/:orderId", checkUserStatus, orderDetailControlle
 
 //-----------------------------------------------------------------------------------------invoice
 router.get("/user/orders/invoice/:orderId", checkUserStatus, orderDetailController.downloadInvoice);
+
+
+
+
+//-----------------------------------------------------------------------------------------wallet
+
+router.get("/user/wallet",checkUserStatus,walletController.loadWalletPage);
 
 
 

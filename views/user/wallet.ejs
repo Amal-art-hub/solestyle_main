@@ -1,0 +1,93 @@
+<%- include('../partials/header') %>
+    <!-- Reusing your profile styles for consistency -->
+    <link rel="stylesheet" href="/css/user/profile.css">
+    <!-- Wallet specific styles -->
+    <link rel="stylesheet" href="/css/user/wallet.css">
+    <link rel="stylesheet" href="/css/user/homestyle.css">
+    
+    <div class="dashboard-container">
+        <!-- Breadcrumb / Header -->
+        <div class="header-row">
+            <h2>My Wallet</h2>
+            <a href="/" class="btn-outline">Back to Profile</a>
+        </div>
+
+        <!-- Balance Card (Styled like your profile-card but dark) -->
+        <div class="profile-card wallet-card">
+            <div class="balance-info">
+                <span class="label-light">Current Balance</span>
+                <h1 class="balance-amount">₹<%= wallet.balance.toFixed(2) %></h1>
+            </div>
+            <div class="wallet-icon">
+                <i class="fas fa-wallet"></i>
+            </div>
+        </div>
+
+        <!-- Transaction History -->
+        <h3>Transaction History</h3>
+        
+        <div class="profile-card history-container">
+            <% if(transactions && transactions.length > 0) { %>
+                <table class="transaction-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Type</th>
+                            <th class="text-right">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% transactions.forEach(txn => { %>
+                            <tr class="txn-row">
+                                <td><%= new Date(txn.date).toLocaleDateString() %></td>
+                                <td><%= txn.description %></td>
+                                <td>
+                                    <!-- Using simple text or badges -->
+                                    <span class="status-badge <%= txn.type %>">
+                                        <%= txn.type === 'credit' ? 'Credit' : 'Debit' %>
+                                    </span>
+                                </td>
+                                <td class="text-right amount <%= txn.type %>">
+                                    <%= txn.type === 'credit' ? '+' : '-' %> ₹<%= txn.amount.toFixed(2) %>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <div class="empty-state">
+                    <p>No transactions yet.</p>
+                </div>
+            <% } %>
+        </div>
+                    <!-- Inside history-container div -->
+            
+            <!-- Pagination Controls -->
+            <% if (totalPages > 1) { %>
+                <div class="pagination-wrapper">
+                    <!-- PREVIOUS BUTTON -->
+                    <% if (currentPage > 1) { %>
+                        <a href="/user/wallet?page=<%= currentPage - 1 %>" class="pagination-btn">
+                            &laquo; Prev
+                        </a>
+                    <% } %>
+
+                    <!-- PAGE NUMBERS -->
+                    <span class="pagination-info">
+                        Page <%= currentPage %> of <%= totalPages %>
+                    </span>
+
+                    <!-- NEXT BUTTON -->
+                    <% if (currentPage < totalPages) { %>
+                        <a href="/user/wallet?page=<%= currentPage + 1 %>" class="pagination-btn">
+                            Next &raquo;
+                        </a>
+                    <% } %>
+                </div>
+            <% } %>
+
+        </div> <!-- End of history-container -->
+    </div>
+
+<%- include('../partials/footer') %>
