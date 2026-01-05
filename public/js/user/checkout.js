@@ -58,3 +58,36 @@ async function placeOrder() {
         }
     }
 }
+
+/* COUPON FUNCTIONS */
+async function applyCoupon() {
+    const codeInput = document.getElementById('couponCode');
+    const code = codeInput.value.trim();
+    if (!code) return Swal.fire('Error', 'Please enter a coupon code', 'error');
+
+    try {
+        const response = await axios.post('/checkout/apply-coupon', { code });
+        if (response.data.success) {
+            Swal.fire('Success', 'Coupon Applied!', 'success');
+            // Update UI
+            document.getElementById('applyBtn').style.display = 'none';
+            document.getElementById('removeBtn').style.display = 'block';
+            document.getElementById('couponCode').disabled = true;
+            location.reload(); // Reload to update totals (Simple way)
+        }
+    } catch (error) {
+        Swal.fire('Invalid Coupon', error.response?.data?.message || 'Error applying coupon', 'error');
+    }
+}
+
+async function removeCoupon() {
+    try {
+        const response = await axios.post('/checkout/remove-coupon');
+        if (response.data.success) {
+            Swal.fire('Removed', 'Coupon removed', 'info');
+            location.reload();
+        }
+    } catch (error) {
+        Swal.fire('Error', 'Could not remove coupon', 'error');
+    }
+}
