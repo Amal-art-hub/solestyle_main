@@ -1,7 +1,9 @@
 const {
   getAllOrders,
   updateOrderStatus,
-  getOrderById
+  getOrderById,
+  approveReturnService,
+  rejectReturnService
 } = require("../../services/adminSer/orderService")
 const statusCode = require("../../utils/statusCodes.js");
 
@@ -67,9 +69,33 @@ const getOrderDetails = async (req, res) => {
 };
 
 
+const approveReturn=async(req,res)=>{
+  try {
+    const {orderId,itemId}=req.body;
+    const result=await approveReturnService(orderId,itemId);
+    res.json(result);
+  } catch (error) {
+        console.error("Approve Return Error:", error);
+        res.status(500).json({ success: false, message: error.message });
+  }
+}
+
+const rejectReturn = async (req, res) => {
+    try {
+        const { orderId, itemId } = req.body;
+        const result = await rejectReturnService(orderId, itemId);
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+
 
 module.exports = {
   getOrderList,
   changeStatus,
-  getOrderDetails
+  getOrderDetails,
+  approveReturn,
+  rejectReturn
 }

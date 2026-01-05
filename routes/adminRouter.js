@@ -63,6 +63,9 @@ router.delete("/variants/:id", isAdminLoggedIn, variantController.removeVariant)
 router.get("/orders",isAdminLoggedIn,orderController.getOrderList);
 router.patch("/orders/update-status",isAdminLoggedIn,orderController.changeStatus);
 router.get('/orders/details/:id', isAdminLoggedIn, orderController.getOrderDetails);
+//admin approve ,reject feature
+router.post("/orders/approve-return",isAdminLoggedIn,orderController.approveReturn);
+router.post("/orders/reject-return", isAdminLoggedIn, orderController.rejectReturn);
 
 
 
@@ -85,6 +88,9 @@ router.get("/coupons",isAdminLoggedIn,coupenController.getCoupenList);
 router.post("/coupons/add",isAdminLoggedIn,coupenController.addCoupon);
 router.post("/coupons/edit/:id",isAdminLoggedIn,coupenController.editCoupen);
 router.delete("/coupons/:id",isAdminLoggedIn,coupenController.deleteCoupen);
+
+
+
 
 
 

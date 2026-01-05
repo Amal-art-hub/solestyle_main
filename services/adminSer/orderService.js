@@ -1,4 +1,6 @@
 const Order = require("../../models/orders");
+const Variant = require("../../models/varient");
+const walletService = require("../../services/userSer/walletService");
 
 
 const getAllOrders = async (page = 1, limit = 5, search = "", status = "") => {
@@ -86,8 +88,52 @@ throw error;
   }
 };
 
+const approveReturnService = async (orderId, itemId) => {
+    try {
+        const order = await Order.findById(orderId);
+        if (!order) throw new Error("Order not found");
+        const item = order.items.id(itemId);
+        if (item.status !== "Return Request") {
+            throw new Error("Item is not pending return approval");
+        }
+        // 1. Update Status
+        item.status = "Returned";
+        // 2. Restock Inventory
+        if (item.variant_id) {
+            await Variant.findByIdAndUpdate(item.variant_id, {
+                $inc: { stock: item.quantity }
+            });
+        }
+        // 3. Refund to Wallet
+        await walletService.creditWallet(
+            order.user_id,
+            item.total_amount, // Refund actual paid amount for this item
+            `Refund for Order #${order.order_number}`
+        );
+        await order.save();
+        return { success: true, message: "Return Approved & Refunded" };
+    } catch (error) {
+        throw error;
+    }
+};
+
+const rejectReturnService = async (orderId, itemId) => {
+    try {
+        const order = await Order.findById(orderId);
+        const item = order.items.id(itemId);
+        if (item.status !== "Return Request") throw new Error("Invalid Status");
+        item.status = "Return Rejected"; // Or revert to previous status if preferred
+        await order.save();
+        return { success: true, message: "Return Rejected" };
+    } catch (error) {
+        throw error;
+    }
+};
+
 module.exports = {
     getAllOrders,
     updateOrderStatus,
-    getOrderById
+    getOrderById,
+    approveReturnService,
+    rejectReturnService
 }
