@@ -97,7 +97,7 @@ const approveReturnService = async (orderId, itemId) => {
             throw new Error("Item is not pending return approval");
         }
         // 1. Update Status
-        item.status = "Returned";
+        item.status = "returned";
         // 2. Restock Inventory
         if (item.variant_id) {
             await Variant.findByIdAndUpdate(item.variant_id, {

@@ -62,10 +62,26 @@ async function viewOrderDetails(orderId) {
                 let actionButtons = '';
                 
                 // Logic to display the reason if it exists
-                let reasonHtml = '';
+                // let reasonHtml = '';
+                // if(item.return_reason) {
+                //     reasonHtml = `<div style="font-size: 0.85em; color: #666; margin-top: 4px;">
+                //                     <strong>Return Reason:</strong> <em>"${item.return_reason}"</em>
+                //                   </div>`;
+                // }
+
+                                // Logic to display the reason with "Read More" for long text
+                                let reasonHtml = '';
                 if(item.return_reason) {
-                    reasonHtml = `<div style="font-size: 0.85em; color: #666; margin-top: 4px;">
-                                    <strong>Return Reason:</strong> <em>"${item.return_reason}"</em>
+                    const fullText = item.return_reason.replace(/"/g, '&quot;'); 
+                    const shortText = fullText.length > 50 ? fullText.substring(0, 50) + '...' : fullText;
+                    
+                    /* FIXED LOGIC HERE: Using a dedicated function call instead of inline Swal */
+                    const displayText = fullText.length > 50 
+                        ? `<span title="${fullText}">${shortText} <a href="javascript:void(0)" onclick="showReason('${fullText.replace(/'/g, "\\'")}')" style="color: blue; font-size: 0.9em;">Read Full</a></span>`
+                        : `"${fullText}"`;
+
+                    reasonHtml = `<div style="font-size: 0.85em; color: #666; margin-top: 4px; max-width: 300px; word-wrap: break-word;">
+                                    <strong>Return Reason:</strong> ${displayText}
                                   </div>`;
                 }
 
@@ -164,4 +180,14 @@ async function handleReturn(orderId, itemId, action) {
     } catch (error) {
         Swal.fire('Error', error.message || 'Something went wrong', 'error');
     }
+}
+
+/* Add this at the very bottom of orderList.js */
+function showReason(text) {
+    Swal.fire({
+        title: 'Return Reason',
+        text: text,
+        icon: 'info',
+        confirmButtonText: 'Close'
+    });
 }

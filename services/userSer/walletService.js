@@ -1,4 +1,5 @@
 
+const mongoose = require("mongoose");
 const Wallet=require("../../models/wallet");
 
 const getWallet=async(userId)=>{
@@ -32,7 +33,8 @@ const creditWallet = async (userId, amount, description) => {
         await wallet.save();
         return wallet;
     } catch (error) {
-        throw new Error("Error crediting wallet");
+        console.error("Wallet credit error details:",error);
+        throw error;
     }
 };
 
