@@ -58,16 +58,42 @@ async function viewOrderDetails(orderId) {
         if (data.success) {
             const order = data.order;
             
-            let itemsHtml = order.items.map(item => `
-                <li class="item">
-                   <img src="/uploads/variant-images/${item.variant_id?.images?.[2] || 'default.jpg'}" ... >
+                       let itemsHtml = order.items.map(item => {
+                let actionButtons = '';
+                
+                // Logic to display the reason if it exists
+                let reasonHtml = '';
+                if(item.return_reason) {
+                    reasonHtml = `<div style="font-size: 0.85em; color: #666; margin-top: 4px;">
+                                    <strong>Return Reason:</strong> <em>"${item.return_reason}"</em>
+                                  </div>`;
+                }
+
+                // Logic to show Approve/Reject buttons
+                if (item.status === 'Return Request') {
+                    actionButtons = `
+                        <div style="margin-top: 5px;">
+                            <span style="background: #ffc107; color: black; padding: 2px 6px; border-radius: 4px; font-size: 12px;">Return Request</span>
+                            <button onclick="handleReturn('${order._id}', '${item._id}', 'approve')" 
+                                style="background: #28a745; color: white; border: none; padding: 4px 8px; margin-left: 5px; border-radius: 4px; cursor: pointer;">Approve</button>
+                            <button onclick="handleReturn('${order._id}', '${item._id}', 'reject')" 
+                                style="background: #dc3545; color: white; border: none; padding: 4px 8px; margin-left: 5px; border-radius: 4px; cursor: pointer;">Reject</button>
+                        </div>
+                    `;
+                }
+
+                return `
+                <li class="item" style="margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+                   <img src="/uploads/variant-images/${item.variant_id?.images?.[2] || 'default.jpg'}" alt="Item" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
                     <div>
                         <strong>${item.name_snapshot || item.product_id?.productName}</strong><br>
                         Qty: ${item.quantity} | Price: ₹${item.unit_price}
+                        ${reasonHtml}
+                        ${actionButtons}
                     </div>
                 </li>
-            `).join('');
-
+            `;
+            }).join('');
             const content = `
                 <div class="detail-group">
                     <div class="detail-title">Order Info</div>
@@ -100,5 +126,42 @@ async function viewOrderDetails(orderId) {
         }
     } catch (error) {
         modalBody.innerHTML = '<p class="error">Error loading details</p>';
+    }
+}
+
+
+async function handleReturn(orderId, itemId, action) {
+    const url = action === 'approve' ?
+        '/admin/orders/approve-return' :
+        '/admin/orders/reject-return';
+
+    try {
+        const result = await Swal.fire({
+            title: `Are you sure you want to ${action}?`,
+            text: action === 'approve' ? "Funds will be refunded to the user's wallet." : "Return request will be rejected.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, proceed!',
+             confirmButtonColor: action === 'approve' ? '#28a745' : '#dc3545'
+        });
+
+        if (result.isConfirmed) {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId, itemId })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                await Swal.fire('Success', data.message, 'success');
+                viewOrderDetails(orderId); // Refresh modal to show updated status
+            } else {
+                throw new Error(data.message);
+            }
+        }
+    } catch (error) {
+        Swal.fire('Error', error.message || 'Something went wrong', 'error');
     }
 }
