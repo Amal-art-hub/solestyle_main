@@ -3,6 +3,7 @@ const Address = require("../../models/address");
 const Order = require("../../models/orders");
 const Variant = require("../../models/varient");
 const Product = require("../../models/product");
+const Coupon = require("../../models/Coupen"); 
 
 
 
@@ -108,7 +109,29 @@ throw error;
 
 
 
+
+const validateCoupon = async (userId, code) => {
+    const coupon = await Coupon.findOne({ code: code.toUpperCase() });
+    
+
+    if (!coupon) throw new Error("Invalid Coupon Code");
+    
+
+    if (new Date() > new Date(coupon.expiry_date)) throw new Error("Coupon Expired");
+    
+
+    if (coupon.used_by.includes(userId)) throw new Error("You have already used this coupon");
+    
+
+    return coupon;
+};
+
+
+
+
+
 module.exports={
     getCheckoutData,
-    placeOrderService
+    placeOrderService,
+    validateCoupon
 }

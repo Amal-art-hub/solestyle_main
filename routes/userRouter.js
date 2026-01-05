@@ -109,20 +109,22 @@ router.delete("/cart/remove/:itemId", checkUserStatus, cartController.removeCart
 
 
 
-//------------------------------------------------------------------------------------------checkout
+//=======================================================================================checkout
 
 router.get("/checkout", checkUserStatus, checkoutController.loadCheckout);
 
 router.post("/checkout/place-order", checkUserStatus, checkoutController.placeOrder);
 
 router.get('/order-success/:id', checkUserStatus, checkoutController.orderSuccess);
+//------------------------------------------------------------------------------------coupen apply
+router.post("/checkout/apply-coupon",checkUserStatus,checkoutController.applyCoupen);
+router.post("/checkout/remove-coupon", checkUserStatus, checkoutController.removeCoupon);
 
-router.get("/orders/:id", orderDetailController.getOrderDetails);
 
-
-//------------------------------------------------------------------------------------------------orders
+//==========================================================================================orders
 
 router.get("/user/orders", checkUserStatus, ordersController.listOrder);
+router.get("/orders/:id", orderDetailController.getOrderDetails);
 
 
 //---------------------------------------------------------------------------------------------------canceling
@@ -145,6 +147,12 @@ router.get("/user/orders/invoice/:orderId", checkUserStatus, orderDetailControll
 //-----------------------------------------------------------------------------------------wallet
 
 router.get("/user/wallet",checkUserStatus,walletController.loadWalletPage);
+
+
+
+
+
+
 
 
 

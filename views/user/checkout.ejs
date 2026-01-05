@@ -233,7 +233,7 @@
 
                     <div class="summary-row total">
                         <span>Total Amount</span>
-                        <span>₹<%= subtotal %></span>
+                           <span>₹<%= subtotal - (typeof discount !== 'undefined' ? discount : 0) %></span>
                     </div>
 
                     <button type="button" class="place-order-btn" onclick="placeOrder()">
