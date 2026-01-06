@@ -28,7 +28,7 @@ const getCheckoutData = async (userId) => {
     }
 };
 
-const placeOrderService=async (userId,addressId,paymentMethod)=> {
+const placeOrderService=async (userId,addressId,paymentMethod,couponData)=> {
 try {
 
 const cart=await Cart.findOne({ user_id: userId }).populate("items.variant_id");
@@ -39,6 +39,7 @@ if (!address)thrownewError("Address not found");
 
 
 let totalAmount=0;
+
 const orderItems= [];
 
 for (const item of cart.items) {
@@ -65,13 +66,25 @@ const itemTotal= item.quantity* item.price_at_addition;
         }
 
 
+
+
+        let discountAmount = 0;
+  let finalTotal = totalAmount;
+      if (couponData) {
+        discountAmount = couponData.discount;
+        finalTotal = totalAmount - discountAmount;
+    }
+
+
 const orderNumber="ORD-"+ Date.now()+ Math.floor(Math.random()*1000);
 
 const newOrder=new Order({
             user_id: userId,
             status:"pending",
             subtotal: totalAmount,
-            final_total: totalAmount,
+            discount_amount: discountAmount,
+            final_total: finalTotal,
+            coupon_id: couponData ? couponData._id : null,
             order_number: orderNumber,
             address_id: addressId,
             shipping_address_snapshot: {

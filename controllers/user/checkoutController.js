@@ -34,12 +34,13 @@ const placeOrder=async (req,res)=> {
 try {
 const userId= req.session.user._id;
 const { addressId, paymentMethod }= req.body;
+const couponData = req.session.coupon;
 
 if (!addressId) {
 return res.status(statusCode.BAD_REQUEST).json({ success:false, message:"Please select an address" });
         }
 
-const order=await placeOrderService(userId, addressId, paymentMethod);
+const order=await placeOrderService(userId, addressId, paymentMethod,couponData);
 
         res.status(statusCode.OK).json({
             success:true,

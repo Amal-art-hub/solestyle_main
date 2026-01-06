@@ -124,7 +124,7 @@ router.post("/checkout/remove-coupon", checkUserStatus, checkoutController.remov
 //==========================================================================================orders
 
 router.get("/user/orders", checkUserStatus, ordersController.listOrder);
-router.get("/orders/:id", orderDetailController.getOrderDetails);
+router.get("/orders/:id",checkUserStatus, orderDetailController.getOrderDetails);
 
 
 //---------------------------------------------------------------------------------------------------canceling

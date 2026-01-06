@@ -21,7 +21,10 @@ const getOrderDetails = async (req, res) => {
         const order = await getOrderDetailsService(orderId, userId);
         res.render("orderDetails", {
             order,
-            user: userId
+            user: userId,
+            //  subtotal: subtotal,
+            //  discount: req.session.coupon ? req.session.coupon.discount : 0,
+            //    coupon: req.session.coupon || null
         });
     } catch (error) {
         console.error("Error fetching order details:", error);
@@ -89,12 +92,7 @@ const returnOrder = async (req, res) => {
     }
 };
 
-module.exports = {
-    getOrderDetails,
-    cancelOrderItem,
-    cancelOrder,
-    returnOrderItem
-};
+
 
 
 
@@ -109,11 +107,11 @@ const downloadInvoice = async (req, res) => {
         // 2. Launch Puppeteer
         const browser = await puppeteer.launch({ headless: 'new' });
         const page = await browser.newPage();
-        // 3. Set content and generate PDF
+       
         await page.setContent(html, { waitUntil: 'networkidle0' });
         const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
         await browser.close();
-        // 4. Send PDF to user
+      
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `attachment; filename=invoice-${order.order_id}.pdf`);
         res.send(pdfBuffer);
