@@ -197,7 +197,7 @@
                             <% }) %>
                     </div>
                                         <!-- COUPON SECTION -->
-                    <div class="coupon-section">
+                    <!-- <div class="coupon-section">
                         <label class="coupon-label">Have a Coupon?</label>
                         <div class="coupon-input-group">
                             <input type="text" id="couponCode" class="coupon-input" placeholder="Enter code">
@@ -207,6 +207,36 @@
                             <button type="button" onclick="removeCoupon()" id="removeBtn" class="coupon-btn remove">
                                 Remove
                             </button>
+                        </div>
+                        <div id="couponMessage" class="coupon-msg"></div>
+                    </div> -->
+
+                                        <div class="coupon-section">
+                        <label class="coupon-label">Have a Coupon?</label>
+                        <div class="coupon-input-group">
+                            <!-- 1. Fill value if coupon exists. 2. Disable if coupon exists -->
+                            <input type="text" id="couponCode" class="coupon-input" placeholder="Enter code"
+                                value="<%= (typeof coupon !== 'undefined' && coupon) ? coupon.code : '' %>"
+                                <%= (typeof coupon !== 'undefined' && coupon) ? 'disabled' : '' %> >
+
+                            <!-- LOGIC: Show Remove if coupon exists, otherwise Show Apply -->
+                            <% if (typeof coupon !== 'undefined' && coupon) { %>
+                                <!-- COUPON IS APPLIED: Show Remove, Hide Apply -->
+                                <button type="button" onclick="applyCoupon()" id="applyBtn" class="coupon-btn apply" style="display: none;">
+                                    Apply
+                                </button>
+                                <button type="button" onclick="removeCoupon()" id="removeBtn" class="coupon-btn remove" style="display: block;">
+                                    Remove
+                                </button>
+                            <% } else { %>
+                                <!-- NO COUPON: Show Apply, Hide Remove -->
+                                <button type="button" onclick="applyCoupon()" id="applyBtn" class="coupon-btn apply" style="display: block;">
+                                    Apply
+                                </button>
+                                <button type="button" onclick="removeCoupon()" id="removeBtn" class="coupon-btn remove" style="display: none;">
+                                    Remove
+                                </button>
+                            <% } %>
                         </div>
                         <div id="couponMessage" class="coupon-msg"></div>
                     </div>

@@ -19,7 +19,8 @@ const loadCheckout = async (req, res) => {
             cart: cart,
             addresses: addresses,
             subtotal: subtotal,
-             discount: req.session.coupon ? req.session.coupon.discount : 0
+             discount: req.session.coupon ? req.session.coupon.discount : 0,
+               coupon: req.session.coupon || null
         });
     } catch (error) {
         console.error("Load Checkout Error:", error);
