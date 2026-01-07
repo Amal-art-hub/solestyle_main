@@ -1,5 +1,6 @@
 const Order = require("../../models/orders");
 const Variant = require("../../models/varient");
+const {creditWallet} = require("./walletService");
 
 const getOrderDetailsService = async (orderId, userId) => {
     try {
@@ -46,7 +47,15 @@ const cancelOrderItemService = async (orderId, itemId, reason) => {
 
         await Variant.findByIdAndUpdate(item.variant_id, { $inc: { stock: item.quantity } });
 
-        // Check if all items are canceled
+            if (order.payment_method !== "COD") {  
+             await creditWallet(
+                order.user_id, 
+                item.total_amount, 
+                `Refund for cancellation of item in Order #${order.order_number}`
+            );
+        }
+
+  
         const allItemsCanceled = order.items.every(itm => itm.status === 'canceled');
         if (allItemsCanceled) {
             order.status = 'canceled';
@@ -81,6 +90,15 @@ const cancelOrderService = async (orderId, reason) => {
 
         order.status = 'canceled';
         order.cancellation_reason = reason;
+
+
+           if (order.payment_method !== "COD") {
+             await walletService.creditWallet(
+                order.user_id, 
+                order.final_total, 
+                `Refund for cancellation of Order #${order.order_number}`
+            );
+        }
         await order.save();
 
         return { success: true, message: "Order canceled successfully" };

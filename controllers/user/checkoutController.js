@@ -4,6 +4,10 @@ const {
     placeOrderService,
     validateCoupon
 } = require("../../services/userSer/checkoutService");
+const { 
+    getWallet,
+    debitWallet 
+ } = require("../../services/userSer/walletService"); 
 const statusCode = require("../../utils/statusCodes");
 
 
@@ -11,16 +15,19 @@ const loadCheckout = async (req, res) => {
     try {
         const userId = req.session.user._id;
         const { cart, addresses, subtotal } = await getCheckoutData(userId);
+          const wallet = await getWallet(userId);
          if (!cart) {
             return res.redirect("/user/cart"); 
         }
+      
         res.render("checkout", {
             user: req.session.user,
             cart: cart,
             addresses: addresses,
             subtotal: subtotal,
              discount: req.session.coupon ? req.session.coupon.discount : 0,
-               coupon: req.session.coupon || null
+               coupon: req.session.coupon || null,
+                wallet: wallet 
         });
     } catch (error) {
         console.error("Load Checkout Error:", error);

@@ -6,6 +6,11 @@ const Product = require("../../models/product");
 const Coupon = require("../../models/Coupen"); 
 
 
+const { 
+  
+    debitWallet 
+ } = require("../../services/userSer/walletService"); 
+
 
 const getCheckoutData = async (userId) => {
     try {
@@ -75,12 +80,21 @@ const itemTotal= item.quantity* item.price_at_addition;
         finalTotal = totalAmount - discountAmount;
     }
 
+         const orderNumber = "ORD-" + Date.now() + Math.floor(Math.random() * 1000);
+        
+        let orderStatus = "pending"; 
+        if (paymentMethod === 'Wallet') {
+           
+            await debitWallet(userId, finalTotal, "Order Payment - " + orderNumber);
+            orderStatus = "processing";
+        }
 
-const orderNumber="ORD-"+ Date.now()+ Math.floor(Math.random()*1000);
+
+
 
 const newOrder=new Order({
             user_id: userId,
-            status:"pending",
+            status:orderStatus,
             subtotal: totalAmount,
             discount_amount: discountAmount,
             final_total: finalTotal,

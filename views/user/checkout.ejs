@@ -83,23 +83,49 @@
 
 
                     <!-- Payment Section -->
+                                      <!-- Payment Section -->
                     <div class="payment-section">
                         <div class="section-title">
                             <i class="fas fa-credit-card"></i> Payment Method
                         </div>
+                        
+                        <!-- COD Option -->
                         <label class="payment-option">
                             <input type="radio" name="paymentMethod" value="COD" checked>
                             <span>Cash on Delivery (COD)</span>
                             <i class="fas fa-money-bill-wave" style="margin-left:auto; color:#666;"></i>
                         </label>
+                        
+                        <!-- Online Option (Disabled) -->
                         <label class="payment-option disabled">
                             <input type="radio" name="paymentMethod" value="Online" disabled>
                             <span>Online Payment</span>
-                            <span
-                                style="font-size:0.75rem; background:#eee; padding:2px 6px; border-radius:4px; margin-left:8px;">Coming
-                                Soon</span>
+                            <span style="font-size:0.75rem; background:#eee; padding:2px 6px; border-radius:4px; margin-left:8px;">Coming Soon</span>
                             <i class="fas fa-lock" style="margin-left:auto; color:#999;"></i>
                         </label>
+
+                        <!-- [UPDATED] Wallet Option -->
+                        <% 
+                            let finalAmount = subtotal;
+                            if (typeof discount !== 'undefined' && discount) {
+                                finalAmount = subtotal - discount;
+                            }
+                            let canUseWallet = wallet.balance >= finalAmount;
+                        %>
+                        <label class="payment-option <%= canUseWallet ? '' : 'disabled' %>">
+                            <input type="radio" name="paymentMethod" value="Wallet" <%= canUseWallet ? '' : 'disabled' %>>
+                            <span style="display: flex; flex-direction: column;">
+                                <span>Wallet</span>
+                                <span style="font-size: 0.85rem; color: <%= canUseWallet ? '#28a745' : '#dc3545' %>;">
+                                    Balance: ₹<%= wallet.balance %>
+                                    <% if (!canUseWallet) { %>
+                                        (Insufficient)
+                                    <% } %>
+                                </span>
+                            </span>
+                            <i class="fas fa-wallet" style="margin-left:auto; color:#666;"></i>
+                        </label>
+                       
                     </div>
                 </form>
             </div>
