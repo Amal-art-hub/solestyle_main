@@ -2,11 +2,12 @@
 const {
     getCheckoutData,
     placeOrderService,
-    validateCoupon
+    validateCoupon,
+    createRazorpayOrderService
 } = require("../../services/userSer/checkoutService");
 const { 
     getWallet,
-    debitWallet 
+    
  } = require("../../services/userSer/walletService"); 
 const statusCode = require("../../utils/statusCodes");
 
@@ -40,14 +41,14 @@ const loadCheckout = async (req, res) => {
 const placeOrder=async (req,res)=> {
 try {
 const userId= req.session.user._id;
-const { addressId, paymentMethod }= req.body;
+const { addressId, paymentMethod,paymentDetails  }= req.body;
 const couponData = req.session.coupon;
 
 if (!addressId) {
 return res.status(statusCode.BAD_REQUEST).json({ success:false, message:"Please select an address" });
         }
 
-const order=await placeOrderService(userId, addressId, paymentMethod,couponData);
+const order=await placeOrderService(userId, addressId, paymentMethod,couponData,paymentDetails );
 
         res.status(statusCode.OK).json({
             success:true,
@@ -120,6 +121,25 @@ const removeCoupon = async (req, res) => {
 };
 
 
+const createRazorpayOrder = async (req, res) => {
+    try {
+        const userId = req.session.user._id;
+        const couponData = req.session.coupon;
+      
+        const order = await createRazorpayOrderService(userId, couponData);
+        res.status(200).json({
+            success: true,
+            order: order
+        });
+    } catch (error) {
+        console.error("Razorpay Error:", error);
+        res.status(500).json({ 
+            success: false, 
+            message: error.message || "Failed to create payment order" 
+        });
+    }
+};
+
 
 
 module.exports={
@@ -127,5 +147,6 @@ module.exports={
     placeOrder,
     orderSuccess,
     applyCoupen,
-    removeCoupon
+    removeCoupon,
+    createRazorpayOrder
 }

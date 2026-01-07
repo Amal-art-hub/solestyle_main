@@ -1,60 +1,79 @@
 async function placeOrder() {
-    // 1. Get Selected Address
+    // 1. Get Address & Payment... (Same as before)
     const addressInput = document.querySelector('input[name="selectedAddress"]:checked');
-    if (!addressInput) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'No Address Selected',
-            text: 'Please select a delivery address to proceed.'
-        });
-        return;
-    }
-    const addressId = addressInput.value;
-    // 2. Get Payment Method
+    if (!addressInput) return Swal.fire('Warning', 'Select Address', 'warning');
+
     const paymentInput = document.querySelector('input[name="paymentMethod"]:checked');
     const paymentMethod = paymentInput ? paymentInput.value : 'COD';
-    // 3. Confirm
-    const confirm = await Swal.fire({
+
+    // IF ONLINE PAYMENT -> DIFFERENT FLOW
+    if (paymentMethod === 'Online') {
+        try {
+            // A. Create Order on Server
+            const response = await axios.post('/checkout/razorpay-order');
+            if (!response.data.success) throw new Error('Failed to start payment');
+
+            const orderData = response.data.order;
+
+            // B. Open Razorpay Options
+            const options = {
+                "key": "rzp_test_S0ywJN5WPSnvu3", // Or fetch from server API if safer
+                "amount": orderData.amount,
+                "currency": "INR",
+                "name": "Shoe Project",
+                "description": "Purchase Order",
+                "order_id": orderData.id, 
+                "handler": async function (response) {
+                    // C. Payment Success -> Place Actual Order
+                    await submitFinalOrder(addressInput.value, 'Online', response);
+                },
+                "prefill": {
+                    "name": "User Name", // You can inject these values
+                    "email": "user@example.com"
+                },
+                "theme": { "color": "#3399cc" }
+            };
+
+            const rzp1 = new Razorpay(options);
+            rzp1.open();
+            
+            rzp1.on('payment.failed', function (response){
+                Swal.fire('Payment Failed', response.error.description, 'error');
+            });
+
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Error', 'Payment initialization failed', 'error');
+        }
+        return; // STOP HERE, wait for payment
+    }
+
+    // IF COD OR WALLET -> NORMAL FLOW
+    await submitFinalOrder(addressInput.value, paymentMethod);
+}
+
+// Separate function for final submission to reuse code
+async function submitFinalOrder(addressId, paymentMethod, paymentDetails = {}) {
+     const confirm = await Swal.fire({
         title: 'Place Order?',
         text: `Confirm order with ${paymentMethod}?`,
         icon: 'question',
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, Place Order!'
+        confirmButtonText: 'Yes'
     });
+
     if (confirm.isConfirmed) {
         try {
-            // 4. Send Request
-            // Show Loading
-            Swal.fire({
-                title: 'Processing...',
-                allowOutsideClick: false,
-                didOpen: () => { Swal.showLoading(); }
-            });
             const response = await axios.post('/checkout/place-order', {
-                addressId: addressId,
-                paymentMethod: paymentMethod
+                addressId,
+                paymentMethod,
+                paymentDetails // Send razorpay_payment_id etc.
             });
             if (response.data.success) {
-                // Success
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Order Placed!',
-                    timer: 1500,
-                    showConfirmButton: false
-                }).then(() => {
-                    window.location.href = `/order-success/${response.data.orderId}`;
-                });
+                 window.location.href = `/order-success/${response.data.orderId}`;
             }
         } catch (error) {
-            console.error(error);
-            const msg = error.response?.data?.message || 'Something went wrong';
-            Swal.fire({
-                icon: 'error',
-                title: 'Order Failed',
-                text: msg
-            });
+             Swal.fire('Failed', error.response?.data?.message, 'error');
         }
     }
 }

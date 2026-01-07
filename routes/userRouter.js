@@ -119,7 +119,8 @@ router.get('/order-success/:id', checkUserStatus, checkoutController.orderSucces
 //------------------------------------------------------------------------------------coupen apply
 router.post("/checkout/apply-coupon",checkUserStatus,checkoutController.applyCoupen);
 router.post("/checkout/remove-coupon", checkUserStatus, checkoutController.removeCoupon);
-
+//----------------------------------------------------------------------------------------razorpay
+router.post("/checkout/razorpay-order",checkUserStatus,checkoutController.createRazorpayOrder);
 
 //==========================================================================================orders
 
@@ -147,6 +148,9 @@ router.get("/user/orders/invoice/:orderId", checkUserStatus, orderDetailControll
 //-----------------------------------------------------------------------------------------wallet
 
 router.get("/user/wallet",checkUserStatus,walletController.loadWalletPage);
+
+
+
 
 
 

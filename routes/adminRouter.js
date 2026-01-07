@@ -9,6 +9,7 @@ const variantController = require("../controllers/admin/variantController");
 const orderController=require("../controllers/admin/orderController");
 const offerController=require("../controllers/admin/offerController");
 const coupenController=require("../controllers/admin/coupenController");
+// const salesController=require("../controller/admin/salesController");
 const { upload, variantUpload } = require("../middlewares/admin-mid/multer");
 const { isAdminLoggedIn } = require("../middlewares/admin-mid/admin-auth");
 
@@ -93,6 +94,8 @@ router.delete("/coupons/:id",isAdminLoggedIn,coupenController.deleteCoupen);
 
 
 
+//sales report
+// router.get("/sales-report",isAdminLoggedIn,salesController.loadReport);  
 
 
 

@@ -4,6 +4,8 @@ const Order = require("../../models/orders");
 const Variant = require("../../models/varient");
 const Product = require("../../models/product");
 const Coupon = require("../../models/Coupen"); 
+const Payment = require("../../models/payment");
+const Razorpay = require("razorpay");
 
 
 const { 
@@ -33,7 +35,7 @@ const getCheckoutData = async (userId) => {
     }
 };
 
-const placeOrderService=async (userId,addressId,paymentMethod,couponData)=> {
+const placeOrderService=async (userId,addressId,paymentMethod,couponData,paymentDetails)=> {
 try {
 
 const cart=await Cart.findOne({ user_id: userId }).populate("items.variant_id");
@@ -112,10 +114,34 @@ const newOrder=new Order({
                 alt_phone: address.alt_phone
             },
             payment_method: paymentMethod,
-            items: orderItems
+            items: orderItems,
+            payment_id: null
         });
 
 await newOrder.save();
+
+
+
+ let paymentDoc = null;
+        if (paymentMethod === 'Online') {
+            const { razorpay_payment_id } = paymentDetails || {};
+            
+            paymentDoc = new Payment({
+                user_id: userId,
+                order_id: newOrder._id, // LINK TO ORDER
+                payment_method: "Razorpay",
+                amount: finalTotal,
+                status: "completed",
+                transaction_id: razorpay_payment_id
+            });
+            await paymentDoc.save();
+        }
+        // STEP 3: UPDATE ORDER WITH PAYMENT ID
+        if (paymentDoc) {
+            newOrder.payment_id = paymentDoc._id; // LINK TO PAYMENT
+            await newOrder.save();
+        }
+
 
 
 for (const item of cart.items) {
@@ -153,12 +179,43 @@ const validateCoupon = async (userId, code) => {
     return coupon;
 };
 
+const createRazorpayOrderService = async (userId, couponData) => {
+    try {
+        
+        const { subtotal } = await getCheckoutData(userId);
+        let totalAmount = subtotal;
+        if (couponData) {
+            totalAmount = subtotal - couponData.discount;
+        }
 
+
+                console.log("---------------- DEBUG RAZORPAY ----------------");
+        console.log("Key ID Exists?", !!process.env.RAZORPAY_KEY_ID);
+        console.log("Key Secret Exists?", !!process.env.RAZORPAY_KEY_SECRET);
+        console.log("Key ID Value:", process.env.RAZORPAY_KEY_ID); 
+        console.log("------------------------------------------------");
+        const instance = new Razorpay({
+            key_id: process.env.RAZORPAY_KEY_ID,
+            key_secret: process.env.RAZORPAY_KEY_SECRET,
+        });
+        
+        const options = {
+            amount: Math.round(totalAmount * 100), 
+            currency: "INR",
+            receipt: "order_rcptid_" + Date.now()
+        };
+        const order = await instance.orders.create(options);
+        return order;
+    } catch (error) {
+        throw error;
+    }
+};
 
 
 
 module.exports={
     getCheckoutData,
     placeOrderService,
-    validateCoupon
+    validateCoupon,
+    createRazorpayOrderService
 }
