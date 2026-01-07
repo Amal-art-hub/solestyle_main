@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sales Report - SoleStyle Admin</title>
+    <!-- Linked your Standard Dashboard CSS -->
+    <link rel="stylesheet" href="/css/admin/dashboard-side.css">
+    <!-- Linked your NEW Report CSS -->
+    <link rel="stylesheet" href="/css/admin/salesReport.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <%- include('../partials/adminSideBar', { activePage: 'salesReport' }) %>
+
+        <div class="main-content">
+            <div class="content-header">
+                <div>
+                    <h1>Sales Report</h1>
+                    <p style="color: #666; width:max-content">Monitor your business performance</p>
+                </div>
+                <div>
+                    <button onclick="downloadReport('pdf')" class="btn-download btn-pdf">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </button>
+                    <button onclick="downloadReport('excel')" class="btn-download btn-excel">
+                        <i class="fas fa-file-excel"></i> Excel
+                    </button>
+                </div>
+            </div>
+
+            <!-- FILTER SECTION -->
+            <div class="filter-section">
+                <form id="filterForm" action="/admin/sales-report" method="GET" style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px;">
+                    <label>Filter By:</label>
+                    <select name="period" id="periodSelect" class="form-control" style="width: 150px;">
+                        <option value="daily" <%= filters.period === 'daily' ? 'selected' : '' %>>Today</option>
+                        <option value="weekly" <%= filters.period === 'weekly' ? 'selected' : '' %>>This Week</option>
+                        <option value="yearly" <%= filters.period === 'yearly' ? 'selected' : '' %>>This Year</option>
+                        <option value="custom" <%= filters.period === 'custom' ? 'selected' : '' %>>Custom Date</option>
+                    </select>
+
+                    <div id="customDateInputs" class="<%= filters.period === 'custom' ? '' : 'hidden' %>" style="display: flex; gap: 10px;">
+                        <input type="date" name="startDate" value="<%= filters.startDate %>" class="form-control" placeholder="Start Date">
+                        <input type="date" name="endDate" value="<%= filters.endDate %>" class="form-control" placeholder="End Date">
+                    </div>
+
+                    <button type="submit" class="btn-download" style="background-color: #333; color: white;">
+                        <i class="fas fa-filter"></i> Apply Filter
+                    </button>
+                </form>
+            </div>
+
+            <!-- SUMMARY CARDS -->
+            <div class="stats-cards">
+                <div class="stat-card">
+                    <div class="stat-icon bg-blue"><i class="fas fa-money-bill-wave"></i></div>
+                    <div>
+                        <p style="margin:0; color:#666; font-size:12px;">Total Sales</p>
+                        <h3 style="margin:0; font-size:24px;">₹<%= stats.amount.toLocaleString() %></h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon bg-green"><i class="fas fa-shopping-bag"></i></div>
+                    <div>
+                        <p style="margin:0; color:#666; font-size:12px;">Total Orders</p>
+                        <h3 style="margin:0; font-size:24px;"><%= stats.count %></h3>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon bg-orange"><i class="fas fa-tag"></i></div>
+                    <div>
+                        <p style="margin:0; color:#666; font-size:12px;">Total Discount</p>
+                        <h3 style="margin:0; font-size:24px;">₹<%= stats.discount.toLocaleString() %></h3>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DATA TABLE -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Payment</th>
+                            <th>Status</th>
+                            <th style="text-align: right;">Total Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% if(orders.length > 0) { %>
+                            <% orders.forEach(order => { %>
+                            <tr>
+                                <td style="font-weight: bold; color: #333;"><%= order.order_number %></td>
+                                <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+                                <td><%= order.payment_method %></td>
+                                <td>
+                                    <span style="padding: 4px 8px; border-radius: 12px; font-size: 12px; background: #e8f5e9; color: #2e7d32;">
+                                        <%= order.status.toUpperCase() %>
+                                    </span>
+                                </td>
+                                <td style="text-align: right; font-weight: bold;">₹<%= order.final_total %></td>
+                            </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr><td colspan="5" style="text-align: center; color: #888;">No orders found for this period.</td></tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/js/admin/salesReport.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+</html>

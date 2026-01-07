@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h1 { text-align: center; color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .summary { margin-top: 20px; text-align: right; }
+    </style>
+</head>
+<body>
+    <h1>Sales Report (<%= period.toUpperCase() %>)</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Discount</th>
+                <th>Amount</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% orders.forEach(order => { %>
+            <tr>
+                <td><%= order.order_number %></td>
+                <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
+                <td><%= order.status %></td>
+                <td>₹<%= order.discount_amount || 0 %></td>
+                <td>₹<%= order.final_total %></td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+
+    <div class="summary">
+        <h3>Total Sales: ₹<%= stats.amount %></h3>
+        <h3>Total Discount: ₹<%= stats.discount %></h3>
+        <h3>Total Count: <%= stats.count %></h3>
+    </div>
+</body>
+</html>
