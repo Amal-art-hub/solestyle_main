@@ -1,183 +1,189 @@
-/* Sticky Footer Setup */
+/* Professional Profile Layout with Full Width Footer */
 body {
+    background-color: #f8f9fa;
+    /* Light Gray Background */
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    width: 100%;
+    /* Ensure body isn't constrained */
+    margin: 0;
 }
 
-/* Container */
 .dashboard-container {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 40px auto;
-    padding: 20px;
-    font-family: sans-serif;
+    padding: 0 20px;
     width: 100%;
     flex: 1;
-    /* This pushes the footer to the bottom */
+    /* Pushes footer down */
 }
 
-.profile-card {
+/* Force Footer to act normally */
+footer,
+.footer {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex-shrink: 0;
+}
+
+h2 {
+    font-size: 2rem;
+    margin-bottom: 25px;
+    color: #333;
+    font-weight: 600;
+}
+
+/* Card Styling */
+.profile-card,
+.address-section-link {
     background: #fff;
-    border: 1px solid #ddd;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
+    border: none;
+    padding: 30px;
+    border-radius: 12px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.profile-card:hover,
+.address-section-link:hover {
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
 }
 
 .info-row {
-    padding: 10px 0;
-    border-bottom: 1px solid #f0f0f0;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+}
+
+.info-row:last-child {
+    border-bottom: none;
 }
 
 .label {
-    font-weight: bold;
-    width: 100px;
-    display: inline-block;
+    font-weight: 600;
+    width: 150px;
     color: #555;
+    font-size: 0.95rem;
+}
+
+.value {
+    color: #333;
+    font-size: 1rem;
+    flex: 1;
 }
 
 /* Buttons */
 .actions {
-    margin-bottom: 30px;
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .btn-primary {
-    background: #000;
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 4px;
-    margin-right: 10px;
+    background: #111;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary:active {
+    transform: translateY(1px);
 }
 
 .btn-secondary {
-    background: #eee;
+    background: #fff;
+    border: 1px solid #ddd;
     color: #333;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    border-radius: 4px;
-    margin-right: 10px;
+}
+
+.btn-secondary:hover {
+    background: #f1f1f1;
+    border-color: #ccc;
 }
 
 .btn-link {
-    color: #000;
-    text-decoration: none;
-    margin-left: 10px;
-}
-
-/* Address Link Box */
-.address-section-link {
-    background: #f9f9f9;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px dashed #ccc;
-}
-
-.btn-outline {
-    display: inline-block;
-    border: 1px solid #000;
-    padding: 8px 16px;
-    text-decoration: none;
-    color: #000;
-    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    color: #666;
+    text-decoration: underline;
+    font-size: 0.9rem;
     margin-top: 10px;
 }
 
-.btn-outline:hover {
-    background: #000;
-    color: #fff;
-}
-
-/* Modals */
+/* Modal Styling */
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
+    z-index: 2000;
 }
 
 .modal-content {
     background: #fff;
-    padding: 30px;
+    padding: 40px;
     width: 90%;
-    max-width: 400px;
-    border-radius: 8px;
-    position: relative;
-    animation: slideDown 0.3s;
+    max-width: 500px;
+    border-radius: 16px;
+    box-shadow: 0 20px 25px rgba(0, 0, 0, 0.2);
+    animation: fadeInScale 0.2s ease-out;
 }
 
-@keyframes slideDown {
+@keyframes fadeInScale {
     from {
-        transform: translateY(-20px);
         opacity: 0;
+        transform: scale(0.95);
     }
 
     to {
-        transform: translateY(0);
         opacity: 1;
+        transform: scale(1);
     }
 }
 
+.modal-content h3 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #111;
+}
+
 .close-btn {
-    position: absolute;
-    right: 15px;
-    top: 10px;
-    font-size: 24px;
-    cursor: pointer;
+    top: 20px;
+    right: 20px;
+    font-size: 1.5rem;
+    color: #999;
 }
 
-.modal-content input {
-    width: 100%;
-    padding: 8px;
-    padding-right: 35px;
-    /* Space for eye icon */
-    margin: 10px 0 20px;
-    border: 1px solid #ddd;
-    display: block;
+.close-btn:hover {
+    color: #111;
 }
 
-.password-wrapper {
-    position: relative;
-    width: 100%;
+/* Coupon Style */
+.coupon-item {
+    transition: transform 0.2s;
 }
 
-.password-toggle {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-80%);
-    /* Adjusted because margin on input affects centering */
-    cursor: pointer;
-    color: #666;
-    z-index: 2;
-}
-
-.modal-actions {
-    text-align: right;
-}
-
-.btn-save {
-    background: #000;
-    color: #fff;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-.btn-cancel {
-    background: transparent;
-    border: 1px solid #ddd;
-    padding: 8px 16px;
-    border-radius: 4px;
-    margin-right: 10px;
-    cursor: pointer;
+.coupon-item:hover {
+    transform: translateX(5px);
 }
