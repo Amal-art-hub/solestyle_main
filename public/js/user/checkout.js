@@ -27,6 +27,11 @@ async function placeOrder() {
                     // C. Payment Success -> Place Actual Order
                     await submitFinalOrder(addressInput.value, 'Online', response);
                 },
+                  "modal": {
+                    "ondismiss": function() {
+                        Swal.fire('Payment Cancelled', 'You cancelled the payment process.', 'info');
+                    }
+                },
                 "prefill": {
                     "name": "User Name", // You can inject these values
                     "email": "user@example.com"
@@ -38,7 +43,7 @@ async function placeOrder() {
             rzp1.open();
             
             rzp1.on('payment.failed', function (response){
-                Swal.fire('Payment Failed', response.error.description, 'error');
+                  window.location.href = '/checkout/payment-failure';
             });
 
         } catch (error) {

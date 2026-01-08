@@ -1,0 +1,79 @@
+<link rel="stylesheet" href="/css/user/homestyle.css">
+<%- include("../partials/header") %>
+<style>
+    .failure-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 60vh;
+        text-align: center;
+        padding: 20px;
+    }
+    .failure-icon {
+        font-size: 80px;
+        color: #dc3545;
+        margin-bottom: 20px;
+    }
+    .failure-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 10px;
+        color: #333;
+    }
+    .failure-message {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 30px;
+        max-width: 500px;
+    }
+    .action-buttons {
+        display: flex;
+        gap: 15px;
+    }
+    .btn-retry {
+        background-color: #dc3545;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background 0.3s;
+    }
+    .btn-retry:hover {
+        background-color: #c82333;
+    }
+    .btn-cart {
+        background-color: #f8f9fa;
+        color: #333;
+        padding: 12px 30px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: background 0.3s;
+    }
+    .btn-cart:hover {
+        background-color: #e2e6ea;
+    }
+</style>
+
+<div class="failure-container">
+    <div class="failure-icon">
+        <i class="fas fa-times-circle"></i>
+    </div>
+    <h1 class="failure-title">Payment Failed</h1>
+    <p class="failure-message">
+        We couldn't process your payment. This might be due to a network issue or a declined transaction. Don't worry, you haven't been charged.
+    </p>
+    <div class="action-buttons">
+        <a href="/checkout" class="btn-retry">
+            <i class="fas fa-redo-alt"></i> Retry Payment
+        </a>
+        <a href="/user/cart" class="btn-cart">
+            Go to Cart
+        </a>
+    </div>
+</div>
+
+<%- include("../partials/footer") %>

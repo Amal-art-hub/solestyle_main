@@ -140,6 +140,17 @@ const createRazorpayOrder = async (req, res) => {
     }
 };
 
+const paymentFailed = async (req, res) => {
+    try {
+        res.render("paymentFailure", {
+            user: req.session.user,
+        });
+    } catch (error) {
+        console.error("Payment Failure Page Error:", error);
+        res.status(500).render("page-404");
+    }
+};
+
 
 
 module.exports={
@@ -148,5 +159,6 @@ module.exports={
     orderSuccess,
     applyCoupen,
     removeCoupon,
-    createRazorpayOrder
+    createRazorpayOrder,
+    paymentFailed
 }

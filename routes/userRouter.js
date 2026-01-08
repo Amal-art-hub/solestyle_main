@@ -121,6 +121,8 @@ router.post("/checkout/apply-coupon",checkUserStatus,checkoutController.applyCou
 router.post("/checkout/remove-coupon", checkUserStatus, checkoutController.removeCoupon);
 //----------------------------------------------------------------------------------------razorpay
 router.post("/checkout/razorpay-order",checkUserStatus,checkoutController.createRazorpayOrder);
+router.get("/checkout/payment-failure", checkUserStatus, checkoutController.paymentFailed);
+
 
 //==========================================================================================orders
 
