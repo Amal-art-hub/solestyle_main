@@ -1,5 +1,6 @@
 const User = require("../../models/user.js");
-const Address=require("../../models/address.js")
+const Address=require("../../models/address.js");
+const Coupon = require("../../models/Coupen");
 const bcrypt = require("bcrypt");
 const { generateOtp, sendVerificationEmail } = require("./userService");
 
@@ -151,6 +152,24 @@ const deleteAddressServic = async (addressId, userId) => {
 };
 
 
+const getCoupons = async (userId) => {
+    try {
+        const currentDate = new Date();
+        
+        return await Coupon.find({ 
+            $or: [
+                { userId: userId }, 
+                { userId: null }    
+            ],
+            status: 'active',
+            expiry_date: { $gte: currentDate } 
+        }).sort({ createdAt: -1 }); 
+        
+    } catch (error) {
+        throw error;
+    }
+}
+
 
 module.exports = {
     getUserProfile,
@@ -161,5 +180,6 @@ module.exports = {
     getAddressByUserId,
     addAddressService,
     editAddressService,
-    deleteAddressServic
+    deleteAddressServic,
+    getCoupons
 }

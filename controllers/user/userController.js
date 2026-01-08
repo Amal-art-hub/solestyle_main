@@ -85,7 +85,7 @@ const verifyOtp = async (req, res) => {
 // Signup handler – generate OTP and redirect to verification page
 const signup = async (req, res) => {
   try {
-    const { firstName, lastName, email, phone, password, confirmPassword } =
+    const { firstName, lastName, email, phone, password, confirmPassword ,referralCode } =
       req.body;
     if (password !== confirmPassword) {
       return res.json({ message: "Password do not match" });
@@ -115,10 +115,10 @@ const signup = async (req, res) => {
     if (!emailSent) {
       return res.json({ message: "Failed to send verification email" });
     }
-    // Store OTP and user data in session for later creation
+ 
     req.session.userOtp = otp;
-    req.session.userData = { firstName, lastName, email, phone, password };
-    // Return JSON with redirect URL for client-side navigation
+    req.session.userData = { firstName, lastName, email, phone, password,referralCode  };
+  
     return res.json({ success: true, redirect: "/verify-otp" });
   } catch (error) {
     console.error("signup error", error);

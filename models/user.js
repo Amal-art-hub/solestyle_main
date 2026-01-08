@@ -9,6 +9,16 @@ const userSchema = new mongoose.Schema({
   phone: { type: String, unique: true ,sparse:true,default:null},
   isVerified: { type: Boolean, default: false },
   isBlock: { type: Boolean, default: false },
+    referralCode: {
+    type: String,
+    unique: true,
+    sparse: true // Important: Allows multiple users to have 'null' if they have no code
+  },
+  referredBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    default: null
+  },
   // address_ids: [{ type: mongoose.Schema.Types.ObjectId, ref: "Address" }],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },

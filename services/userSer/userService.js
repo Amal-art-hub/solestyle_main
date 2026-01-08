@@ -1,4 +1,5 @@
 const User = require("../../models/user.js");
+const Coupon = require("../../models/Coupen");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 const statusCode = require("../../utils/statusCodes.js");
@@ -49,14 +50,46 @@ async function checkExistingUser(email) {
 }
 
 // Create a new user and save to DB
-async function createUser({ firstName, lastName, email, phone, password }) {
+// Create a new user with Referral Logic
+async function createUser({ firstName, lastName, email, phone, password, referralCode }) {
   const name = `${firstName} ${lastName}`;
+  
+  // 1. Generate a Code for THIS new user (e.g. JOHN4821)
+  const myReferralCode = firstName.toUpperCase() + Math.floor(1000 + Math.random() * 9000);
+
+  let referredByUserId = null;
+
+  // 2. Check if they were invited (Referral Code provided)
+  if (referralCode) {
+      const referrer = await User.findOne({ referralCode: referralCode });
+      if (referrer) {
+          referredByUserId = referrer._id;
+          
+          // 3. Give Reward to Referrer (Create a Coupon)
+          const rewardCoupon = new Coupon({
+              code: `REF-${Math.floor(100000 + Math.random() * 900000)}`, // Unique coupon code
+              description: `Referral Reward for inviting ${name}`,
+              discount_type: "Percentage",
+              discount_value: 20, // 20% Reward!
+              mincart_value: 500,
+              expiry_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Expires in 7 days
+              userId: referrer._id,
+              status: "active"
+          });
+          await rewardCoupon.save();
+          console.log(`Referral Reward given to ${referrer.name}`);
+      }
+  }
+
   const newUser = new User({
     name,
     email,
     phone,
     password,
+    referralCode: myReferralCode, // Save their new code
+    referredBy: referredByUserId  // Link them to who invited them
   });
+  
   return await newUser.save();
 }
 
@@ -80,8 +113,9 @@ async function verifyOtpService(session, otp) {
     }
 
     // OTP is correct – create user
-    const { firstName, lastName, email, phone, password } = session.userData;
-    await createUser({ firstName, lastName, email, phone, password });
+    const { firstName, lastName, email, phone, password,referralCode  } = session.userData;
+
+    await createUser({ firstName, lastName, email, phone, password,referralCode  });
 
     // Clean up session
     session.userOtp = null;

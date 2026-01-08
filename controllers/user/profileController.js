@@ -7,7 +7,8 @@ const {
     getAddressByUserId,
     addAddressService,
     editAddressService,
-    deleteAddressServic
+    deleteAddressServic,
+    getCoupons
 
 } = require("../../services/userSer/profileServices");
 const statusCode = require("../../utils/statusCodes");
@@ -18,8 +19,11 @@ const statusCode = require("../../utils/statusCodes");
 //--------------------------------------------------------------------------------- Load User Profile
 const loadProfile = async (req, res) => {
     try {
-        const user = await getUserProfile(req.session.user._id);
-        res.render("profile", { user })
+           const userId = req.session.user._id; 
+        
+        const user = await getUserProfile(userId);
+        const coupons = await getCoupons(userId); 
+        res.render("profile", { user,coupons })
     } catch (error) {
         console.error("Profile looad Error:", error);
         res.redirect("/");

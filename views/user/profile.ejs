@@ -16,11 +16,21 @@
                 </span></div>
             <div class="info-row"><span class="label">Phone:</span> <span class="value">
                     <%= user.phone || 'Not set' %>
-                </span></div>
+<div class="info-row">
+                <span class="label">Referral Code:</span> 
+                <span class="value" style="color: #27ae60; font-weight: bold; cursor: pointer;" 
+                      onclick="navigator.clipboard.writeText(this.innerText); Swal.fire('Copied!', 'Code copied to clipboard', 'success')">
+                    <%= user.referralCode || 'Generate one by buying something!' %>
+                </span>
+                <span style="font-size: 0.8rem; color: #888;">(Click to copy)</span>
+            </div>
         </div>
         <div class="actions">
             <button onclick="openModal('editModal')" class="btn-primary">Edit Profile</button>
             <button onclick="openModal('passwordModal')" class="btn-secondary">Change Password</button>
+            <button onclick="openModal('couponModal')" class="btn-primary" style="background-color: #27ae60;">
+        <i class="fas fa-gift"></i> My Rewards
+    </button>
             <a href="/user/profile/email" class="btn-link">Change Email</a>
         </div>
         <div class="address-section-link">
@@ -75,6 +85,31 @@
                     <button type="submit" class="btn-save">Update</button>
                 </div>
             </form>
+        </div>
+    </div>
+        <!-- Coupon Modal -->
+    <div id="couponModal" class="modal-overlay" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <span class="close-btn" onclick="closeModal('couponModal')">&times;</span>
+            <h3 style="text-align:center; color: #2c3e50;">🎁 My Rewards</h3>
+            
+            <div class="coupon-list" style="margin-top: 20px;">
+                <% if (coupons && coupons.length > 0) { %>
+                    <% coupons.forEach(coupon => { %>
+                        <div class="coupon-item" style="background: #f8f9fa; padding: 15px; margin-bottom: 10px; border-left: 5px solid #27ae60; border-radius: 4px;">
+                            <div style="font-weight: bold; font-size: 1.1rem; color: #27ae60;"><%= coupon.code %></div>
+                            <div style="color: #666;"><%= coupon.description %></div>
+                            <div style="font-size: 0.9rem; margin-top: 5px;">
+                                <strong><%= coupon.discount_value %>% OFF</strong> 
+                                (Min Order: ₹<%= coupon.mincart_value %>)
+                            </div>
+                            <div style="font-size: 0.8rem; color: #999;">Expires: <%= new Date(coupon.expiry_date).toLocaleDateString() %></div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <p style="text-align: center;">You have no rewards yet. Invite friends to earn them!</p>
+                <% } %>
+            </div>
         </div>
     </div>
     <script src="/js/user/profile.js"></script>

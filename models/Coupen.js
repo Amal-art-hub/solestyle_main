@@ -14,6 +14,7 @@ const couponSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User' 
   }],
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
 
   status: { type: String, enum: ["active", "inactive"], default: "active" }
 
