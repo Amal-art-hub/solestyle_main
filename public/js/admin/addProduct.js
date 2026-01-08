@@ -9,6 +9,10 @@ const imageCounter = document.getElementById('imageCounter');
 let croppedFiles = [];
 let filesToProcess = [];
 let currentFileIndex = 0;
+
+
+if (imageInput) { 
+
 imageInput.addEventListener('change', (e) => {
   const files = Array.from(e.target.files);
   
@@ -31,6 +35,8 @@ imageInput.addEventListener('change', (e) => {
   
   processNextImage();
 });
+}
+
 function processNextImage() {
   if (currentFileIndex < filesToProcess.length) {
     const file = filesToProcess[currentFileIndex];
@@ -59,6 +65,9 @@ function processNextImage() {
     cropperContainer.style.display = 'none';
   }
 }
+
+if (cropBtn) { 
+
 cropBtn.addEventListener('click', () => {
   if (!cropper) return;
   
@@ -76,17 +85,69 @@ cropBtn.addEventListener('click', () => {
     processNextImage();
   }, 'image/jpeg', 0.95);
 });
+}
+
+
+
+
+
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
+
   
-  if (croppedFiles.length < 3) {
+  // 1. Get Values
+  const name = document.getElementById('name').value.trim();
+  const desc = document.getElementById('description').value.trim();
+  const cat = document.getElementById('category').value;
+  const brand = document.getElementById('brand').value;
+
+  // 2. Validate Empty Fields
+  // 2. Validate Empty Fields with SweetAlert
+  if (!name) {
+      Swal.fire({
+          icon: 'error',
+          title: 'Missing Input',
+          text: 'Product Name is required!',
+          confirmButtonColor: '#d33'
+      });
+      return;
+  }
+  if (!description) { // Make sure variable name matches (desc vs description)
+      Swal.fire({
+          icon: 'error',
+          title: 'Missing Input',
+          text: 'Description is required!',
+          confirmButtonColor: '#d33'
+      });
+      return;
+  }
+  if (!category) {
+      Swal.fire({
+          icon: 'warning',
+          title: 'Selection Needed',
+          text: 'Please select a Category!',
+          confirmButtonColor: '#f39c12'
+      });
+      return;
+  }
+  if (!brand) {
+      Swal.fire({
+          icon: 'warning',
+          title: 'Selection Needed',
+          text: 'Please select a Brand!',
+          confirmButtonColor: '#f39c12'
+      });
+      return;
+  }
+  
+  if (cropBtn && croppedFiles.length < 3) {
     alert('Please crop at least 3 images');
     return;
   }
   
   const formData = new FormData(form);
   
-  // Clear original file input
+  //Clear original file input
   formData.delete('images');
   
   // Add cropped images

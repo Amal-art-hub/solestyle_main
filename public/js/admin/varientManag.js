@@ -147,9 +147,53 @@ window.onclick = function (event) {
 }
 
 // Toggle Variant Listing
-async function toggleVariant(button) {
-  const variantId = button.dataset.id;
+// async function toggleVariant(button) {
+//   const variantId = button.dataset.id;
 
+//   try {
+//     const response = await fetch(`/admin/variants/${variantId}/toggle-listing`, {
+//       method: 'PATCH',
+//       headers: {
+//         'Content-Type': 'application/json'
+//       }
+//     });
+
+//     const result = await response.json();
+
+//     if (result.success) {
+//       location.reload();
+//     } else {
+//       alert(result.message || 'Error toggling variant');
+//     }
+//   } catch (error) {
+//     console.error('Error:', error);
+//     alert('Error toggling variant');
+//   }
+// }
+
+
+/* REPLACE THE OLD FUNCTION WITH THIS NEW ONE */
+async function toggleVariant(button) {
+  // 1. Get the ID needed for the action
+  const variantId = button.dataset.id;
+  
+  // 2. The New "Gate" (Confirmation Popup)
+  const confirmation = await Swal.fire({
+      title: 'Are you sure?',
+      text: "Do you want to change the status of this variant?",
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, change it!'
+  });
+
+  // 3. Stop if they said "Cancel"
+  if (!confirmation.isConfirmed) {
+      return;
+  }
+
+  // 4. Send Request (Only runs if Confirmed)
   try {
     const response = await fetch(`/admin/variants/${variantId}/toggle-listing`, {
       method: 'PATCH',
@@ -161,13 +205,19 @@ async function toggleVariant(button) {
     const result = await response.json();
 
     if (result.success) {
+      // Optional: Show Success Popup before reloading
+      await Swal.fire(
+        'Success!',
+        'Variant status has been updated.',
+        'success'
+      );
       location.reload();
     } else {
-      alert(result.message || 'Error toggling variant');
+      Swal.fire('Error', result.message || 'Error toggling variant', 'error');
     }
   } catch (error) {
     console.error('Error:', error);
-    alert('Error toggling variant');
+    Swal.fire('Error', 'An error occurred. Please try again.', 'error');
   }
 }
 
