@@ -1,0 +1,77 @@
+<%- include("../partials/header") %>
+<!-- Link to your main style and the new wishlist style -->
+<link rel="stylesheet" href="/css/user/homestyle.css">
+<link rel="stylesheet" href="/css/user/wishlist.css">
+
+<div class="wishlist-wrapper">
+    <div class="wishlist-header">
+        <h1>My Wishlist ❤️</h1>
+        <p class="wishlist-count"><%= wishlist.length %> Items</p>
+    </div>
+
+    <% if (wishlist.length > 0) { %>
+        <div class="wishlist-grid">
+            <% wishlist.forEach(item => { %>
+                <div class="wishlist-card" id="wishlist-item-<%= item._id %>">
+                    <!-- Remove Button (Top Right) -->
+                    <button class="btn-remove-icon" onclick="removeFromWishlist('<%= item._id %>')" title="Remove">
+                        <i class="fas fa-times"></i>
+                    </button>
+
+                    <!-- Product Image (FIXED: Uses Variant Image) -->
+                    <div class="card-image">
+                        <!-- Check if variant images exist to prevent crash -->
+                        <% if(item.variant_id && item.variant_id.images && item.variant_id.images.length > 0) { %>
+                            <img src="/uploads/variant-images/<%= item.variant_id.images[2] %>" 
+                                 alt="<%= item.products_id.name %>">
+                        <% } else { %>
+                             <img src="/images/no-image.png" alt="No Image">
+                        <% } %>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="card-content">
+                        <!-- FIXED: Uses .name instead of .productName -->
+                        <h3 class="product-name"><%= item.products_id.name %></h3>
+                        <p class="product-variant">Size: <%= item.variant_id.size %></p>
+                        
+                        <div class="price-row">
+                             <!-- FIXED: Uses Variant Price logic -->
+                            <% if (item.variant_id.offerPrice) { %>
+                                <span class="sale-price">₹<%= item.variant_id.offerPrice %></span>
+                                <span class="regular-price">₹<%= item.variant_id.price %></span>
+                            <% } else { %>
+                                <span class="sale-price">₹<%= item.variant_id.price %></span>
+                            <% } %>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="card-actions">
+                            <!-- Link to specific variant -->
+                            <a href="/product/<%= item.products_id._id %>?variantId=<%= item.variant_id._id %>" class="btn-view">
+                                View Details
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    <% } else { %>
+        <!-- Empty State -->
+        <div class="empty-state">
+            <div class="empty-icon">
+                <i class="far fa-heart"></i>
+            </div>
+            <h2>Your wishlist is empty</h2>
+            <p>Save items you want to buy later!</p>
+            <a href="/mens-products" class="btn-explore">Explore Products</a>
+        </div>
+    <% } %>
+</div>
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="/js/user/wishlist.js"></script>
+
+<%- include("../partials/footer") %>

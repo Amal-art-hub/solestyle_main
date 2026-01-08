@@ -157,6 +157,7 @@
                         </div>
 
                         <input type="hidden" id="selectedVariantId" value="<%= currentVariant._id %>">
+                        <input type="hidden" id="productId" value="<%= product._id %>">
 
                         <div class="action-buttons">
                             <button class="btn-add-cart" onclick="addToCart()">
@@ -167,7 +168,7 @@
                                     
                                     Proceed to Checkout
                                 </button> -->
-                            <button class="btn-wishlist"><i class="fa fa-heart"></i></button>
+                            <button class="btn-wishlist" onclick="addToWishlist()"><i class="fa fa-heart"></i></button>
                         </div>
 
                         <div class="delivery-info">

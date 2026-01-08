@@ -1,0 +1,201 @@
+/* Container Layout */
+.wishlist-wrapper {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 0 20px;
+    min-height: 60vh;
+}
+
+.wishlist-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+.wishlist-header h1 {
+    font-size: 2rem;
+    color: #333;
+    margin: 0;
+}
+
+.wishlist-count {
+    font-size: 1rem;
+    color: #777;
+    font-weight: 500;
+}
+
+/* Grid Layout */
+.wishlist-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+/* Card Styling */
+.wishlist-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    position: relative;
+    border: 1px solid #f1f1f1;
+}
+
+.wishlist-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+/* Remove Button */
+.btn-remove-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #dc3545;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: all 0.2s;
+    z-index: 2;
+}
+
+.btn-remove-icon:hover {
+    background: #dc3545;
+    color: #fff;
+    transform: rotate(90deg);
+}
+
+/* Image */
+.card-image {
+    height: 250px;
+    width: 100%;
+    background: #f8f9fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-image img {
+    /* Use 'contain' or 'cover' depending on your preference */
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+}
+
+/* Content */
+.card-content {
+    padding: 20px;
+}
+
+.product-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 5px 0;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-variant {
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 15px;
+}
+
+.price-row {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+}
+
+.sale-price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+.regular-price {
+    font-size: 0.9rem;
+    color: #aaa;
+    text-decoration: line-through;
+}
+
+/* Buttons */
+.card-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-view {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    background: #333;
+    color: #fff;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: background 0.3s;
+}
+
+.btn-view:hover {
+    background: #555;
+    color: #fff;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px dashed #ddd;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: #ddd;
+    margin-bottom: 20px;
+}
+
+.empty-state h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.empty-state p {
+    color: #777;
+    margin-bottom: 30px;
+}
+
+.btn-explore {
+    display: inline-block;
+    padding: 12px 35px;
+    background: #007bff;
+    color: #fff;
+    border-radius: 30px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+
+.btn-explore:hover {
+    background: #0056b3;
+    transform: translateY(-2px);
+}

@@ -117,7 +117,7 @@ const getKidsProducts = async (req, res) => {
     try {
         const categoryId = req.query.category;
 
-        // Fix 1: Check correct variable
+       
         if (!categoryId) {
             return res.redirect("/");
         }
@@ -126,16 +126,15 @@ const getKidsProducts = async (req, res) => {
         const search = req.query.search || "";
         const sort = req.query.sort || "newest";
 
-        const filters = { // Fix 2: Renamed to plural to match usage
+        const filters = { 
             brand: req.query.brand,
             minPrice: req.query.minPrice,
             maxPrice: req.query.maxPrice
         };
 
-        // Fix 3: Added await
+        
         const data = await getProductsByCategory(categoryId, page, 12, search, sort, filters);
 
-        // Fix 4: Correct object syntax for render
         res.render("mensProducts", {
             ...data,
             search,

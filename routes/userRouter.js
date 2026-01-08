@@ -9,6 +9,7 @@ const checkoutController = require("../controllers/user/checkoutController");
 const orderDetailController = require("../controllers/user/orderDetailController");
 const ordersController = require("../controllers/user/ordersController");
 const walletController = require("../controllers/user/walletController");
+const wishlistController = require("../controllers/user/wishlistController");
 
 console.log(cartController);
 
@@ -150,6 +151,12 @@ router.get("/user/orders/invoice/:orderId", checkUserStatus, orderDetailControll
 //-----------------------------------------------------------------------------------------wallet
 
 router.get("/user/wallet",checkUserStatus,walletController.loadWalletPage);
+
+
+//wishlist
+router.get("/user/wishlist",checkUserStatus,wishlistController.loadWishlist);
+router.post("/user/wishlist/add", checkUserStatus, wishlistController.addToWishlist);
+router.delete("/user/wishlist/remove/:id", checkUserStatus, wishlistController.removeFromWishlist);
 
 
 

@@ -201,6 +201,71 @@ async function addToCart() {
 }
 
 
+/* Add this function at the bottom of public/js/user/productDetails.js */
+
+async function addToWishlist() {
+    // 1. Get IDs from Hidden Inputs (The "Better" Way)
+    const variantId = document.getElementById('selectedVariantId').value;
+    // NOTE: Make sure you added <input type="hidden" id="productId" value="<%= product._id %>"> in EJS
+    const productId = document.getElementById('productId') ? document.getElementById('productId').value : null;
+
+    // 2. Validation
+    if (!variantId) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Please select a size',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000
+        });
+        return;
+    }
+    
+    // Fallback if forgotten in EJS (Safety First!)
+    if (!productId) {
+         console.error("Product ID missing in EJS");
+         return;
+    }
+
+    try {
+        // 3. Send Request
+        const response = await axios.post('/user/wishlist/add', {
+            productId: productId,
+            variantId: variantId
+        });
+
+        if (response.data.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Added to Wishlist',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        } else {
+             // If "Item already in wishlist"
+            Swal.fire({
+                icon: 'info',
+                title: 'Info',
+                text: response.data.message
+            });
+        }
+    } catch (error) {
+        if (error.response && error.response.status === 401) {
+             // Not logged in -> Go to login
+            window.location.href = '/login';
+        } else {
+            console.error(error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: error.response?.data?.message || 'Error adding to wishlist'
+            });
+        }
+    }
+}
+
+
 
 
 

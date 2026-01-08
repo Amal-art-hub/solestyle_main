@@ -91,6 +91,10 @@
                                     </p>
                                 </div>
                             </a>
+                                <button class="wishlist-btn" onclick="addToWishlist('<%= p._id %>', '<%= p.variantId %>')">
+        <i class="fas fa-heart"></i>
+    </button>
+                            
                         </div>
                         <% }) %>
                 </div>
@@ -106,6 +110,47 @@
             </main>
         </div>
         <%- include('../partials/footer') %>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script>
+    async function addToWishlist(productId, variantId) {
+        try {
+            if (!productId || !variantId) {
+                return Swal.fire('Error', 'Product info missing', 'error');
+            }
+            const response = await axios.post('/user/wishlist/add', {
+                productId, variantId
+            });
+            
+            if (response.data.success) {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Added to Wishlist',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            } else {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'info',
+                    title: response.data.message, // e.g., "Already in wishlist"
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            }
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                window.location.href = '/login'; // Redirect if not logged in
+            } else {
+                console.error(error);
+                Swal.fire('Error', 'Something went wrong', 'error');
+            }
+        }
+    }
+</script>
 </body>
 
 </html>

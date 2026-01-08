@@ -5,7 +5,7 @@ const Variant = require('../../models/varient');
 const Brand = require('../../models/brand');
 const Category = require('../../models/category');
 const Feedback = require('../../models/feedback');
-const Offers=require("../../models/offers");
+const Offers = require("../../models/offers");
 
 
 
@@ -33,15 +33,15 @@ const calculateFinalPrice = async (product, originalPrice) => {
 
 
     for (const offer of activeOffers) {
-        
+
         if (offer.type === 'product' && offer.product_ids.includes(product._id)) {
             if (offer.discount_percentage > bestDiscount) {
                 bestDiscount = offer.discount_percentage;
             }
         }
-      
+
         const catId = product.categoryId._id ? product.categoryId._id.toString() : product.categoryId.toString();
-        
+
         if (offer.type === 'category' && offer.category_ids.map(id => id.toString()).includes(catId)) {
             if (offer.discount_percentage > bestDiscount) {
                 bestDiscount = offer.discount_percentage;
@@ -49,14 +49,14 @@ const calculateFinalPrice = async (product, originalPrice) => {
         }
     }
 
-  
+
     if (bestDiscount > 0) {
         const discountAmount = (originalPrice * bestDiscount) / 100;
         const finalPrice = Math.round(originalPrice - discountAmount);
         return { finalPrice, bestDiscount };
     }
 
-    
+
     return { finalPrice: originalPrice, bestDiscount: 0 };
 };
 
@@ -93,33 +93,34 @@ const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = 
         let processedProducts = await Promise.all(products.map(async (p) => {
             const variants = await Variant.find({ productId: p._id, isListed: true }).sort({ price: 1 });
 
-            if (!variants.length) return null; 
+            if (!variants.length) return null;
             const basePrice = variants[0].price;
             const { finalPrice, bestDiscount } = await calculateFinalPrice(p, basePrice);
             return {
                 ...p,
-                image: variants[0].images[2], 
-                price: finalPrice,  
-                originalPrice: basePrice,   
+                image: variants[0].images[2],
+                price: finalPrice,
+                originalPrice: basePrice,
                 discount: bestDiscount,
-                stock: variants.reduce((acc, v) => acc + v.stock, 0) 
+                stock: variants.reduce((acc, v) => acc + v.stock, 0),
+                  variantId: variants[0]._id
             };
         }));
-       
+
         processedProducts = processedProducts.filter(p => p !== null);
-        
+
         if (filters.minPrice || filters.maxPrice) {
             const min = parseFloat(filters.minPrice) || 0;
             const max = parseFloat(filters.maxPrice) || Infinity;
             processedProducts = processedProducts.filter(p => p.price >= min && p.price <= max);
         }
-        
+
         if (sort === 'price-low') {
             processedProducts.sort((a, b) => a.price - b.price);
         } else if (sort === 'price-high') {
             processedProducts.sort((a, b) => b.price - a.price);
         }
-    
+
         const totalProducts = processedProducts.length;
         const finalProducts = processedProducts.slice(skip, skip + limit);
         return {
@@ -152,11 +153,11 @@ const getProductDetailService = async (productId) => {
     if (!product) return null;
     let variants = await Variant.find({ productId: product._id, isListed: true }).sort({ price: 1 }).lean();
 
-      variants = await Promise.all(variants.map(async (v) => {
+    variants = await Promise.all(variants.map(async (v) => {
         const { finalPrice, bestDiscount } = await calculateFinalPrice(product, v.price);
         return {
             ...v,
-            discountedPrice: finalPrice,  
+            discountedPrice: finalPrice,
             basePrice: v.price,
             offerPercentage: bestDiscount
         };
@@ -173,12 +174,14 @@ const getProductDetailService = async (productId) => {
         const v = await Variant.findOne({ productId: p._id }).sort({ price: 1 });
         const basePrice = v?.price || 0;
         const { finalPrice, bestDiscount } = await calculateFinalPrice(p, basePrice);
-        return { ...p,
-             image: v?.images[2],
-              price: finalPrice,
+        return {
+            ...p,
+            image: v?.images[2],
+            price: finalPrice,
             originalPrice: basePrice,
             discount: bestDiscount,
-              variantId: v?._id };
+            variantId: v?._id
+        };
     }));
 
 
@@ -202,16 +205,16 @@ const getProductDetailService = async (productId) => {
 
 const getTrendingProducts = async () => {
     try {
-       
+
         const fetchByCategory = async (categoryName) => {
-            
+
             const category = await Category.findOne({ name: categoryName, isListed: true });
             if (!category) return [];
             const products = await Product.find({ categoryId: category._id, isListed: true })
                 .sort({ createdAt: -1 })
                 .limit(3)
                 .lean();
-            
+
             const processed = await Promise.all(products.map(async (p) => {
                 const variant = await Variant.findOne({ productId: p._id, isListed: true }).sort({ price: 1 });
                 if (variant) {
@@ -227,13 +230,13 @@ const getTrendingProducts = async () => {
 
             return processed.filter(p => p !== null);
         };
-        
+
         const [men, women, kids] = await Promise.all([
-            fetchByCategory('Men'),   
+            fetchByCategory('Men'),
             fetchByCategory('Women'),
             fetchByCategory('Kids')
         ]);
-  
+
         return { men, women, kids };
     } catch (error) {
         throw error;
