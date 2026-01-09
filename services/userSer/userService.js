@@ -1,5 +1,6 @@
 const User = require("../../models/user.js");
 const Coupon = require("../../models/Coupen");
+const Offers = require("../../models/offers");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 const statusCode = require("../../utils/statusCodes.js");
@@ -61,16 +62,28 @@ async function createUser({ firstName, lastName, email, phone, password, referra
 
   // 2. Check if they were invited (Referral Code provided)
   if (referralCode) {
-      const referrer = await User.findOne({ referralCode: referralCode });
+      const referrer = await User.findOne({ referralCode: referralCode .toUpperCase()});
       if (referrer) {
           referredByUserId = referrer._id;
+
+
+                   const today = new Date();
+          const activeReferralOffer = await Offers.findOne({
+              type: 'referral',
+              status: 'active',
+              start_date: { $lte: today },
+              end_date: { $gte: today }
+          });
+          // 2. Determine Discount (Default to 10% if no offer exists)
+          const discountVal = activeReferralOffer ? activeReferralOffer.discount_percentage : 10;
+          const description = activeReferralOffer ? activeReferralOffer.name : "Referral Reward";
           
           // 3. Give Reward to Referrer (Create a Coupon)
           const rewardCoupon = new Coupon({
               code: `REF-${Math.floor(100000 + Math.random() * 900000)}`, // Unique coupon code
-              description: `Referral Reward for inviting ${name}`,
+              description: `Referral Reward for inviting ${description}`,
               discount_type: "Percentage",
-              discount_value: 20, // 20% Reward!
+              discount_value: discountVal, 
               mincart_value: 500,
               expiry_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Expires in 7 days
               userId: referrer._id,

@@ -43,7 +43,9 @@ const loadHomepage = async (req, res) => {
 // Load signup page
 const loadSignup = async (req, res) => {
   try {
-    return res.render("signup");
+
+      const referralCode = req.query.ref || ""; 
+    return res.render("signup",{referralCode});
   } catch (error) {
     console.log("signup page error :", error);
     res.status(statusCode.INTERNAL_SERVER_ERROR).send("Server Error");

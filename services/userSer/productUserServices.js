@@ -23,6 +23,9 @@ const calculateFinalPrice = async (product, originalPrice) => {
     const today = new Date();
 
 
+    
+
+
     const activeOffers = await Offers.find({
         status: 'active',
         start_date: { $lte: today },
@@ -34,7 +37,7 @@ const calculateFinalPrice = async (product, originalPrice) => {
 
     for (const offer of activeOffers) {
 
-        if (offer.type === 'product' && offer.product_ids.includes(product._id)) {
+        if (offer.type === 'product' && offer.product_ids.some(id => id.toString() === product._id.toString())) {
             if (offer.discount_percentage > bestDiscount) {
                 bestDiscount = offer.discount_percentage;
             }
@@ -59,6 +62,56 @@ const calculateFinalPrice = async (product, originalPrice) => {
 
     return { finalPrice: originalPrice, bestDiscount: 0 };
 };
+
+
+// const calculateFinalPrice = async (product, originalPrice) => {
+//     const today = new Date();
+    
+//     // DEBUG 1: Check what 'Today' is
+//     console.log(`[DEBUG] Checking Price for: ${product.name} (ID: ${product._id})`);
+//     console.log(`[DEBUG] Today is: ${today.toISOString()}`);
+//     const activeOffers = await Offers.find({
+//         status: 'active',
+//         start_date: { $lte: today },
+//         end_date: { $gte: today }
+//     });
+//     // DEBUG 2: Did we find ANY active offers?
+//     console.log(`[DEBUG] Found ${activeOffers.length} active offers globally.`);
+//     let bestDiscount = 0;
+//     for (const offer of activeOffers) {
+//         // DEBUG 3: Check each offer
+//         console.log(`   > Checking Offer: "${offer.name}" (Type: ${offer.type}, %: ${offer.discount_percentage})`);
+        
+//         let matchFound = false;
+//         // CHECK PRODUCT MATCH
+//         if (offer.type === 'product') {
+//             const isMatch = offer.product_ids.some(id => id.toString() === product._id.toString());
+//             console.log(`     - Product Match? ${isMatch}`);
+//             if (isMatch) matchFound = true;
+//         }
+//         // CHECK CATEGORY MATCH
+//         const catId = product.categoryId._id ? product.categoryId._id.toString() : product.categoryId.toString();
+//         if (offer.type === 'category') {
+//              const isMatch = offer.category_ids.some(id => id.toString() === catId);
+//              console.log(`     - Category Match? ${isMatch} (Product CatID: ${catId})`);
+//              if (isMatch) matchFound = true;
+//         }
+//         if (matchFound) {
+//             if (offer.discount_percentage > bestDiscount) {
+//                 bestDiscount = offer.discount_percentage;
+//                 console.log(`     !!! NEW BEST DISCOUNT: ${bestDiscount}% !!!`);
+//             }
+//         }
+//     }
+//     if (bestDiscount > 0) {
+//         const discountAmount = (originalPrice * bestDiscount) / 100;
+//         const finalPrice = Math.round(originalPrice - discountAmount);
+//         return { finalPrice, bestDiscount };
+//     }
+//     return { finalPrice: originalPrice, bestDiscount: 0 };
+// };
+
+
 
 const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = '', sort = 'newest', filters = {}) => {
     try {

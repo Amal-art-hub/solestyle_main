@@ -92,13 +92,20 @@ async function returnOrderItem(orderId, itemId) {
     const { value: reason } = await Swal.fire({
         title: 'Return Item?',
         text: "Please provide a reason for return:",
-        input: 'text',
-        inputPlaceholder: 'Reason is required',
+        input: 'select',
+              inputOptions: {
+        'Changed Mind': 'Changed Mind',
+        'Ordered by Mistake': 'Ordered by Mistake',
+        'Found Cheaper Elsewhere': 'Found Cheaper Elsewhere',
+        'Shipping Too Slow': 'Shipping is too slow',
+        'Other': 'Other'
+    },
+        inputPlaceholder: 'Select the reason',
         showCancelButton: true,
         confirmButtonText: 'Submit Return Request',
         inputValidator: (value) => {
             if (!value) {
-                return 'You need to write a reason!'
+                return 'You need to select a reason!'
             }
         }
     });
@@ -178,11 +185,23 @@ const returnOrder = async (orderId) => {
         title: 'Return Entire Order?',
         text: "Are you sure? This will return all items in this order.",
         icon: 'warning',
-        input: 'text',
-        inputPlaceholder: 'Reason for return',
+        input: 'select',
+        inputOptions: {
+        'Changed Mind': 'Changed Mind',
+        'Ordered by Mistake': 'Ordered by Mistake',
+        'Found Cheaper Elsewhere': 'Found Cheaper Elsewhere',
+        'Shipping Too Slow': 'Shipping is too slow',
+        'Other': 'Other'
+    },
+        inputPlaceholder: 'Select a return',
         showCancelButton: true,
         confirmButtonColor: '#f39c12',
-        confirmButtonText: 'Yes, Return Order'
+        confirmButtonText: 'Yes, Return Order',
+                  inputValidator: (value) => {
+        if (!value) {
+            return 'You need to select a reason!'
+        }
+    }
     });
 
     if (reason) {

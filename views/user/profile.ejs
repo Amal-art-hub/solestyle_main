@@ -31,14 +31,35 @@
                 <div class="info-row"><span class="label">Phone:</span> <span class="value">
                         <%= user.phone || 'Not set' %>
                     </span></div>
-                <div class="info-row">
-                    <span class="label">Referral Code:</span>
-                    <span class="value" style="color: #27ae60; font-weight: bold; cursor: pointer;"
-                        onclick="navigator.clipboard.writeText(this.innerText); Swal.fire('Copied!', 'Code copied to clipboard', 'success')">
-                        <%= user.referralCode || 'Generate one by buying something!' %>
-                    </span>
-                    <span style="font-size: 0.8rem; color: #888;">(Click to copy)</span>
-                </div>
+            
+<div class="info-row referral-section">
+    <div class="referral-header">
+        <span class="label">Refer & Earn</span>
+        <span class="referral-badge">Get %20 Off!</span>
+    </div>
+    
+    <div class="referral-content">
+        <!-- 1. The Code -->
+        <div class="referral-box">
+            <span class="referral-label">Your Code:</span>
+            <div class="code-display" onclick="copyReferral('code', '<%= user.referralCode %>')">
+                <span id="refCode"><%= user.referralCode || 'N/A' %></span>
+                <i class="fas fa-copy"></i>
+            </div>
+        </div>
+        <!-- 2. The Link -->
+        <div class="referral-box">
+            <span class="referral-label">Your Link:</span>
+            <% const refLink = `http://localhost:5000/signup?ref=${user.referralCode}`; %>
+            <div class="link-display" onclick="copyReferral('link', '<%= refLink %>')">
+                <span class="link-text">/signup?ref=<%= user.referralCode %></span>
+                <i class="fas fa-link"></i>
+                <span class="tooltip">Copy Link</span>
+            </div>
+        </div>
+    </div>
+    <p class="referral-hint">Click the code or link to copy directly to your clipboard!</p>
+</div>
             </div>
             <div class="actions">
                 <button onclick="openModal('editModal')" class="btn-primary">Edit Profile</button>

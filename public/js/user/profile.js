@@ -39,3 +39,22 @@ function validatePassword(e) {
     }
     return true;
 }
+
+
+
+function copyReferral(type, text) {
+    if (!text || text === 'N/A') return;
+    
+    navigator.clipboard.writeText(text).then(() => {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: (type === 'code' ? 'Code' : 'Link') + ' copied!',
+            showConfirmButton: false,
+            timer: 2000
+        });
+    }).catch(err => {
+        console.error('Failed to copy', err);
+    });
+}
