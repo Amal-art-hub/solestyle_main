@@ -60,9 +60,10 @@
                                                         onclick="updateQty('<%= item._id %>', 'decrement')">
                                                         <i class="fa fa-minus"></i>
                                                     </button>
-                                                    <span class="qty-display">
+                                                    <!-- <span class="qty-display">
                                                         <%= item.quantity %>
-                                                    </span>
+                                                    </span> -->
+                                                    <span id="qty-display-<%= item._id %>" class="qty-display"><%= item.quantity %></span>
                                                     <button class="qty-btn"
                                                         onclick="updateQty('<%= item._id %>', 'increment')">
                                                         <i class="fa fa-plus"></i>
@@ -95,17 +96,19 @@
 
                         <div class="summary-row">
                             <span>Subtotal</span>
-                            <span>₹<%= total %></span>
+                            <span id="cart-subtotal">₹<%= total %></span>
                         </div>
                         <div class="summary-row">
                             <span>Delivery</span>
                             <span style="color: green;">Free</span>
                         </div>
                         <hr>
-                        <div class="summary-total">
+                        <!-- <div class="summary-total">
                             <span>Total</span>
                             <span>₹<%= total %></span>
-                        </div>
+                        </div> -->
+                        <span>Total</span>
+                        <span id="cart-total">₹<%= total %></span>
 
                         <% if (hasInvalidItems) { %>
                             <p class="summary-warning">

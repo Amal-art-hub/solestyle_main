@@ -6,12 +6,33 @@ async function updateQty(itemId, action) {
             action: action
         });
 
-        if (response.data.success) {
-            // Success: Reload to show new price/total
-            window.location.reload();
+        // if (response.data.success) {
+        //     // Success: Reload to show new price/total
+        //     // window.location.reload();
+        // }
+           if (response.data.success) {
+           
+            const qtyElement = document.getElementById(`qty-display-${itemId}`);
+            if (qtyElement) {
+              
+                qtyElement.innerText = response.data.newQty; 
+            }
+         
+            const totalElement = document.getElementById('cart-total');
+            if (totalElement) {
+              
+                totalElement.innerText = '₹' + response.data.cartTotal;
+            }
+            
+   
+            const subtotalElement = document.getElementById('cart-subtotal');
+            if (subtotalElement) {
+                 subtotalElement.innerText = '₹' + response.data.cartTotal;
+            }
+          
         }
     } catch (error) {
-        // Error handling (Stock Limit, Max Qty, etc)
+  
         const msg = error.response && error.response.data 
             ? error.response.data.message 
             : "Cannot update quantity";

@@ -48,9 +48,12 @@ try {
 const userId= req.session.user._id;
 const { itemId, action }= req.body;
 
-await updateQuantityService(userId, itemId, action);
+const result = await updateQuantityService(userId, itemId, action);
 
-        res.status(statusCode.OK).json({ success:true, message:"Quantity updated" });
+        res.status(statusCode.OK).json({ success:true, 
+            message:"Quantity updated",
+         newQty: result.newQty,
+        cartTotal: result.optTotal  });
 
     }catch (error) {
         res.status(statusCode.BAD_REQUEST).json({

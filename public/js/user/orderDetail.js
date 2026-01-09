@@ -37,21 +37,35 @@ const startOrderStatusRefresh = () => {
         } catch (error) {
             console.error('Error refreshing order status:', error);
         }
-    }, 5000); // Refresh every 5 seconds
+    }, 5000); 
 };
 
-// Start refresh when page loads
+
 window.addEventListener('load', startOrderStatusRefresh);
+
+
 
 const cancelOrderItem = async (orderId, itemId) => {
     const { value: reason } = await Swal.fire({
         title: 'Cancel this item?',
         text: "Please provide a reason for cancellation:",
-        input: 'text',
-        inputPlaceholder: 'Reason (optional)',
+        input: 'select',
+        inputOptions: {
+        'Changed Mind': 'Changed Mind',
+        'Ordered by Mistake': 'Ordered by Mistake',
+        'Found Cheaper Elsewhere': 'Found Cheaper Elsewhere',
+        'Shipping Too Slow': 'Shipping is too slow',
+        'Other': 'Other'
+    },
+        inputPlaceholder: 'Select a reason',
         showCancelButton: true,
         confirmButtonColor: '#d33',
-        confirmButtonText: 'Yes, Cancel Item'
+        confirmButtonText: 'Yes, Cancel Item',
+        inputValidator: (value) => {
+        if (!value) {
+            return 'You need to select a reason!'
+        }
+    }
     });
     if (reason !== undefined) {
         try {
@@ -117,11 +131,23 @@ const cancelOrder = async (orderId) => {
         title: 'Cancel Entire Order?',
         text: "Are you sure? This will cancel all items in this order.",
         icon: 'warning',
-        input: 'text',
-        inputPlaceholder: 'Reason for cancellation',
+        input: 'select',
+         inputOptions: {
+        'Changed Mind': 'Changed Mind',
+        'Ordered by Mistake': 'Ordered by Mistake',
+        'Found Cheaper Elsewhere': 'Found Cheaper Elsewhere',
+        'Shipping Too Slow': 'Shipping is too slow',
+        'Other': 'Other'
+    },
+        inputPlaceholder: 'Select a reason',
         showCancelButton: true,
         confirmButtonColor: '#d33',
-        confirmButtonText: 'Yes, Cancel Order!'
+        confirmButtonText: 'Yes, Cancel Order!',
+            inputValidator: (value) => {
+        if (!value) {
+            return 'You need to select a reason!'
+        }
+    }
     });
 
     if (reason !== undefined) {

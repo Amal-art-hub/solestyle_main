@@ -122,35 +122,63 @@ const addToCartService = async (userId, variantId, quantity) => {
 
 const updateQuantityService=async (userId,itemId,action)=> {
 try {
-const cart=await Cart.findOne({ user_id: userId });
+    const cart = await Cart.findOne({ user_id: userId }).populate({
+            path: 'items.variant_id',
+            select: 'size color price stock'
+        }).populate({
+            path: 'items.product_id',
+            select: 'name isDeleted isListed'
+        });
 if (!cart)thrownewError("Cart not found");
 
 const item= cart.items.id(itemId);
 if (!item)thrownewError("Item not found in cart");
 
+const variant = item.variant_id;
 
-const variant=await Variant.findById(item.variant_id);
-if (!variant)thrownewError("Product Variant no longer exists");
+const variantCheck=await Variant.findById(item.variant_id._id);
+if (!variantCheck)throw new Error("Product Variant no longer exists");
 
 let newQty= item.quantity;
 if (action==="increment") newQty+=1;
 if (action==="decrement") newQty-=1;
 
 
-if (newQty<1)thrownewError("Quantity cannot be less than 1");
+if (newQty<1)throw new Error("Quantity cannot be less than 1");
 
 if (newQty> MAX_QTY_PER_PERSON) {
-thrownewError(`Maximum limit is${MAX_QTY_PER_PERSON} per customer`);
+throw new Error(`Maximum limit is${MAX_QTY_PER_PERSON} per customer`);
         }
 
 if (newQty> variant.stock) {
-thrownewError(`Out of Stock! Only${variant.stock} available.`);
+throw new Error(`Out of Stock! Only${variant.stock} available.`);
         }
 
         item.quantity= newQty;
 await cart.save();
 
-return { success:true, newQty: newQty };
+
+const validItems = cart.items.filter(item => 
+            item.variant_id && 
+            item.product_id &&
+            item.variant_id.stock >= item.quantity && 
+            !item.product_id.isDeleted && 
+            item.product_id.isListed
+        );
+        
+       
+        
+        let grandTotal = 0;
+        validItems.forEach(item => {
+
+             if(item.variant_id && item.variant_id.price) {
+                grandTotal += item.quantity * item.variant_id.price;
+             }
+        });
+
+return { success:true,
+     newQty: newQty ,
+     optTotal: grandTotal};
 
     }catch (error) {
 throw error;
