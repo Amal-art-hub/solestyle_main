@@ -140,6 +140,11 @@ const createRazorpayOrder = async (req, res) => {
     }
 };
 
+
+// Card Number: 5200 8282 8282 8282
+// Expiry Date: Any future date (e.g., 12/30)
+// CVV: 123
+
 const paymentFailed = async (req, res) => {
     try {
         res.render("paymentFailure", {

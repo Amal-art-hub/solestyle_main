@@ -380,55 +380,103 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   // Add variant form submission with cropped images
+  // Add variant form submission with cropped images
+    // Add variant form submission
   const addForm = document.getElementById('addVariantForm');
   if (addForm) {
     addForm.addEventListener('submit', async function (e) {
       e.preventDefault();
 
-      // If using cropper, check cropped files
+      // --- 1. SIMPLE VALIDATION (The Fix) ---
+      const sizeVal = document.getElementById('addSize').value.trim();
+      const colorVal = document.getElementById('addColor').value.trim();
+      const priceVal = document.getElementById('addPrice').value.trim();
+      const stockVal = document.getElementById('addStock').value.trim();
+
+      if (!sizeVal || !colorVal || !priceVal || !stockVal) {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Missing Details',
+            text: 'Please fill in Size, Color, Price, and Stock!'
+          });
+          return; // Stop here! Don't annoy the server.
+      }
+      // --------------------------------------
+
+      let formData;
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const originalBtnText = submitBtn.textContent;
+
+      // CASE 1: Using Cropper
       if (croppedFiles.length > 0) {
         if (croppedFiles.length < 3) {
-          alert('Please crop at least 3 images');
-          return;
+           Swal.fire({ icon: 'warning', title: 'Images Required', text: 'Please crop at least 3 images' });
+           return;
         }
 
-        const formData = new FormData();
-
-        // Add form fields
-        formData.append('size', document.getElementById('addSize').value);
-        formData.append('color', document.getElementById('addColor').value);
-        formData.append('price', document.getElementById('addPrice').value);
-        formData.append('stock', document.getElementById('addStock').value);
+        formData = new FormData();
+        // Add manual fields
+        formData.append('size', sizeVal);
+        formData.append('color', colorVal);
+        formData.append('price', priceVal);
+        formData.append('stock', stockVal);
 
         // Add cropped images
         croppedFiles.forEach((blob, index) => {
           formData.append('images', blob, `variant-${Date.now()}-${index}.jpg`);
         });
 
-        // Submit
+      } else {
+        // CASE 2: No Cropping (Standard file input)
+        const fileInput = document.getElementById('variantImages');
+        if (fileInput && fileInput.files.length < 3) {
+            Swal.fire({ icon: 'warning', title: 'Images Required', text: 'Please select at least 3 images' });
+          return;
+        }
+        // Create FormData directly
+        formData = new FormData(e.target);
+      }
+
+      // SUBMIT
+      try {
+        submitBtn.textContent = "Adding...";
+        submitBtn.disabled = true;
+
         const response = await fetch(e.target.action, {
           method: 'POST',
           body: formData
         });
 
         if (response.ok) {
-          location.reload();
+            await Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Variant added successfully!',
+                timer: 1500,
+                showConfirmButton: false
+            });
+            location.reload();
         } else {
-          alert('Error adding variant');
+            const resData = await response.json();
+            Swal.fire({
+                icon: 'error',
+                title: 'Failed',
+                text: resData.message || 'Error adding variant'
+            });
+            submitBtn.textContent = originalBtnText;
+            submitBtn.disabled = false;
         }
-      } else {
-        // Fallback: original validation without cropper
-        const fileInput = document.getElementById('variantImages');
-        if (fileInput && fileInput.files.length < 3) {
-          alert('Please select at least 3 images');
-          return;
-        }
-        // Submit normally
-        e.target.submit();
+      } catch (err) {
+            console.error(err);
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Something went wrong.' });
+            submitBtn.textContent = originalBtnText;
+            submitBtn.disabled = false;
       }
     });
   }
 
+
+  
   // Edit variant form validation and submission
   const editForm = document.getElementById('editVariantForm');
   if (editForm) {

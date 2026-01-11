@@ -98,6 +98,10 @@
                             <span>Subtotal</span>
                             <span id="cart-subtotal">₹<%= total %></span>
                         </div>
+                              <div class="summary-row">
+                        <span>Discount</span>
+                        <span style="color: #e74c3c;">- ₹<%= typeof discount !== 'undefined' ? discount : 0 %></span>
+                    </div>
                         <div class="summary-row">
                             <span>Delivery</span>
                             <span style="color: green;">Free</span>

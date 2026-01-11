@@ -22,6 +22,33 @@ const loadCartPage = async (req, res) => {
     }
 };
 
+
+
+
+// const loadCheckout = async (req, res) => {
+//     try {
+//         const userId = req.session.user._id;
+//         const { cart, addresses, subtotal } = await getCheckoutData(userId);
+//           const wallet = await getWallet(userId);
+//          if (!cart) {
+//             return res.redirect("/user/cart"); 
+//         }
+      
+//         res.render("checkout", {
+//             user: req.session.user,
+//             cart: cart,
+//             addresses: addresses,
+//             subtotal: subtotal,
+//              discount: req.session.coupon ? req.session.coupon.discount : 0,
+//                coupon: req.session.coupon || null,
+//                 wallet: wallet 
+//         });
+//     } catch (error) {
+//         console.error("Load Checkout Error:", error);
+//         res.status(statusCode.INTERNAL_SERVER_ERROR).render("page-404");
+//     }
+// };
+
 const addToCart = async (req, res) => {
     try {
         const userId = req.session.user._id;

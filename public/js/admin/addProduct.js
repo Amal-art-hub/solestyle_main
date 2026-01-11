@@ -145,15 +145,22 @@ form.addEventListener('submit', async (e) => {
     return;
   }
   
-  const formData = new FormData(form);
+  // const formData = new FormData(form);
   
   //Clear original file input
-  formData.delete('images');
+  // formData.delete('images');
   
-  // Add cropped images
-  croppedFiles.forEach((blob, index) => {
-    formData.append('images', blob, `product-${Date.now()}-${index}.jpg`);
-  });
+  // // Add cropped images
+  // croppedFiles.forEach((blob, index) => {
+  //   formData.append('images', blob, `product-${Date.now()}-${index}.jpg`);
+  // });
+
+    const data = {
+    name: name,
+    description: desc,
+    category: cat,
+    brand: brand
+  };
   
   const submitBtn = form.querySelector('.btn-submit');
   submitBtn.textContent = 'Adding Product...';
@@ -162,13 +169,31 @@ form.addEventListener('submit', async (e) => {
   try {
     const response = await fetch('/admin/products/add', {
       method: 'POST',
-      body: formData
+      headers: {
+        'Content-Type': 'application/json' // <--- The Golden Key 🔑
+      },
+      body: JSON.stringify(data) 
     });
     
     if (response.ok) {
+        await Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'Product added successfully!',
+        confirmButtonText: 'Great!'
+      });
       window.location.href = '/admin/products';
     } else {
-      alert('Error adding product');
+
+           const errorResult = await response.json();
+      
+    
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed',
+        text: errorResult.message || 'Error adding product',
+        confirmButtonColor: '#d33'
+      });
       submitBtn.textContent = 'Add Product';
       submitBtn.disabled = false;
     }

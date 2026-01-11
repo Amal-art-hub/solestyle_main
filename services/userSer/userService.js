@@ -64,6 +64,7 @@ async function createUser({ firstName, lastName, email, phone, password, referra
   if (referralCode) {
       const referrer = await User.findOne({ referralCode: referralCode .toUpperCase()});
       if (referrer) {
+          console.log("DEBUG: Found Referrer:", referrer.name);
           referredByUserId = referrer._id;
 
 
@@ -89,8 +90,10 @@ async function createUser({ firstName, lastName, email, phone, password, referra
               userId: referrer._id,
               status: "active"
           });
+          console.log("DEBUG: Attempting to save Coupon:", rewardCoupon);
           await rewardCoupon.save();
           console.log(`Referral Reward given to ${referrer.name}`);
+            console.log("DEBUG: Coupon Saved Successfully!");
       }
   }
 

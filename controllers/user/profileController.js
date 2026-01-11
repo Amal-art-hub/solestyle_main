@@ -11,6 +11,7 @@ const {
     getCoupons
 
 } = require("../../services/userSer/profileServices");
+const Offers = require("../../models/offers");
 const statusCode = require("../../utils/statusCodes");
 
 
@@ -23,7 +24,10 @@ const loadProfile = async (req, res) => {
         
         const user = await getUserProfile(userId);
         const coupons = await getCoupons(userId); 
-        res.render("profile", { user,coupons })
+
+               const referralOffer = await Offers.findOne({ type: 'referral', status: 'active' });
+        const referralDiscount = referralOffer ? referralOffer.discount_percentage : 10; 
+        res.render("profile", { user,coupons,referralDiscount  })
     } catch (error) {
         console.error("Profile looad Error:", error);
         res.redirect("/");

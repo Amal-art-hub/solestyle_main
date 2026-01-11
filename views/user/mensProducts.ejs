@@ -59,7 +59,14 @@
                         <label>Sort By:</label>
                         <select onchange="location = this.value;">
                             <!-- Helper to build URL with current params + new sort -->
-                            <% const buildUrl=(s)=> `?category=${categoryId}&search=${search}&sort=${s}`; %>
+                          
+                             <% const buildUrl = (s) => {
+    let url = `?category=${categoryId}&search=${search}&sort=${s}`;
+    if(filters.minPrice) url += `&minPrice=${filters.minPrice}`;
+    if(filters.maxPrice) url += `&maxPrice=${filters.maxPrice}`;
+    if(filters.brand) url += `&brand=${filters.brand}`;
+    return url;
+} %>
 
                                 <option value="<%= buildUrl('newest') %>" <%=sort==='newest' ? 'selected' : '' %>>Newest
                                 </option>
@@ -148,10 +155,14 @@
                 <!-- Pagination -->
                 <div class="pagination">
                     <% for(let i=1; i<=totalPages; i++) { %>
-                        <a href="?category=<%= categoryId %>&page=<%= i %>&search=<%= search %>&sort=<%= sort %>"
+                        <!-- <a href="?category=<%= categoryId %>&page=<%= i %>&search=<%= search %>&sort=<%= sort %>"
                             class="<%= currentPage == i ? 'active' : '' %>">
                             <%= i %>
-                        </a>
+                        </a> -->
+                        <a href="?category=<%= categoryId %>&page=<%= i %>&search=<%= search %>&sort=<%= sort %>&minPrice=<%= filters.minPrice %>&maxPrice=<%= filters.maxPrice %>&brand=<%= filters.brand %>"
+   class="<%= currentPage == i ? 'active' : '' %>">
+    <%= i %>
+</a>
                         <% } %>
                 </div>
             </main>

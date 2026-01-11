@@ -197,6 +197,7 @@ document.addEventListener("DOMContentLoaded", function () {
       phone: document.getElementById("phone").value.trim(),
       password: passwordInput.value,
       confirmPassword: confirmPasswordInput.value,
+      referralCode: document.getElementById("referralCode") ? document.getElementById("referralCode").value.trim() : "",
     };
 
     // Client-side validation
