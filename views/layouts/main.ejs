@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title || 'SoleStyle' %></title>
+    <base href="/">
+    <!-- Common CSS -->
+    <link rel="stylesheet" href="/css/homestyle.css">
+    <!-- Page-specific CSS -->
+    <% if (typeof styles !== 'undefined') { %>
+        <% styles.forEach(function(style) { %>
+            <link rel="stylesheet" href="<%= style %>">
+        <% }); %>
+    <% } %>
+</head>
+<body>
+    <%- include('../partials/header') %>
+
+    <main class="main-content">
+        <%- body %>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <!-- Common JS -->
+    <script src="/js/main.js"></script>
+    <!-- Page-specific JS -->
+    <% if (typeof scripts !== 'undefined') { %>
+        <% scripts.forEach(function(script) { %>
+            <script src="<%= script %>"></script>
+        <% }); %>
+    <% } %>
+</body>
+</html>

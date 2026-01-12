@@ -450,5 +450,5 @@ module.exports = {
     getProductsByCategory,
     getProductDetailService,
     getTrendingProducts,
-
+calculateFinalPrice
 }

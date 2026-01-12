@@ -3,19 +3,20 @@ const Product = require("../../models/product");
 const Variant = require("../../models/varient");
 const Wishlist = require("../../models/wishlist");
 const MAX_QTY_PER_PERSON = 5;
+const { calculateFinalPrice } = require("./productUserServices");
 
 
 
 const getCart = async (userId) => {
     try {
-        const cart = await Cart.findOne({ user_id: userId })
+        let cart = await Cart.findOne({ user_id: userId })
             .populate({
                 path: 'items.variant_id',
                 select: 'size color price stock'
             })
             .populate({
                 path: 'items.product_id',
-                select: 'name isDeleted isListed'
+                select: 'name isDeleted isListed categoryId'
             });
 
         if (!cart) {
@@ -23,6 +24,24 @@ const getCart = async (userId) => {
             return { items: [] };
         }
 
+
+
+             cart = cart.toObject();
+        // Loop through items to calculate REAL TIME offers
+        if (cart.items && cart.items.length > 0) {
+            for (const item of cart.items) {
+                const product = item.product_id;
+                const variant = item.variant_id;
+                if (product && variant) {
+                    const { finalPrice, bestDiscount } = await calculateFinalPrice(product, variant.price);
+                    
+                    // Attach these new values to the item
+                    item.finalPrice = finalPrice;
+                    item.originalPrice = variant.price;
+                    item.discountPercentage = bestDiscount;
+                }
+            }
+        }
         return cart;
 
     } catch (error) {
