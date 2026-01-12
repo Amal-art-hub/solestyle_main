@@ -57,7 +57,12 @@ const getCheckoutData = async (userId) => {
 const placeOrderService=async (userId,addressId,paymentMethod,couponData,paymentDetails)=> {
 try {
 
-const cart=await Cart.findOne({ user_id: userId }).populate("items.variant_id");
+const cart = await Cart.findOne({ user_id: userId })
+    .populate("items.variant_id")
+    .populate({
+        path: "items.product_id",
+        select: "name categoryId"
+    });
 if (!cart|| cart.items.length===0)throw newError("Cart is empty");
 
 const address=await Address.findById(addressId);
@@ -76,21 +81,35 @@ if (variant.stock< item.quantity) {
 thrownewError(`Stock insufficient for${item.name_snapshot}`);
             }
 
-const itemTotal= item.quantity* item.price_at_addition;
-            totalAmount+= itemTotal;
+// const itemTotal= item.quantity* item.price_at_addition;
+//             totalAmount+= itemTotal;
 
-            orderItems.push({
-                product_id: item.product_id,
-                variant_id: item.variant_id._id,
-                quantity: item.quantity,
-                unit_price: item.price_at_addition,
-                total_amount: itemTotal,
-                name_snapshot: item.name_snapshot,
-                variant_snapshot:`Size:${variant.size}, Color:${variant.color}`,
-                status: 'pending'
-            });
-        }
+//             orderItems.push({
+//                 product_id: item.product_id,
+//                 variant_id: item.variant_id._id,
+//                 quantity: item.quantity,
+//                 unit_price: item.price_at_addition,
+//                 total_amount: itemTotal,
+//                 name_snapshot: item.name_snapshot,
+//                 variant_snapshot:`Size:${variant.size}, Color:${variant.color}`,
+//                 status: 'pending'
+//             });
+//         }
 
+
+const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price); // Calculate Offer
+const itemTotal = item.quantity * finalPrice; // Use Offer Price
+totalAmount += itemTotal;
+orderItems.push({
+    product_id: item.product_id,
+    variant_id: item.variant_id._id,
+    quantity: item.quantity,
+    unit_price: finalPrice, // <--- SAVE THE OFFER PRICE HERE
+    total_amount: itemTotal,
+    name_snapshot: item.name_snapshot,
+    variant_snapshot: `Size:${variant.size}, Color:${variant.color}`,
+    status: 'pending'
+});
 
 
 
@@ -174,10 +193,12 @@ await Cart.findOneAndDelete({ user_id: userId });
 
 return newOrder;
 
-    }catch (error) {
+    }}
+    catch (error) {
 throw error;
     }
 }
+
 
 
 
