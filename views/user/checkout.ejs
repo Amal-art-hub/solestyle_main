@@ -217,8 +217,7 @@
                                         <div style="font-size:0.8rem; color:#999;">Size: <%= item.variant_id.size %>
                                         </div>
                                 </div>
-                                <div class="item-price">₹<%= item.price_at_addition * item.quantity %>
-                                </div>
+                               <div class="item-price">₹<%= (item.finalPrice || item.originalPrice) * item.quantity %></div>
                             </div>
                             <% }) %>
                     </div>
@@ -268,6 +267,23 @@
                     </div>
 
                     <hr>
+
+                    <!-- INSERT THIS RIGHT AFTER <hr> AT LINE 270 -->
+<% 
+   let totalOriginal = 0;
+   let totalFinal = 0;
+   cart.items.forEach(item => {
+       totalOriginal += item.quantity * (item.originalPrice || item.price_at_addition);
+       totalFinal += item.quantity * (item.finalPrice || item.price_at_addition);
+   });
+   const totalSavings = totalOriginal - totalFinal;
+%>
+<% if(totalSavings > 0) { %>
+    <div class="summary-row" style="color: #27ae60;">
+        <span>Your Savings</span>
+        <span>- ₹<%= totalSavings %></span>
+    </div>
+<% } %>
 
                     <div class="summary-row">
                         <span>Subtotal</span>

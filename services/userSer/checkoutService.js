@@ -6,6 +6,7 @@ const Product = require("../../models/product");
 const Coupon = require("../../models/Coupen"); 
 const Payment = require("../../models/payment");
 const Razorpay = require("razorpay");
+const { calculateFinalPrice } = require("./productUserServices");
 
 
 const { 
@@ -16,19 +17,37 @@ const {
 
 const getCheckoutData = async (userId) => {
     try {
-        const cart = await Cart.findOne({ user_id: userId }).populate({
+        let cart = await Cart.findOne({ user_id: userId }).populate({
             path: "items.variant_id",
-            select: "price stock size color images" 
-        }).populate("items.product_id", "name");
+            select: "price stock size color images"
+        }).populate({
+            path: "items.product_id",
+            select: "name categoryId" // <--- ADD categoryId HERE
+        }); // REMOVE .populate("items.product_id", "name") as we combined it above
+
         if (!cart || cart.items.length === 0) {
             return { cart: null, addresses: [], subtotal: 0 };
         }
+
         const addresses = await Address.find({ user_id: userId });
-       
+
+        // --- NEW LOGIC START ---
+        cart = cart.toObject(); // Convert to edit
         let subtotal = 0;
-        cart.items.forEach(item => {
-            subtotal += item.quantity * item.price_at_addition;
-        });
+
+        for (const item of cart.items) {
+            if(item.product_id && item.variant_id) {
+                 // Calculate Offer Price
+                 const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price);
+                 
+                 // Update Item Value for the View
+                 item.finalPrice = finalPrice; 
+                 // Add to Subtotal
+                 subtotal += item.quantity * finalPrice;
+            }
+        }
+        // --- NEW LOGIC END ---
+
         return { cart, addresses, subtotal };
     } catch (error) {
         throw error;
