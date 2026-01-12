@@ -5,30 +5,32 @@ const {
     validateCoupon,
     createRazorpayOrderService
 } = require("../../services/userSer/checkoutService");
-const { 
+const {
     getWallet,
-    
- } = require("../../services/userSer/walletService"); 
+
+} = require("../../services/userSer/walletService");
 const statusCode = require("../../utils/statusCodes");
 
 
 const loadCheckout = async (req, res) => {
     try {
+        console.log("DEBUG: HIT loadCheckout CONTROLLER");
         const userId = req.session.user._id;
-        const { cart, addresses, subtotal } = await getCheckoutData(userId);
-          const wallet = await getWallet(userId);
-         if (!cart) {
-            return res.redirect("/user/cart"); 
+        const { cart, addresses, subtotal, coupons } = await getCheckoutData(userId);
+        const wallet = await getWallet(userId);
+        if (!cart) {
+            return res.redirect("/user/cart");
         }
-      
+
         res.render("checkout", {
             user: req.session.user,
             cart: cart,
             addresses: addresses,
             subtotal: subtotal,
-             discount: req.session.coupon ? req.session.coupon.discount : 0,
-               coupon: req.session.coupon || null,
-                wallet: wallet 
+            discount: req.session.coupon ? req.session.coupon.discount : 0,
+            coupon: req.session.coupon || null,
+            coupons: coupons,
+            wallet: wallet
         });
     } catch (error) {
         console.error("Load Checkout Error:", error);
@@ -38,41 +40,41 @@ const loadCheckout = async (req, res) => {
 
 
 
-const placeOrder=async (req,res)=> {
-try {
-const userId= req.session.user._id;
-const { addressId, paymentMethod,paymentDetails  }= req.body;
-const couponData = req.session.coupon;
+const placeOrder = async (req, res) => {
+    try {
+        const userId = req.session.user._id;
+        const { addressId, paymentMethod, paymentDetails } = req.body;
+        const couponData = req.session.coupon;
 
-if (!addressId) {
-return res.status(statusCode.BAD_REQUEST).json({ success:false, message:"Please select an address" });
+        if (!addressId) {
+            return res.status(statusCode.BAD_REQUEST).json({ success: false, message: "Please select an address" });
         }
 
-const order=await placeOrderService(userId, addressId, paymentMethod,couponData,paymentDetails );
+        const order = await placeOrderService(userId, addressId, paymentMethod, couponData, paymentDetails);
 
         res.status(statusCode.OK).json({
-            success:true,
-            message:"Order placed successfully",
+            success: true,
+            message: "Order placed successfully",
             orderId: order._id
         });
 
-    }catch (error) {
+    } catch (error) {
         console.error("Place Order Error:", error);
         res.status(statusCode.BAD_REQUEST).json({
-            success:false,
-            message: error.message||"Failed to place order"
+            success: false,
+            message: error.message || "Failed to place order"
         });
     }
 };
 
-const orderSuccess=async (req,res)=> {
-try {
-const orderId= req.params.id;
+const orderSuccess = async (req, res) => {
+    try {
+        const orderId = req.params.id;
         res.render("orderSuccess", {
             user: req.session.user,
             orderId: orderId
         });
-    }catch (error) {
+    } catch (error) {
         res.status(statusCode.INTERNAL_SERVER_ERROR).render("page-404");
     }
 };
@@ -83,16 +85,16 @@ const applyCoupen = async (req, res) => {
     try {
         const { code } = req.body;
         const userId = req.session.user._id;
-        const { subtotal } = await getCheckoutData(userId); 
+        const { subtotal } = await getCheckoutData(userId);
 
         const coupon = await validateCoupon(userId, code);
 
-       
+
         if (subtotal < coupon.mincart_value) {
             throw new Error(`Min purchase of ₹${coupon.min_purchase_amount} required`);
         }
 
-   
+
         let discount = 0;
         if (coupon.discount_type === 'Percentage') {
             discount = (subtotal * coupon.discount_value) / 100;
@@ -101,7 +103,7 @@ const applyCoupen = async (req, res) => {
             discount = coupon.discount_value;
         }
 
-        
+
         req.session.coupon = {
             code: coupon.code,
             discount: discount,
@@ -125,7 +127,7 @@ const createRazorpayOrder = async (req, res) => {
     try {
         const userId = req.session.user._id;
         const couponData = req.session.coupon;
-      
+
         const order = await createRazorpayOrderService(userId, couponData);
         res.status(200).json({
             success: true,
@@ -133,9 +135,9 @@ const createRazorpayOrder = async (req, res) => {
         });
     } catch (error) {
         console.error("Razorpay Error:", error);
-        res.status(500).json({ 
-            success: false, 
-            message: error.message || "Failed to create payment order" 
+        res.status(500).json({
+            success: false,
+            message: error.message || "Failed to create payment order"
         });
     }
 };
@@ -158,7 +160,7 @@ const paymentFailed = async (req, res) => {
 
 
 
-module.exports={
+module.exports = {
     loadCheckout,
     placeOrder,
     orderSuccess,
