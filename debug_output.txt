@@ -1,0 +1,15 @@
+Found 2 coupons.
+
+--- Coupon #1 ---
+Code: "SUMMER50"
+Type: Percentage
+Value: 10 (Type: number)
+Min Cart: 1000 (Type: number)
+Expiry: Tue Jan 20 2026 05:30:00 GMT+0530 (India Standard Time)
+
+--- Coupon #2 ---
+Code: "REF-379353"
+Type: Percentage
+Value: 10 (Type: number)
+Min Cart: 500 (Type: number)
+Expiry: Sat Jan 17 2026 12:11:39 GMT+0530 (India Standard Time)

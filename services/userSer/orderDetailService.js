@@ -18,6 +18,7 @@ const getOrderDetailsService = async (orderId, userId) => {
         if (!order) {
             throw new Error("Order not found or access denied");
         }
+        console.log("DEBUG ORDER ITEMS:", order.items.length);
 
         // order.status = 'delivered';
         // order.items.forEach(item => item.status = 'delivered');

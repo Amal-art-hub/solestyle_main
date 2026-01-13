@@ -52,6 +52,8 @@ const placeOrder = async (req, res) => {
 
         const order = await placeOrderService(userId, addressId, paymentMethod, couponData, paymentDetails);
 
+        req.session.coupon = null;
+
         res.status(statusCode.OK).json({
             success: true,
             message: "Order placed successfully",
@@ -85,13 +87,18 @@ const applyCoupen = async (req, res) => {
     try {
         const { code } = req.body;
         const userId = req.session.user._id;
+
+        console.log("DEBUG: Apply Coupon Request", { code, userId });
+
         const { subtotal } = await getCheckoutData(userId);
+        console.log("DEBUG: Subtotal fetched", subtotal);
 
         const coupon = await validateCoupon(userId, code);
+        console.log("DEBUG: Coupon validated", coupon);
 
 
         if (subtotal < coupon.mincart_value) {
-            throw new Error(`Min purchase of ₹${coupon.min_purchase_amount} required`);
+            throw new Error(`Min purchase of ₹${coupon.min_purchase_amount || coupon.mincart_value} required`);
         }
 
 
@@ -103,6 +110,8 @@ const applyCoupen = async (req, res) => {
             discount = coupon.discount_value;
         }
 
+        console.log("DEBUG: Calculated Discount", { discount, discount_type: coupon.discount_type, discount_value: coupon.discount_value });
+
 
         req.session.coupon = {
             code: coupon.code,
@@ -113,6 +122,7 @@ const applyCoupen = async (req, res) => {
         res.json({ success: true, discount, newTotal: subtotal - discount });
 
     } catch (error) {
+        console.error("DEBUG: Apply Coupon Error", error.message);
         res.status(400).json({ success: false, message: error.message });
     }
 };

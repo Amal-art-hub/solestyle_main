@@ -26,7 +26,8 @@ const getCheckoutData = async (userId) => {
         }); // REMOVE .populate("items.product_id", "name") as we combined it above
 
 
-        const coupons = await Coupon.find({}); // Fetch ALL coupons for debugging
+        const coupons = await Coupon.find({expiry_date:{$gte: new Date()},
+    used_by:{$ne:userId}}); // Fetch ALL coupons for debugging
 
         console.log("------------------------");
         console.log("DEBUG: Running getCheckoutData");
@@ -119,6 +120,7 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
                 variant_snapshot: `Size:${variant.size}, Color:${variant.color}`,
                 status: 'pending'
             });
+             }
 
 
 
@@ -189,6 +191,12 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
                 await newOrder.save();
             }
 
+            if (couponData && couponData._id) {
+                await Coupon.findByIdAndUpdate(couponData._id, {
+                    $addToSet: { used_by: userId }
+                });
+            }
+
 
 
             for (const item of cart.items) {
@@ -202,7 +210,7 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
 
             return newOrder;
 
-        }
+       
     }
     catch (error) {
         throw error;
