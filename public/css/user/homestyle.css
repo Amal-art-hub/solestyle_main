@@ -941,3 +941,142 @@ a.btn-primary-small {
         text-align: center;
     }
 }
+
+
+/* MODERN SWEETALERT STYLE - Global Override */
+div:where(.swal2-container) div:where(.swal2-popup) {
+    border-radius: 16px !important; /* Modern rounded corners */
+    padding: 24px !important;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1) !important;
+    font-family: 'Outfit', sans-serif !important; /* Matches your site font */
+}
+
+/* Title Styling */
+div:where(.swal2-container) h2:where(.swal2-title) {
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+    color: #111 !important;
+}
+
+/* Content Text */
+div:where(.swal2-container) .swal2-html-container {
+    font-size: 1rem !important;
+    color: #666 !important;
+}
+
+/* Buttons */
+div:where(.swal2-container) button:where(.swal2-confirm) {
+    background-color: #111 !important; /* Black button */
+    border-radius: 8px !important;
+    box-shadow: none !important;
+    font-weight: 500 !important;
+    padding: 12px 24px !important;
+}
+
+div:where(.swal2-container) button:where(.swal2-cancel) {
+    background-color: #fff !important;
+    color: #111 !important;
+    border: 1px solid #ddd !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    padding: 12px 24px !important;
+}
+
+div:where(.swal2-container) button:where(.swal2-confirm):focus,
+div:where(.swal2-container) button:where(.swal2-cancel):focus {
+    box-shadow: none !important; /* Remove blue glow */
+}
+
+
+
+
+
+
+/* =========================================
+   RICH & MODERN SWEETALERT OVERRIDE
+   ========================================= */
+
+/* The Dark Backdrop with Blur */
+div:where(.swal2-container).swal2-backdrop-show,
+div:where(.swal2-container).swal2-noanimation {
+    background: rgba(0, 0, 0, 0.4) !important;
+    backdrop-filter: blur(8px) !important; /* The "Premium" Glass Effect */
+}
+
+/* The Popup Card */
+div:where(.swal2-container) div:where(.swal2-popup) {
+    border-radius: 24px !important; /* Very round corners */
+    padding: 32px !important;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15) !important; /* Deep, soft shadow */
+    border: 1px solid rgba(255,255,255,0.8) !important;
+    font-family: 'Outfit', sans-serif !important;
+    background: #ffffff !important;
+}
+
+/* Icons (Success, Error, etc) */
+div:where(.swal2-icon) {
+    border-width: 3px !important;
+    transform: scale(1.1); /* Slightly larger */
+    margin-bottom: 20px !important;
+}
+
+/* Title Text */
+div:where(.swal2-container) h2:where(.swal2-title) {
+    font-size: 1.75rem !important;
+    font-weight: 700 !important;
+    color: #1a1a1a !important;
+    letter-spacing: -0.5px !important;
+    margin-bottom: 10px !important;
+}
+
+/* Body Text */
+div:where(.swal2-container) .swal2-html-container {
+    font-size: 1.05rem !important;
+    font-weight: 400 !important;
+    line-height: 1.6 !important;
+    color: #666 !important;
+}
+
+/* ANIMATED BUTTONS */
+div:where(.swal2-actions) {
+    gap: 15px !important;
+    margin-top: 25px !important;
+    width: 100% !important;
+}
+
+/* Confirm Button (The main action) */
+div:where(.swal2-container) button:where(.swal2-confirm) {
+    background: #111 !important;
+    color: #fff !important;
+    border-radius: 50px !important; /* Pill shape */
+    padding: 14px 32px !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+    transition: transform 0.2s, box-shadow 0.2s !important;
+    width: auto !important;
+    min-width: 120px !important;
+}
+
+div:where(.swal2-container) button:where(.swal2-confirm):hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;
+}
+
+/* Cancel Button (The secondary action) */
+div:where(.swal2-container) button:where(.swal2-cancel) {
+    background: transparent !important;
+    color: #666 !important;
+    border: 1px solid #e0e0e0 !important;
+    border-radius: 50px !important;
+    padding: 14px 32px !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+    transition: all 0.2s !important;
+}
+
+div:where(.swal2-container) button:where(.swal2-cancel):hover {
+    background: #f5f5f5 !important;
+    color: #333 !important;
+    border-color: #ccc !important;
+}
