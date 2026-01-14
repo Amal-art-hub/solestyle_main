@@ -3,63 +3,15 @@ async function placeOrder() {
     const addressInput = document.querySelector('input[name="selectedAddress"]:checked');
     if (!addressInput) return Swal.fire('Warning', 'Select Address', 'warning');
 
+
+
     const paymentInput = document.querySelector('input[name="paymentMethod"]:checked');
     const paymentMethod = paymentInput ? paymentInput.value : 'COD';
 
-    // IF ONLINE PAYMENT -> DIFFERENT FLOW
-    if (paymentMethod === 'Online') {
-        try {
-            // A. Create Order on Server
-            const response = await axios.post('/checkout/razorpay-order');
-            if (!response.data.success) throw new Error('Failed to start payment');
 
-            const orderData = response.data.order;
 
-            // B. Open Razorpay Options
-            const options = {
-                "key": "rzp_test_S0ywJN5WPSnvu3", // Or fetch from server API if safer
-                "amount": orderData.amount,
-                "currency": "INR",
-                "name": "Shoe Project",
-                "description": "Purchase Order",
-                "order_id": orderData.id, 
-                "handler": async function (response) {
-                    // C. Payment Success -> Place Actual Order
-                    await submitFinalOrder(addressInput.value, 'Online', response);
-                },
-                  "modal": {
-                    "ondismiss": function() {
-                        Swal.fire('Payment Cancelled', 'You cancelled the payment process.', 'info');
-                    }
-                },
-                "prefill": {
-                    "name": "User Name", // You can inject these values
-                    "email": "user@example.com"
-                },
-                "theme": { "color": "#3399cc" }
-            };
-
-            const rzp1 = new Razorpay(options);
-            rzp1.open();
-            
-            rzp1.on('payment.failed', function (response){
-                  window.location.href = '/checkout/payment-failure';
-            });
-
-        } catch (error) {
-            console.error(error);
-            Swal.fire('Error', 'Payment initialization failed', 'error');
-        }
-        return; // STOP HERE, wait for payment
-    }
-
-    // IF COD OR WALLET -> NORMAL FLOW
-    await submitFinalOrder(addressInput.value, paymentMethod);
-}
-
-// Separate function for final submission to reuse code
-async function submitFinalOrder(addressId, paymentMethod, paymentDetails = {}) {
-     const confirm = await Swal.fire({
+    
+      const confirm = await Swal.fire({
         title: 'Place Order?',
         text: `Confirm order with ${paymentMethod}?`,
         icon: 'question',
@@ -67,21 +19,83 @@ async function submitFinalOrder(addressId, paymentMethod, paymentDetails = {}) {
         confirmButtonText: 'Yes'
     });
 
-    if (confirm.isConfirmed) {
+        if (!confirm.isConfirmed) return;
+
+    if (paymentMethod === 'Online') {
+        try {
+        
+            const response = await axios.post('/checkout/razorpay-order');
+            if (!response.data.success) throw new Error('Failed to start payment');
+
+            const orderData = response.data.order;
+
+
+            const options = {
+                "key": "rzp_test_S0ywJN5WPSnvu3", 
+                "amount": orderData.amount,
+                "currency": "INR",
+                "name": "Shoe Project",
+                "description": "Purchase Order",
+                "order_id": orderData.id,
+                "handler": async function (response) {
+                    
+                    await submitFinalOrder(addressInput.value, 'Online', response);
+                },
+                "modal": {
+                    "ondismiss": function () {
+                        Swal.fire('Payment Cancelled', 'You cancelled the payment process.', 'info');
+                    }
+                },
+                "prefill": {
+                    "name": "User Name", 
+                    "email": "user@example.com"
+                },
+                "theme": { "color": "#3399cc" }
+            };
+
+            const rzp1 = new Razorpay(options);
+            rzp1.open();
+
+            rzp1.on('payment.failed', function (response) {
+                window.location.href = '/checkout/payment-failure';
+            });
+
+        } catch (error) {
+            console.error(error);
+            Swal.fire('Error', 'Payment initialization failed', 'error');
+        }
+        return; 
+    }
+
+    
+    await submitFinalOrder(addressInput.value, paymentMethod);
+}
+
+
+async function submitFinalOrder(addressId, paymentMethod, paymentDetails = {}) {
+    // const confirm = await Swal.fire({
+    //     title: 'Place Order?',
+    //     text: `Confirm order with ${paymentMethod}?`,
+    //     icon: 'question',
+    //     showCancelButton: true,
+    //     confirmButtonText: 'Yes'
+    // });
+
+
         try {
             const response = await axios.post('/checkout/place-order', {
                 addressId,
                 paymentMethod,
-                paymentDetails // Send razorpay_payment_id etc.
+                paymentDetails
             });
             if (response.data.success) {
-                 window.location.href = `/order-success/${response.data.orderId}`;
+                window.location.href = `/order-success/${response.data.orderId}`;
             }
         } catch (error) {
-             Swal.fire('Failed', error.response?.data?.message, 'error');
+            Swal.fire('Failed', error.response?.data?.message, 'error');
         }
     }
-}
+
 
 /* COUPON FUNCTIONS */
 async function applyCoupon() {

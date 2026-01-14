@@ -22,12 +22,12 @@ const getCheckoutData = async (userId) => {
             select: "price stock size color images"
         }).populate({
             path: "items.product_id",
-            select: "name categoryId" // <--- ADD categoryId HERE
-        }); // REMOVE .populate("items.product_id", "name") as we combined it above
+            select: "name categoryId" 
+        }); 
 
 
         const coupons = await Coupon.find({expiry_date:{$gte: new Date()},
-    used_by:{$ne:userId}}); // Fetch ALL coupons for debugging
+    used_by:{$ne:userId}}); 
 
         console.log("------------------------");
         console.log("DEBUG: Running getCheckoutData");
@@ -41,22 +41,21 @@ const getCheckoutData = async (userId) => {
 
         const addresses = await Address.find({ user_id: userId });
 
-        // --- NEW LOGIC START ---
-        cart = cart.toObject(); // Convert to edit
+        cart = cart.toObject(); 
         let subtotal = 0;
 
         for (const item of cart.items) {
             if (item.product_id && item.variant_id) {
-                // Calculate Offer Price
+              
                 const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price);
 
-                // Update Item Value for the View
+               
                 item.finalPrice = finalPrice;
-                // Add to Subtotal
+            
                 subtotal += item.quantity * finalPrice;
             }
         }
-        // --- NEW LOGIC END ---
+       
 
         return { cart, addresses, subtotal, coupons };
     } catch (error) {
@@ -107,14 +106,14 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
             //         }
 
 
-            const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price); // Calculate Offer
-            const itemTotal = item.quantity * finalPrice; // Use Offer Price
+            const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price); 
+            const itemTotal = item.quantity * finalPrice;
             totalAmount += itemTotal;
             orderItems.push({
                 product_id: item.product_id,
                 variant_id: item.variant_id._id,
                 quantity: item.quantity,
-                unit_price: finalPrice, // <--- SAVE THE OFFER PRICE HERE
+                unit_price: finalPrice,
                 total_amount: itemTotal,
                 name_snapshot: item.name_snapshot,
                 variant_snapshot: `Size:${variant.size}, Color:${variant.color}`,
@@ -177,7 +176,7 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
 
                 paymentDoc = new Payment({
                     user_id: userId,
-                    order_id: newOrder._id, // LINK TO ORDER
+                    order_id: newOrder._id, 
                     payment_method: "Razorpay",
                     amount: finalTotal,
                     status: "completed",
@@ -185,9 +184,9 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
                 });
                 await paymentDoc.save();
             }
-            // STEP 3: UPDATE ORDER WITH PAYMENT ID
+           
             if (paymentDoc) {
-                newOrder.payment_id = paymentDoc._id; // LINK TO PAYMENT
+                newOrder.payment_id = paymentDoc._id; 
                 await newOrder.save();
             }
 

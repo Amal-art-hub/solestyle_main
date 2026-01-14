@@ -162,7 +162,7 @@ const getCoupons = async (userId) => {
                 { userId: null }    
             ],
             status: 'active',
-            expiry_date: { $gte: currentDate } 
+            expiry_date: { $gte: currentDate } ,used_by:{$ne:userId}
         }).sort({ createdAt: -1 }); 
         
     } catch (error) {
