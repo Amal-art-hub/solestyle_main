@@ -96,18 +96,35 @@ const approveReturnService = async (orderId, itemId) => {
         if (item.status !== "Return Request") {
             throw new Error("Item is not pending return approval");
         }
-        // 1. Update Status
+
+          let refundAmount = item.total_amount;
+
+             // If the order had a coupon discount applied
+        if (order.discount_amount && order.discount_amount > 0) {
+            
+           
+            const currentSubtotal = order.items.reduce((sum, i) => sum + i.total_amount, 0);
+            
+            const itemDiscountPortion = (item.total_amount / currentSubtotal) * order.discount_amount;
+            
+        
+            refundAmount = item.total_amount - itemDiscountPortion;
+            
+           
+            refundAmount = Math.round(refundAmount);
+        }
+       
         item.status = "returned";
-        // 2. Restock Inventory
+   
         if (item.variant_id) {
             await Variant.findByIdAndUpdate(item.variant_id, {
                 $inc: { stock: item.quantity }
             });
         }
-        // 3. Refund to Wallet
+     
         await walletService.creditWallet(
             order.user_id,
-            item.total_amount, // Refund actual paid amount for this item
+           refundAmount, 
             `Refund for Order #${order.order_number}`
         );
         await order.save();
