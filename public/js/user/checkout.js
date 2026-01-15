@@ -24,7 +24,9 @@ async function placeOrder() {
     if (paymentMethod === 'Online') {
         try {
         
-            const response = await axios.post('/checkout/razorpay-order');
+            const response = await axios.post('/checkout/razorpay-order', {
+    addressId: addressInput.value 
+});
             if (!response.data.success) throw new Error('Failed to start payment');
 
             const orderData = response.data.order;

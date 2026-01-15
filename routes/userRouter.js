@@ -124,6 +124,8 @@ router.post("/checkout/remove-coupon", checkUserStatus, checkoutController.remov
 router.post("/checkout/razorpay-order",checkUserStatus,checkoutController.createRazorpayOrder);
 router.get("/checkout/payment-failure", checkUserStatus, checkoutController.paymentFailed);
 
+router.post('/checkout/webhook', checkoutController.verifyRazorpayWebhook);
+
 
 //==========================================================================================orders
 

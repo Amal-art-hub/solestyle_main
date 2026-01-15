@@ -5,7 +5,7 @@ const orderSchema = new mongoose.Schema({
 
   status: {
     type: String,
-     enum: ["pending", "processing", "shipped", "out for delivery", "delivered", "canceled", "returned", "Return Request", "Return Rejected"],
+     enum: ["pending", "processing", "shipped", "out for delivery", "delivered", "canceled", "returned", "Return Request", "Return Rejected","Payment Pending", "Payment Failed"],
     default: "pending"
   },
 
@@ -15,6 +15,7 @@ const orderSchema = new mongoose.Schema({
   order_number: { type: String, required: true, unique: true },
   tracking_number: { type: String },
 
+   razorpay_order_id: { type: String }, 
   payment_id: { type: mongoose.Schema.Types.ObjectId, ref: "Payment" },
     payment_method: { type: String, enum: ['COD', 'Online', 'Wallet'] },
 
@@ -57,7 +58,7 @@ const orderSchema = new mongoose.Schema({
 
       status: {
         type: String,
-        enum: ["pending", "processing", "shipped", "delivered", "canceled", "returned", "Return Request", "Return Rejected"],
+        enum: ["pending", "processing", "shipped", "delivered", "canceled", "returned", "Return Request", "Return Rejected","Payment Pending", "Payment Failed"],
         default: "pending"
       },
       cancellation_reason: { type: String },
