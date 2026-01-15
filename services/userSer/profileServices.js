@@ -1,5 +1,5 @@
 const User = require("../../models/user.js");
-const Address=require("../../models/address.js");
+const Address = require("../../models/address.js");
 const Coupon = require("../../models/Coupen");
 const bcrypt = require("bcrypt");
 const { generateOtp, sendVerificationEmail } = require("./userService");
@@ -96,21 +96,21 @@ const verifyOtp = async (typedOtp, sessionOtp, userId, newEmail) => {
 
 }
 
-const getAddressByUserId=async(userId)=>{
-    return await Address.find({user_id:userId});
+const getAddressByUserId = async (userId) => {
+    return await Address.find({ user_id: userId });
 }
 
 
-const addAddressService=async(userId,data)=>{
+const addAddressService = async (userId, data) => {
     try {
-        if(data.is_default_shipping === 'true' || data.is_default_shipping === true){
-            await Address.updateMany({user_id:userId},{is_default_shipping:false});
+        if (data.is_default_shipping === 'true' || data.is_default_shipping === true) {
+            await Address.updateMany({ user_id: userId }, { is_default_shipping: false });
         }
 
-        if(data.is_default_billing==="true"||data.is_default_billing===true){
-            await Address.updateMany({user_id:userId},{is_default_billing:false});
+        if (data.is_default_billing === "true" || data.is_default_billing === true) {
+            await Address.updateMany({ user_id: userId }, { is_default_billing: false });
         }
-        const newAddress=new Address({user_id:userId,...data});
+        const newAddress = new Address({ user_id: userId, ...data });
         return await newAddress.save();
 
     } catch (error) {
@@ -121,16 +121,16 @@ const addAddressService=async(userId,data)=>{
 
 const editAddressService = async (addressId, userId, data) => {
     try {
-        
+
         if (data.is_default_shipping === 'true' || data.is_default_shipping === true) {
             await Address.updateMany({ user_id: userId }, { is_default_shipping: false });
         }
-        
+
 
         if (data.is_default_billing === 'true' || data.is_default_billing === true) {
-             await Address.updateMany({ user_id: userId }, { is_default_billing: false });
+            await Address.updateMany({ user_id: userId }, { is_default_billing: false });
         }
- 
+
         const updatedAddress = await Address.findOneAndUpdate(
             { _id: addressId, user_id: userId },
             data,
@@ -155,16 +155,16 @@ const deleteAddressServic = async (addressId, userId) => {
 const getCoupons = async (userId) => {
     try {
         const currentDate = new Date();
-        
-        return await Coupon.find({ 
+
+        return await Coupon.find({
             $or: [
-                { userId: userId }, 
-                { userId: null }    
+                { userId: userId },
+                { userId: null }
             ],
             status: 'active',
-            expiry_date: { $gte: currentDate } ,used_by:{$ne:userId}
-        }).sort({ createdAt: -1 }); 
-        
+            expiry_date: { $gte: currentDate }, used_by: { $ne: userId }
+        }).sort({ createdAt: -1 });
+
     } catch (error) {
         throw error;
     }
