@@ -417,7 +417,11 @@
                                     <%= c.code %>
                                 </div>
                                 <div style="font-size: 0.85rem; color: #666; margin-top: 4px;">
-                                    Save ₹<%= c.discount_value %>
+                                    <% if (c.discount_type === 'Percentage') { %>
+    <%= c.discount_value %>% OFF
+<% } else { %>
+    Save ₹<%= c.discount_value %>
+<% } %>
                                         <span style="font-size: 0.8rem; color: #999;">(Min Order: ₹<%= c.mincart_value
                                                 %>)</span>
                                 </div>

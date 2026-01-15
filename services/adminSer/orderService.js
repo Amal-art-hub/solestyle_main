@@ -99,7 +99,7 @@ const approveReturnService = async (orderId, itemId) => {
 
           let refundAmount = item.total_amount;
 
-             // If the order had a coupon discount applied
+             
         if (order.discount_amount && order.discount_amount > 0) {
             
            

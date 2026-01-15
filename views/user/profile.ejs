@@ -144,7 +144,12 @@
                                 </div>
                                 <div style="font-size: 0.9rem; margin-top: 5px;">
                                     <strong>
-                                        <%= coupon.discount_value %>% OFF
+                                        <!-- <%= coupon.discount_value %> OFF -->
+                                         <%if(coupon.discount_type==="Percentage"){%>
+                                        <%=coupon.discount_value %>%OFF
+                                    <%}else{%>
+                                    Save  ₹<%=coupon.discount_value%>
+                                <%}%>
                                     </strong>
                                     (Min Order: ₹<%= coupon.mincart_value %>)
                                 </div>
