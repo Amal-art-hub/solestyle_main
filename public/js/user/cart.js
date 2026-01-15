@@ -41,8 +41,8 @@ async function updateQty(itemId, action) {
             icon: 'warning',
             title: 'Limit Reached',
             text: msg,
-            toast: true,
-            position: 'top-end',
+           
+            position: 'center',
             showConfirmButton: false,
             timer: 3000
         });

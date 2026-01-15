@@ -191,7 +191,7 @@ form.addEventListener('submit', async (e) => {
       Swal.fire({
         icon: 'error',
         title: 'Failed',
-        text: errorResult.message || 'Error adding product',
+        text: errorResult.error || errorResult.message || 'Error adding product',
         confirmButtonColor: '#d33'
       });
       submitBtn.textContent = 'Add Product';

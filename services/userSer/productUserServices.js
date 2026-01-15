@@ -116,7 +116,7 @@ const calculateFinalPrice = async (product, originalPrice) => {
 const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = '', sort = 'newest', filters = {}) => {
     try {
         const skip = (page - 1) * limit;
-        
+
         // --- STAGE 1: MATCH (Filter Products) ---
         // Just like .find(), we start by narrowing down the products.
         let matchStage = {
@@ -131,9 +131,18 @@ const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = 
             ];
         }
 
+        // if (filters.brand) {
+        //     matchStage.brandId = new mongoose.Types.ObjectId(filters.brand);
+        // }
+
         if (filters.brand) {
-            matchStage.brandId = new mongoose.Types.ObjectId(filters.brand);
-        }
+
+    const brandIds = Array.isArray(filters.brand) 
+        ? filters.brand.map(id => new mongoose.Types.ObjectId(id)) 
+        : [new mongoose.Types.ObjectId(filters.brand)];           
+   
+    matchStage.brandId = { $in: brandIds }; 
+}
 
         // --- STAGE 2: SORT SETUP ---
         // We define how we WANT to sort, so we can use it later in the pipeline.
@@ -147,7 +156,7 @@ const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = 
         } else if (sort === "z-a") {
             sortStage['name'] = -1;
         } else {
-            sortStage['createdAt'] = -1; 
+            sortStage['createdAt'] = -1;
         }
 
         // --- STAGE 3: THE PIPELINE (The "Assembly Line") ---
@@ -162,14 +171,16 @@ const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = 
                     from: "variants",
                     let: { pid: "$_id" },
                     pipeline: [
-                        { $match: { 
-                            $expr: { 
-                                $and: [
-                                    { $eq: ["$productId", "$$pid"] }, // Match Product ID
-                                    { $eq: ["$isListed", true] }      // Must be listed
-                                ]
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ["$productId", "$$pid"] }, // Match Product ID
+                                        { $eq: ["$isListed", true] }      // Must be listed
+                                    ]
+                                }
                             }
-                        }},
+                        },
                         { $sort: { price: 1 } }, // Sort variants by price...
                         { $limit: 1 }            // ...and keep only the cheapest one.
                     ],
@@ -179,7 +190,7 @@ const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = 
 
             // 3. UNWIND (Flatten the array)
             // If a product has NO listed variants, it gets removed here. Good!
-             { $unwind: "$variantDetails" },
+            { $unwind: "$variantDetails" },
 
             // 4. PRICE FILTER
             // Now that we have the price attached to the product, we can filter!
@@ -216,7 +227,7 @@ const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = 
 
         // Execute the Pipeline
         const result = await Product.aggregate(pipeline);
-        
+
         // Extract Data
         const metadata = result[0].metadata;
         const totalProducts = metadata.length > 0 ? metadata[0].total : 0;
@@ -227,9 +238,9 @@ const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = 
         const processedProducts = await Promise.all(products.map(async (p) => {
             const variant = p.variantDetails;
             const { finalPrice, bestDiscount } = await calculateFinalPrice(p, variant.price);
-            
+
             return {
-                ...p, 
+                ...p,
                 image: variant.images[2], // Matches your logic (3rd image)
                 price: finalPrice,
                 originalPrice: variant.price,
@@ -450,5 +461,5 @@ module.exports = {
     getProductsByCategory,
     getProductDetailService,
     getTrendingProducts,
-calculateFinalPrice
+    calculateFinalPrice
 }

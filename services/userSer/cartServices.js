@@ -26,7 +26,7 @@ const getCart = async (userId) => {
 
 
 
-             cart = cart.toObject();
+        cart = cart.toObject();
         // Loop through items to calculate REAL TIME offers
         if (cart.items && cart.items.length > 0) {
             for (const item of cart.items) {
@@ -34,7 +34,7 @@ const getCart = async (userId) => {
                 const variant = item.variant_id;
                 if (product && variant) {
                     const { finalPrice, bestDiscount } = await calculateFinalPrice(product, variant.price);
-                    
+
                     // Attach these new values to the item
                     item.finalPrice = finalPrice;
                     item.originalPrice = variant.price;
@@ -139,81 +139,95 @@ const addToCartService = async (userId, variantId, quantity) => {
 
 
 
-const updateQuantityService=async (userId,itemId,action)=> {
-try {
-    const cart = await Cart.findOne({ user_id: userId }).populate({
+const updateQuantityService = async (userId, itemId, action) => {
+    try {
+        const cart = await Cart.findOne({ user_id: userId }).populate({
             path: 'items.variant_id',
             select: 'size color price stock'
         }).populate({
             path: 'items.product_id',
-            select: 'name isDeleted isListed'
+            select: 'name isDeleted isListed categoryId'
         });
-if (!cart)thrownewError("Cart not found");
+        if (!cart) thrownewError("Cart not found");
 
-const item= cart.items.id(itemId);
-if (!item)thrownewError("Item not found in cart");
+        const item = cart.items.id(itemId);
+        if (!item) thrownewError("Item not found in cart");
 
-const variant = item.variant_id;
-
-const variantCheck=await Variant.findById(item.variant_id._id);
-if (!variantCheck)throw new Error("Product Variant no longer exists");
-
-let newQty= item.quantity;
-if (action==="increment") newQty+=1;
-if (action==="decrement") newQty-=1;
-
-
-if (newQty<1)throw new Error("Quantity cannot be less than 1");
-
-if (newQty> MAX_QTY_PER_PERSON) {
-throw new Error(`Maximum limit is${MAX_QTY_PER_PERSON} per customer`);
+                if (!item.variant_id) {
+            throw new Error("Product Variant no longer exists");
         }
 
-if (newQty> variant.stock) {
-throw new Error(`Out of Stock! Only${variant.stock} available.`);
+        const variant = item.variant_id;
+
+        // const variantCheck = await Variant.findById(item.variant_id._id);
+        // if (!variantCheck) throw new Error("Product Variant no longer exists");
+
+        let newQty = parseInt(item.quantity);
+        if (action === "increment") newQty += 1;
+        if (action === "decrement") newQty -= 1;
+
+
+        if (newQty < 1) throw new Error("Quantity cannot be less than 1");
+
+        if (newQty > MAX_QTY_PER_PERSON) {
+            throw new Error(`Maximum limit is${MAX_QTY_PER_PERSON} per customer`);
         }
 
-        item.quantity= newQty;
-await cart.save();
+        if (newQty > variant.stock) {
+            throw new Error(`Out of Stock! Only${variant.stock} available.`);
+        }
+
+        item.quantity = newQty;
+        await cart.save();
 
 
-const validItems = cart.items.filter(item => 
-            item.variant_id && 
+        const validItems = cart.items.filter(item =>
+            item.variant_id &&
             item.product_id &&
-            item.variant_id.stock >= item.quantity && 
-            !item.product_id.isDeleted && 
+            item.variant_id.stock >= item.quantity &&
+            !item.product_id.isDeleted &&
             item.product_id.isListed
         );
-        
-       
-        
+
+
+
         let grandTotal = 0;
-        validItems.forEach(item => {
+        // validItems.forEach(item => {
 
+        //     if (item.variant_id && item.variant_id.price) {
+        //         grandTotal += item.quantity * item.variant_id.price;
+        //     }
+        // });
+
+           await Promise.all(validItems.map(async (item) => {
              if(item.variant_id && item.variant_id.price) {
-                grandTotal += item.quantity * item.variant_id.price;
+                 // Calculate ACTIVE offer price
+                 const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price);
+                 grandTotal += item.quantity * finalPrice;
              }
-        });
+        }));
 
-return { success:true,
-     newQty: newQty ,
-     optTotal: grandTotal};
+        return {
+            success: true,
+            newQty: newQty,
+            optTotal: grandTotal
+        };
 
-    }catch (error) {
-throw error;
+    } catch (error) {
+        throw error;
     }
 }
 
 
-const removeItemService=async (userId,itemId)=> {
-try {
-return await Cart.findOneAndUpdate(
+const removeItemService = async (userId, itemId) => {
+    try {
+        return await Cart.findOneAndUpdate(
             { user_id: userId },
             { $pull: { items: { _id: itemId } } },
-            { new:true }
+            { new: true }
         );
-    }catch (error) {
-throw error;
+    } catch (error) {
+        throw error;
     }
 };
 
