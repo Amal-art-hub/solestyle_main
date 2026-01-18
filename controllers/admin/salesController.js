@@ -1,24 +1,26 @@
 
 const {
     getSalesReport,
-     generateExcel,
-      generatePDF
+    generateExcel,
+    generatePDF
 } = require("../../services/adminSer/salesService");
 
 const loadReport = async (req, res) => {
     try {
+
+        // const cart = await Cart.findOne({ user_id: userId }).populate("items.variant_id").populate("items.product_id");
         const { period = 'daily', startDate, endDate } = req.query;
         const data = await getSalesReport({ period, startDate, endDate });
-        
+
         res.render("salesReport", {
             orders: data.orders,
-            stats: { 
-                count: data.overallSalesCount, 
-                amount: data.overallOrderAmount, 
-                discount: data.overallDiscount 
+            stats: {
+                count: data.overallSalesCount,
+                amount: data.overallOrderAmount,
+                discount: data.overallDiscount
             },
             filters: { period, startDate, endDate },
-            activePage: 'salesReport' 
+            activePage: 'salesReport'
         });
     } catch (error) { console.error(error); res.status(500).send("Error"); }
 };
@@ -26,12 +28,12 @@ const loadReport = async (req, res) => {
 const downloadExcel = async (req, res) => {
     try {
         const { period, startDate, endDate } = req.query;
-   
+
         const data = await getSalesReport({ period, startDate, endDate });
- 
+
         const buffer = await generateExcel(data);
 
-  
+
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.setHeader('Content-Disposition', 'attachment; filename=sales-report.xlsx');
         res.send(buffer);
@@ -41,12 +43,12 @@ const downloadExcel = async (req, res) => {
 const downloadPDF = async (req, res) => {
     try {
         const { period, startDate, endDate } = req.query;
-     
+
         const data = await getSalesReport({ period, startDate, endDate });
         const buffer = await generatePDF(data, period || 'Custom');
-       
 
-       
+
+
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', 'attachment; filename=sales-report.pdf');
         res.send(buffer);

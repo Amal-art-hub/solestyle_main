@@ -120,6 +120,18 @@ const returnOrderItemService = async (orderId, itemId, reason) => {
         item.status = "Return Request";
         item.return_reason = reason;
 
+        let allItemReturnRequested=order.items.every(item=>item.status==="Return Request");
+
+        if(allItemReturnRequested){
+            order.status="Return Request";
+        }
+
+
+
+
+
+
+
         // await Variant.findByIdAndUpdate(item.variant_id, { $inc: { stock: item.quantity } });
 
         await order.save();

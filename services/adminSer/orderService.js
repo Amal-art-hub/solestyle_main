@@ -127,6 +127,21 @@ const approveReturnService = async (orderId, itemId) => {
            refundAmount, 
             `Refund for Order #${order.order_number}`
         );
+       
+         const allItemReturned=order.items.every(item=>item.status==="returned");
+
+          const allItemcanceled=order.items.every(item=>item.status==="canceled");
+
+         if(allItemReturned){
+          order.status="returned"
+         }
+
+          if(allItemcanceled){
+          order.status="canceled"
+         }
+
+
+
         await order.save();
         return { success: true, message: "Return Approved & Refunded" };
     } catch (error) {
@@ -139,7 +154,12 @@ const rejectReturnService = async (orderId, itemId) => {
         const order = await Order.findById(orderId);
         const item = order.items.id(itemId);
         if (item.status !== "Return Request") throw new Error("Invalid Status");
-        item.status = "Return Rejected"; // Or revert to previous status if preferred
+        item.status = "Return Rejected"; 
+        
+        let allItemRejected=order.items.every(item=>item.status==="Return Rejected");
+
+        if(allItemRejected){order.status="Return Rejected"}
+        // Or revert to previous status if preferred
         await order.save();
         return { success: true, message: "Return Rejected" };
     } catch (error) {

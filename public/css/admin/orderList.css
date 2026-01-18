@@ -275,3 +275,51 @@
     border-radius: 5px;
     border: 1px solid #dee2e6;
 }
+
+/* Add this new class */
+.status-Payment-Pending {
+    background-color: #ffebee; /* Light Red background */
+    color: #c62828;            /* Dark Red text */
+    border: 1px dashed #ef9a9a; /* Dashed border to show it's incomplete */
+}
+
+
+
+/* --- Pagination (Green Category Theme) --- */
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.pagination a {
+    padding: 8px 1px;
+    border: 1px solid #ddd;
+    text-decoration: none;
+    color: #333;
+    border-radius: 4px; /* Simple rounded corners */
+    transition: all 0.3sease;
+    background: white;
+    min-width: 35px; /* Ensure buttons are square-ish */
+    text-align: center;
+}
+
+.pagination a:hover {
+    background-color: #f0f0f0;
+    border-color: #ccc;
+    transform: none; /* Removed the float effect to match Category page */
+}
+
+.pagination a.active {
+    background-color: #3BB77E; /* The "Green" you wanted */
+    color: white;
+    border-color: #3BB77E;
+    box-shadow: none; /* Removed the glowing shadow */
+}
+
+/* Disabled buttons (dots or inactive arrows) */
+.pagination span {
+    padding: 5px;
+    color: #999;
+}

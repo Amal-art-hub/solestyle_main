@@ -8,21 +8,27 @@ const path = require('path');
 const getSalesReport = async ({ period, startDate, endDate }) => {
     try {
         let matchStage = {
-            status: "delivered"
+            status: "delivered",
+            // final_total:{$gte:10000}
+            // payment_method:"COD"
+
         };
+    // payment_method: { type: String, enum: ['COD', 'Online', 'Wallet'] },
+
+       
 
         const now = new Date();
         if (period === 'daily') {
-        
+
             matchStage.createdAt = { $gte: new Date(now.setHours(0, 0, 0, 0)) };
         } else if (period === 'weekly') {
-        
+
             matchStage.createdAt = { $gte: new Date(now.setDate(now.getDate() - 7)) };
         } else if (period === 'yearly') {
-       
+
             matchStage.createdAt = { $gte: new Date(now.getFullYear(), 0, 1) };
         } else if (period === 'custom' && startDate && endDate) {
-         
+
             matchStage.createdAt = {
                 $gte: new Date(startDate),
                 $lte: new Date(new Date(endDate).setHours(23, 59, 59, 999))
@@ -43,8 +49,36 @@ const getSalesReport = async ({ period, startDate, endDate }) => {
             }
         ];
 
-        const orders = await Order.aggregate(pipeline);
+
+
+    //    const pipeline=[
+    //     {$match:matchStage},
+    //     {
+    //         $unwind:"$items"
+    //     },
+    //     {$group:{
+    //         _id:"$items.product_id",
+    //         totalQuantity:{$sum:"$items.quantity"},
+    //         productName:{
+    //             $first:"$items.name_snapshot"
+    //         }
+
+
+    //     }},
+    //     {$sort:{totalQuantity:-1}},
+    //     {$limit:5}
         
+
+
+    // ];
+
+
+
+
+
+
+        const orders = await Order.aggregate(pipeline);
+
         const overallSalesCount = orders.length;
         const overallOrderAmount = orders.reduce((sum, order) => sum + (order.final_total || 0), 0);
         const overallDiscount = orders.reduce((sum, order) => sum + (order.discount_amount || 0), 0);
@@ -63,7 +97,7 @@ const generateExcel = async (data) => {
         { header: 'Date', key: 'date', width: 15 },
         { header: 'Payment', key: 'payment_method', width: 15 },
         { header: 'Status', key: 'status', width: 15 },
-        { header: 'Discount', key: 'discount', width: 15 }, 
+        { header: 'Discount', key: 'discount', width: 15 },
         { header: 'Amount', key: 'amount', width: 15 }
     ];
     data.orders.forEach(order => {
@@ -78,13 +112,13 @@ const generateExcel = async (data) => {
     });
     worksheet.addRow({});
     worksheet.addRow({ order_number: 'Total:', amount: data.overallOrderAmount });
-  
+
     return await workbook.xlsx.writeBuffer();
 };
 
 const generatePDF = async (data, period) => {
     const templatePath = path.join(__dirname, '../../views/admin/salesReportPDF.ejs');
-    
+
 
     const html = await ejs.renderFile(templatePath, {
         orders: data.orders,

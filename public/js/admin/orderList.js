@@ -116,7 +116,7 @@ async function viewOrderDetails(orderId) {
                     <p><strong>Order ID:</strong> #${order.order_number}</p>
                     <p><strong>Date:</strong> ${new Date(order.order_date).toLocaleString()}</p>
                     <p><strong>Status:</strong> ${order.status}</p>
-                    <p><strong>Payment:</strong> ${order.payment_id ? 'Online/Wallet' : 'COD'}</p> 
+                   <p><strong>Payment:</strong> ${order.payment_method}</p>
                 </div>
                 <div class="detail-group">
                     <div class="detail-title">Shipping Address</div>

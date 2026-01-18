@@ -88,7 +88,7 @@ const addToCartService = async (userId, variantId, quantity) => {
                     quantity: quantity,
                     price_at_addition: variant.price,
                     name_snapshot: product.name,
-                    image_snapshot: variant.images[0]
+                    image_snapshot: variant.images[2]
                 }]
             });
         } else {
@@ -120,7 +120,7 @@ const addToCartService = async (userId, variantId, quantity) => {
                     quantity: quantity,
                     price_at_addition: variant.price,
                     name_snapshot: product.name,
-                    image_snapshot: variant.images[0]
+                    image_snapshot: variant.images[2]
                 });
             }
         }
@@ -153,7 +153,7 @@ const updateQuantityService = async (userId, itemId, action) => {
         const item = cart.items.id(itemId);
         if (!item) thrownewError("Item not found in cart");
 
-                if (!item.variant_id) {
+        if (!item.variant_id) {
             throw new Error("Product Variant no longer exists");
         }
 
@@ -199,12 +199,12 @@ const updateQuantityService = async (userId, itemId, action) => {
         //     }
         // });
 
-           await Promise.all(validItems.map(async (item) => {
-             if(item.variant_id && item.variant_id.price) {
-                 // Calculate ACTIVE offer price
-                 const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price);
-                 grandTotal += item.quantity * finalPrice;
-             }
+        await Promise.all(validItems.map(async (item) => {
+            if (item.variant_id && item.variant_id.price) {
+                // Calculate ACTIVE offer price
+                const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price);
+                grandTotal += item.quantity * finalPrice;
+            }
         }));
 
         return {
