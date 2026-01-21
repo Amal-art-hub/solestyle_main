@@ -3,7 +3,8 @@ const {
     getCheckoutData,
     placeOrderService,
     validateCoupon,
-    createRazorpayOrderService
+    createRazorpayOrderService,
+    retryPaymentService
 } = require("../../services/userSer/checkoutService");
 const {
     getWallet,
@@ -238,6 +239,24 @@ const verifyRazorpayWebhook = async (req, res) => {
 };
 
 
+const retryPayment = async (req, res) => {
+    try {
+        const { orderId } = req.body;
+        const razrpayOrder = await retryPaymentService(orderId);
+        res.status(statusCode.OK).json({ success: true, order: razrpayOrder });
+
+
+    } catch (error) {
+        console.error("Retry Payment Error:", error);
+        res.status(statusCode.INTERNAL_SERVER_ERROR).json({
+            success: false,
+            message: error.message || "Failed to retry payment"
+        });
+
+    }
+}
+
+
 
 module.exports = {
     loadCheckout,
@@ -247,5 +266,7 @@ module.exports = {
     removeCoupon,
     createRazorpayOrder,
     paymentFailed,
-    verifyRazorpayWebhook
+    verifyRazorpayWebhook,
+    retryPayment,
+
 }

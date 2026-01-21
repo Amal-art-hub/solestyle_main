@@ -12,21 +12,21 @@ const startOrderStatusRefresh = () => {
                 // Parse the new HTML and update order details
                 const parser = new DOMParser();
                 const newDoc = parser.parseFromString(html, 'text/html');
-                
+
                 // Update tracking section
                 const newTrackingSection = newDoc.querySelector('.tracking-wrapper');
                 const currentTrackingSection = document.querySelector('.tracking-wrapper');
                 if (newTrackingSection && currentTrackingSection) {
                     currentTrackingSection.innerHTML = newTrackingSection.innerHTML;
                 }
-                
+
                 // Update items section (left-col with order items)
                 const newItemsSection = newDoc.querySelector('.left-col');
                 const currentItemsSection = document.querySelector('.left-col');
                 if (newItemsSection && currentItemsSection) {
                     currentItemsSection.innerHTML = newItemsSection.innerHTML;
                 }
-                
+
                 // Update actions card (right side buttons)
                 const newActionsCard = newDoc.querySelector('.actions-card');
                 const currentActionsCard = document.querySelector('.actions-card');
@@ -37,7 +37,7 @@ const startOrderStatusRefresh = () => {
         } catch (error) {
             console.error('Error refreshing order status:', error);
         }
-    }, 5000); 
+    }, 5000);
 };
 
 
@@ -51,21 +51,21 @@ const cancelOrderItem = async (orderId, itemId) => {
         text: "Please provide a reason for cancellation:",
         input: 'select',
         inputOptions: {
-        'Changed Mind': 'Changed Mind',
-        'Ordered by Mistake': 'Ordered by Mistake',
-        'Found Cheaper Elsewhere': 'Found Cheaper Elsewhere',
-        'Shipping Too Slow': 'Shipping is too slow',
-        'Other': 'Other'
-    },
+            'Changed Mind': 'Changed Mind',
+            'Ordered by Mistake': 'Ordered by Mistake',
+            'Found Cheaper Elsewhere': 'Found Cheaper Elsewhere',
+            'Shipping Too Slow': 'Shipping is too slow',
+            'Other': 'Other'
+        },
         inputPlaceholder: 'Select a reason',
         showCancelButton: true,
         confirmButtonColor: '#d33',
         confirmButtonText: 'Yes, Cancel Item',
         inputValidator: (value) => {
-        if (!value) {
-            return 'You need to select a reason!'
+            if (!value) {
+                return 'You need to select a reason!'
+            }
         }
-    }
     });
     if (reason !== undefined) {
         try {
@@ -93,13 +93,13 @@ async function returnOrderItem(orderId, itemId) {
         title: 'Return Item?',
         text: "Please provide a reason for return:",
         input: 'select',
-              inputOptions: {
-        'Changed Mind': 'Changed Mind',
-        'Ordered by Mistake': 'Ordered by Mistake',
-        'Found Cheaper Elsewhere': 'Found Cheaper Elsewhere',
-        'Shipping Too Slow': 'Shipping is too slow',
-        'Other': 'Other'
-    },
+        inputOptions: {
+            'Changed Mind': 'Changed Mind',
+            'Ordered by Mistake': 'Ordered by Mistake',
+            'Found Cheaper Elsewhere': 'Found Cheaper Elsewhere',
+            'Shipping Too Slow': 'Shipping is too slow',
+            'Other': 'Other'
+        },
         inputPlaceholder: 'Select the reason',
         showCancelButton: true,
         confirmButtonText: 'Submit Return Request',
@@ -117,12 +117,12 @@ async function returnOrderItem(orderId, itemId) {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ reason: reason })
             });
-            
+
             const data = await response.json();
-            
+
             if (data.success) {
                 Swal.fire('Submitted!', 'Return request submitted.', 'success')
-                .then(() => location.reload());
+                    .then(() => location.reload());
             } else {
                 Swal.fire('Error', data.message || 'Could not return item', 'error');
             }
@@ -139,22 +139,22 @@ const cancelOrder = async (orderId) => {
         text: "Are you sure? This will cancel all items in this order.",
         icon: 'warning',
         input: 'select',
-         inputOptions: {
-        'Changed Mind': 'Changed Mind',
-        'Ordered by Mistake': 'Ordered by Mistake',
-        'Found Cheaper Elsewhere': 'Found Cheaper Elsewhere',
-        'Shipping Too Slow': 'Shipping is too slow',
-        'Other': 'Other'
-    },
+        inputOptions: {
+            'Changed Mind': 'Changed Mind',
+            'Ordered by Mistake': 'Ordered by Mistake',
+            'Found Cheaper Elsewhere': 'Found Cheaper Elsewhere',
+            'Shipping Too Slow': 'Shipping is too slow',
+            'Other': 'Other'
+        },
         inputPlaceholder: 'Select a reason',
         showCancelButton: true,
         confirmButtonColor: '#d33',
         confirmButtonText: 'Yes, Cancel Order!',
-            inputValidator: (value) => {
-        if (!value) {
-            return 'You need to select a reason!'
+        inputValidator: (value) => {
+            if (!value) {
+                return 'You need to select a reason!'
+            }
         }
-    }
     });
 
     if (reason !== undefined) {
@@ -187,21 +187,21 @@ const returnOrder = async (orderId) => {
         icon: 'warning',
         input: 'select',
         inputOptions: {
-        'Changed Mind': 'Changed Mind',
-        'Ordered by Mistake': 'Ordered by Mistake',
-        'Found Cheaper Elsewhere': 'Found Cheaper Elsewhere',
-        'Shipping Too Slow': 'Shipping is too slow',
-        'Other': 'Other'
-    },
+            'Changed Mind': 'Changed Mind',
+            'Ordered by Mistake': 'Ordered by Mistake',
+            'Found Cheaper Elsewhere': 'Found Cheaper Elsewhere',
+            'Shipping Too Slow': 'Shipping is too slow',
+            'Other': 'Other'
+        },
         inputPlaceholder: 'Select a return',
         showCancelButton: true,
         confirmButtonColor: '#f39c12',
         confirmButtonText: 'Yes, Return Order',
-                  inputValidator: (value) => {
-        if (!value) {
-            return 'You need to select a reason!'
+        inputValidator: (value) => {
+            if (!value) {
+                return 'You need to select a reason!'
+            }
         }
-    }
     });
 
     if (reason) {
@@ -226,3 +226,51 @@ const returnOrder = async (orderId) => {
         }
     }
 };
+
+
+async function retryPayment(orderId) {
+    try {
+        const response = await axios.post("/retry-payment", { orderId: orderId });
+        if (!response.data.success) {
+            throw new Error(response.data.message || "Failed to initiate retry payment");
+        }
+
+        const orderData = response.data.order;
+
+        const options = {
+            "key": "rzp_test_S0ywJN5WPSnvu3",
+            "amount": orderData.amount,
+            "currency": orderData.currency,
+            "name": "Shoe Project",
+            "description": "Retry Payment",
+            "order_id": orderData.id,
+            "handler": async function (paymentResponse) {
+                try {
+                    const verifyRes = await axios.post("/checkout/place-order", {
+                        addressId: orderData.address_id || null,
+                        paymentMethod: "Online",
+                        paymentDetails: paymentResponse
+                    });
+
+                    if (verifyRes.data.success) {
+                        window.location.href = `/order-success/${verifyRes.data.orderId}`;
+                    }
+                    else {
+                        Swal.fire('Error', verifyRes.data.message, 'error');
+                    }
+                } catch (error) {
+                    Swal.fire('Error', error.response?.data?.message || 'Payment verification failed', 'error');
+                }
+            },
+            theme: { color: "#3399cc" }
+
+        };
+        const rzp = new Razorpay(options);
+        rzp.open();
+
+
+    } catch (error) {
+        console.error(err);
+        Swal.fire('Error', err.message || 'Failed to initiate retry', 'error');
+    }
+}

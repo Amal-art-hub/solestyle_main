@@ -3,20 +3,20 @@ const Variant = require("../../models/varient");
 const Category = require("../../models/category");
 const Brand = require("../../models/brand");
 
-const getAllProducts = async (page = 1, limit = 10, search = "",sort="newest") => {
+const getAllProducts = async (page = 1, limit = 10, search = "", sort = "newest") => {
     try {
         const skip = (page - 1) * limit;
         const query = {}
-                
+
         if (search) {
             query.name = { $regex: new RegExp(search, "i") };
         }
 
 
 
-         let sortOptions = {}; 
+        let sortOptions = {};
         if (sort === "oldest") {
-            sortOptions = { createdAt: 1 }; 
+            sortOptions = { createdAt: 1 };
         } else {
             sortOptions = { createdAt: -1 };
         }
@@ -35,7 +35,7 @@ const getAllProducts = async (page = 1, limit = 10, search = "",sort="newest") =
         const totalPages = Math.ceil(totalProducts / limit);
 
         return {
-         
+
             products,
             currentPage: page,
             totalPages,
@@ -87,13 +87,18 @@ const createProduct = async (Data) => {
         const { name, description, category, brand } = Data;
 
 
-         const categoryData = await Category.findOne({ _id: category, isListed: true });
+        const categoryData = await Category.findOne({ _id: category, isListed: true });
         const brandData = await Brand.findOne({ _id: brand, isListed: true });
         if (!categoryData) {
             throw new Error("This Category is Unlisted or Invalid. Cannot add product.");
         }
         if (!brandData) {
             throw new Error("This Brand is Unlisted or Invalid. Cannot add product.");
+        }
+
+        let exisitingproduct = await Product.findOne({name});
+        if (exisitingproduct) {
+            throw new Error("product with same name already exist");
         }
 
         const newProduct = new Product({

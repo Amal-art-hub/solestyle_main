@@ -118,19 +118,21 @@ router.post("/checkout/place-order", checkUserStatus, checkoutController.placeOr
 
 router.get('/order-success/:id', checkUserStatus, checkoutController.orderSuccess);
 //------------------------------------------------------------------------------------coupen apply
-router.post("/checkout/apply-coupon",checkUserStatus,checkoutController.applyCoupen);
+router.post("/checkout/apply-coupon", checkUserStatus, checkoutController.applyCoupen);
 router.post("/checkout/remove-coupon", checkUserStatus, checkoutController.removeCoupon);
 //----------------------------------------------------------------------------------------razorpay
-router.post("/checkout/razorpay-order",checkUserStatus,checkoutController.createRazorpayOrder);
+router.post("/checkout/razorpay-order", checkUserStatus, checkoutController.createRazorpayOrder);
 router.get("/checkout/payment-failure", checkUserStatus, checkoutController.paymentFailed);
 
 router.post('/checkout/webhook', checkoutController.verifyRazorpayWebhook);
+
+router.post("/retry-payment", checkUserStatus, checkoutController.retryPayment)
 
 
 //==========================================================================================orders
 
 router.get("/user/orders", checkUserStatus, ordersController.listOrder);
-router.get("/orders/:id",checkUserStatus, orderDetailController.getOrderDetails);
+router.get("/orders/:id", checkUserStatus, orderDetailController.getOrderDetails);
 
 
 //---------------------------------------------------------------------------------------------------canceling
@@ -140,7 +142,7 @@ router.put("/user/orders/cancel/:orderId", checkUserStatus, orderDetailControlle
 
 
 //--------------------------------------------------------------------------------------------returning
-router.put("/user/orders/return-item/:orderId/:itemId",checkUserStatus,orderDetailController.returnOrderItem);
+router.put("/user/orders/return-item/:orderId/:itemId", checkUserStatus, orderDetailController.returnOrderItem);
 
 router.put("/user/orders/return/:orderId", checkUserStatus, orderDetailController.returnOrder);
 
@@ -152,11 +154,11 @@ router.get("/user/orders/invoice/:orderId", checkUserStatus, orderDetailControll
 
 //-----------------------------------------------------------------------------------------wallet
 
-router.get("/user/wallet",checkUserStatus,walletController.loadWalletPage);
+router.get("/user/wallet", checkUserStatus, walletController.loadWalletPage);
 
 
 //wishlist
-router.get("/user/wishlist",checkUserStatus,wishlistController.loadWishlist);
+router.get("/user/wishlist", checkUserStatus, wishlistController.loadWishlist);
 router.post("/user/wishlist/add", checkUserStatus, wishlistController.addToWishlist);
 router.delete("/user/wishlist/remove/:id", checkUserStatus, wishlistController.removeFromWishlist);
 

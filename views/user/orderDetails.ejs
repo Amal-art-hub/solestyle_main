@@ -23,14 +23,9 @@
             <div class="tracking-wrapper">
                 <div class="track-line-container">
                     <!-- Dynamic Width Logic -->
-                    <% let progress=0; 
-                    if (order.status==='delivered' || order.status==='returned') { 
-                        progress=90; 
-                    } else if (order.shipped_date || order.status==='shipped' || order.status==='out for delivery') {
-                        progress=50; 
-                    } else if (order.status !=='canceled' ) { 
-                        progress=5; 
-                    } %>
+                    <% var progress=0; if (order.status==='delivered' || order.status==='returned' ) { progress=90; }
+                        else if (order.shipped_date || order.status==='shipped' || order.status==='out for delivery' ) {
+                        progress=50; } else if (order.status !=='canceled' ) { progress=5; } %>
                         <div class="track-line-bg"></div>
                         <div class="track-line-active" style="width: <%= progress %>%"></div>
                         <!-- STEP 1: Confirmed -->
@@ -42,7 +37,8 @@
                             </p>
                         </div>
                         <!-- STEP 2: Shipped -->
-                        <div class="track-step <%= order.shipped_date || ['shipped', 'out for delivery', 'delivered', 'returned'].includes(order.status) ? 'active' : '' %>">
+                        <div
+                            class="track-step <%= order.shipped_date || ['shipped', 'out for delivery', 'delivered', 'returned'].includes(order.status) ? 'active' : '' %>">
                             <div class="dot"><i class="fas fa-truck"></i></div>
                             <h4>Shipped</h4>
                             <% if(order.shipped_date) { %>
@@ -57,7 +53,7 @@
                         <div class="track-step <%= ['delivered', 'returned'].includes(order.status) ? 'active' : '' %>">
                             <div class="dot"><i class="fas fa-box-open"></i></div>
                             <h4>Delivered</h4>
-                            <% if(['delivered', 'returned'].includes(order.status)) { %>
+                            <% if(['delivered', 'returned' ].includes(order.status)) { %>
                                 <p>
                                     <%= new Date(order.updatedAt).toLocaleDateString() %>
                                 </p>
@@ -70,36 +66,44 @@
 
 
                 <!-- Status Message Section -->
-                <% if (order.status === 'Return Request') { %>
+                <% if (order.status==='Return Request' ) { %>
                     <!-- CASE 1: Request is PENDING (Yellow/Orange) -->
                     <div class="delivery-agent-note" style="background-color: #fff3e0; border-left: 4px solid #f39c12;">
                         <i class="fas fa-clock"></i>
-                        <strong style="color: #f39c12;">Return Requested:</strong> Your return request has been submitted. We will process it shortly.
+                        <strong style="color: #f39c12;">Return Requested:</strong> Your return request has been
+                        submitted. We will process it shortly.
                     </div>
-                <% } else if (order.status === 'returned') { %>
-                     <!-- CASE 2: Request is APPROVED (Green) -->
-                    <div class="delivery-agent-note" style="background-color: #e8f8f5; border-left: 4px solid #27ae60;">
-                        <i class="fas fa-check-circle"></i>
-                        <strong style="color: #27ae60;">Return Approved:</strong> Your return has been processed and the amount has been refunded to your wallet.
-                    </div>
-                <% } else if (order.status === 'Return Rejected') { %>
-                    <!-- CASE 3: Request is REJECTED (Red) -->
-                   <div class="delivery-agent-note" style="background-color: #ffebee; border-left: 4px solid #c0392b;">
-                       <i class="fas fa-times-circle"></i>
-                       <strong style="color: #c0392b;">Return Rejected:</strong> Unfortunately, your return request was not approved.
-                   </div>
-                <% } else if (order.status === 'canceled') { %>
-                    <div class="delivery-agent-note" style="background-color: #ffebee; border-left: 4px solid #c0392b;">
-                        <i class="fas fa-times-circle"></i>
-                        <strong style="color: #c0392b;">Order Canceled:</strong> This order has been canceled.
-                    </div>
-                <% } else if(order.shipped_date && order.status !=='delivered' ) { %>
-                    <div class="delivery-agent-note">
-                        <i class="fas fa-info-circle"></i>
-                        <strong>Update:</strong> Your order is on the way! Our delivery executive will contact you
-                        shortly on the registered phone number.
-                    </div>
-                    <% } %>
+                    <% } else if (order.status==='returned' ) { %>
+                        <!-- CASE 2: Request is APPROVED (Green) -->
+                        <div class="delivery-agent-note"
+                            style="background-color: #e8f8f5; border-left: 4px solid #27ae60;">
+                            <i class="fas fa-check-circle"></i>
+                            <strong style="color: #27ae60;">Return Approved:</strong> Your return has been processed and
+                            the amount has been refunded to your wallet.
+                        </div>
+                        <% } else if (order.status==='Return Rejected' ) { %>
+                            <!-- CASE 3: Request is REJECTED (Red) -->
+                            <div class="delivery-agent-note"
+                                style="background-color: #ffebee; border-left: 4px solid #c0392b;">
+                                <i class="fas fa-times-circle"></i>
+                                <strong style="color: #c0392b;">Return Rejected:</strong> Unfortunately, your return
+                                request was not approved.
+                            </div>
+                            <% } else if (order.status==='canceled' ) { %>
+                                <div class="delivery-agent-note"
+                                    style="background-color: #ffebee; border-left: 4px solid #c0392b;">
+                                    <i class="fas fa-times-circle"></i>
+                                    <strong style="color: #c0392b;">Order Canceled:</strong> This order has been
+                                    canceled.
+                                </div>
+                                <% } else if(order.shipped_date && order.status !=='delivered' ) { %>
+                                    <div class="delivery-agent-note">
+                                        <i class="fas fa-info-circle"></i>
+                                        <strong>Update:</strong> Your order is on the way! Our delivery executive will
+                                        contact you
+                                        shortly on the registered phone number.
+                                    </div>
+                                    <% } %>
             </div>
             <!-- GRID LAYOUT -->
             <div class="order-content-grid">
@@ -110,7 +114,7 @@
                         <% order.items.forEach(function(item) { %>
                             <div class="order-item">
                                 <!-- Logic to show image from snapshot OR live variant data if snapshot missing -->
-                                <% let imgSrc='/uploads/variant-images/default.jpg' ; if(item.image_snapshot) {
+                                <% var imgSrc='/uploads/variant-images/default.jpg' ; if(item.image_snapshot) {
                                     imgSrc='/uploads/variant-images/' + item.image_snapshot; } else if(item.variant_id
                                     && item.variant_id.images && item.variant_id.images.length> 0) {
                                     // Fallback to current variant image
@@ -118,74 +122,76 @@
                                     }
                                     %>
                                     <img src="<%= imgSrc %>" alt="Product">
-                                 <div class="item-info">
-    <h4><%= item.name_snapshot %></h4>
-    <p>Size: <%= item.variant_snapshot || 'N/A' %></p>
-    <p>Qty: <%= item.quantity %> x ₹<%= item.unit_price %></p>
-    <p style="color:#27ae60; font-weight:600;">₹<%= item.total_amount %></p>
+                                    <div class="item-info">
+                                        <h4>
+                                            <%= item.name_snapshot %>
+                                        </h4>
+                                        <p>Size: <%= item.variant_snapshot || 'N/A' %>
+                                        </p>
+                                        <p>Qty: <%= item.quantity %> x ₹<%= item.unit_price %>
+                                        </p>
+                                        <p style="color:#27ae60; font-weight:600;">₹<%= item.total_amount %>
+                                        </p>
 
-    <!-- <p style="color: red; font-size: 20px; font-weight: bold;">DEBUG: [<%= item.status %>]</p> -->
+                                        <!-- <p style="color: red; font-size: 20px; font-weight: bold;">DEBUG: [<%= item.status %>]</p> -->
 
-    <!-- Item Status Badge -->
-   <!-- Item Status Badge -->
-<!-- <p class="mb-1">Status: 
+                                        <!-- Item Status Badge -->
+                                        <!-- Item Status Badge -->
+ 
+
+                                     <p class="mb-1">Status:
     <% 
-        // SAFETY CHECK: Default to 'pending' if status is missing
-        let safeStatus = (item.status && item.status.toString().trim()) || 'pending';
-        
-        let badgeColor = '#f0f0f0'; 
-        let textColor = '#333';
-        
-        if (safeStatus === 'canceled') { badgeColor = '#ffebee'; textColor = '#c0392b'; }
-        else if (safeStatus === 'delivered') { badgeColor = '#e8f8f5'; textColor = '#27ae60'; }
-        else if (safeStatus === 'returned') { badgeColor = '#fff3e0'; textColor = '#f39c12'; }
-    %>
-    <span class="badge" style="background-color: <%= badgeColor %>; color: <%= textColor %>; border: 1px solid <%= badgeColor %>; padding: 5px 10px; border-radius: 4px;">
-        <%= safeStatus.charAt(0).toUpperCase() + safeStatus.slice(1) %>
-    </span>
-</p> -->
-
-<p class="mb-1">Status: 
-    <% 
-        let rawStatus = item.status;
-        let finalStatus = 'pending';
+        var rawStatus = item.status; 
+        var finalStatus = 'pending';
         
         if (rawStatus && rawStatus.toString().trim() !== '') {
-            finalStatus = rawStatus.toString().trim();
-        }
-
-        let bColor = '#f0f0f0'; // Gray
-        let tColor = '#333333'; // Black
+            finalStatus = rawStatus.toString().trim(); 
+        } 
         
-        if (finalStatus === 'canceled') { bColor = '#ffebee'; tColor = '#c0392b'; }
-        else if (finalStatus === 'delivered') { bColor = '#e8f8f5'; tColor = '#27ae60'; }
-        else if (finalStatus === 'returned') { bColor = '#fff3e0'; tColor = '#f39c12'; }
+        var bColor = '#f0f0f0'; // Gray
+        var tColor = '#333333'; // Black
         
-        let displayText = finalStatus.charAt(0).toUpperCase() + finalStatus.slice(1);
+        if (finalStatus === 'canceled') { 
+            bColor = '#ffebee'; 
+            tColor = '#c0392b'; 
+        } else if (finalStatus === 'delivered') { 
+            bColor = '#e8f8f5'; 
+            tColor = '#27ae60'; 
+        } else if (finalStatus === 'returned') { 
+            bColor = '#fff3e0'; 
+            tColor = '#f39c12'; 
+        } 
+        
+        var displayText = finalStatus.charAt(0).toUpperCase() + finalStatus.slice(1); 
     %>
 
-    <span class="status-badge" style="background-color: <%= bColor %>; color: <%= tColor %> !important; border: 1px solid <%= bColor %>; padding: 5px 10px; border-radius: 4px; font-weight: bold;">
+    <span class="status-badge"
+        style="background-color: <%= bColor %>; color: <%= tColor %> !important; border: 1px solid <%= bColor %>; padding: 5px 10px; border-radius: 4px; font-weight: bold;">
         <%= displayText %>
     </span>
 </p>
-    <!-- [1] Cancel Item Button (For Pending/Processing) -->
-    <% if (['pending', 'processing'].includes(order.status) && ['pending', 'processing'].includes(item.status)) { %>
-        <button onclick="cancelOrderItem('<%= order._id %>', '<%= item._id %>')" 
-                class="btn-sm" 
-                style="background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-top: 5px;">
-            Cancel Item
-        </button>
-    <% } %>
 
-    <!-- [2] Return Item Button (For Delivered) [NEW] -->
-    <% if (order.status === 'delivered' && item.status === 'delivered') { %>
-        <button onclick="returnOrderItem('<%= order._id %>', '<%= item._id %>')" 
-                class="btn-sm" 
-                style="background: #f39c12; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-top: 5px;">
-            Return Item
-        </button>
-    <% } %>
-</div>
+                               
+                                        <!-- [1] Cancel Item Button (For Pending/Processing) -->
+                                        <% if (['pending', 'processing' ].includes(order.status) &&
+                                            ['pending', 'processing' ].includes(item.status)) { %>
+                                            <button onclick="cancelOrderItem('<%= order._id %>', '<%= item._id %>')"
+                                                class="btn-sm"
+                                                style="background: #ff4444; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-top: 5px;">
+                                                Cancel Item
+                                            </button>
+                                            <% } %>
+
+                                                <!-- [2] Return Item Button (For Delivered) [NEW] -->
+                                                <% if (order.status==='delivered' && item.status==='delivered' ) { %>
+                                                    <button
+                                                        onclick="returnOrderItem('<%= order._id %>', '<%= item._id %>')"
+                                                        class="btn-sm"
+                                                        style="background: #f39c12; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-top: 5px;">
+                                                        Return Item
+                                                    </button>
+                                                    <% } %>
+                                    </div>
                             </div>
                             <% }) %>
                     </div>
@@ -232,47 +238,65 @@
                     </div>
 
                     <!-- ACTIONS CARD -->
-<% if (order.status !== 'canceled' && order.status !== 'returned') { %>
-<div class="card actions-card">
-    <h3>Order Actions</h3>
-    <div class="action-buttons">
-      <% 
-    // Check if all items are in terminal states
-    let allItemsCanceled = order.items.every(item => item.status === 'canceled');
-    let allItemsReturned = order.items.every(item => item.status === 'returned');
-    let allItemsFinal = allItemsCanceled || allItemsReturned;
-%>
+                    <% if (order.status !=='canceled' && order.status !=='returned' ) { %>
+                        <div class="card actions-card">
+                            <h3>Order Actions</h3>
+                            <div class="action-buttons">
+                                <% 
+                                    // Check if all items are in terminal states
+                                    var allItemsCanceled = order.items.every(item => item.status === 'canceled');
+                                    var allItemsReturned = order.items.every(item => item.status === 'returned');
+                                    var allItemsFinal = allItemsCanceled || allItemsReturned;
+                                    %>
 
-<% if (['pending', 'processing'].includes(order.status) && !allItemsCanceled) { %>
-    <!-- Show Cancel Button ONLY if not all canceled -->
-    <button class="btn-action btn-cancel" onclick="cancelOrder('<%= order._id %>')">
-        <i class="fas fa-times-circle"></i> Cancel Order
-    </button>
-<% } %>
+                                    <% if((order.status==="Payment Pending" || order.status==="Payment Failed" )&&
+                                        order.payment_method==="Online" ){%>
+                                        <button onclick="retryPayment('<%= order._id %>')" class="btn-action"
+                                            style="background-color: #27ae60; color: white;">
 
-<% if (order.status === 'delivered' && !allItemsReturned && !allItemsCanceled) { %>
-    <!-- Show Return Button ONLY if no items are returned/canceled -->
-    <button class="btn-action btn-return" onclick="returnOrder('<%= order._id %>')">
-        <i class="fas fa-undo"></i> Return Order
-    </button>
-<% } %>
+                                            <i class="fas fa-redo"></i>Retry Payment
+                                            </button>
+                                        <% } %>
 
-<% if (allItemsFinal) { %>
-    <p style="color: #666; font-weight: bold;">No further actions available</p>
-<% } %>
-        
-        <% if (order.status === 'shipped') { %>
-             <p class="status-note">Order is in transit and cannot be cancelled.</p>
-        <% } %>
-        
-<% if (order.status === 'delivered') { %>
-    <a href="/user/orders/invoice/<%= order._id %>" class="btn-action btn-invoice" style="background-color: #34495e; color: white; text-decoration: none; padding: 10px 15px; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
-        <i class="fas fa-file-download"></i> Download Invoice
-    </a>
-<% } %>
-    </div>
-</div>
-<% } %>
+                                            <% if (['pending', 'processing' ].includes(order.status) &&
+                                                !allItemsCanceled) { %>
+                                                <!-- Show Cancel Button ONLY if not all canceled -->
+                                                <button class="btn-action btn-cancel"
+                                                    onclick="cancelOrder('<%= order._id %>')">
+                                                    <i class="fas fa-times-circle"></i> Cancel Order
+                                                </button>
+                                                <% } %>
+
+                                                    <% if (order.status==='delivered' && !allItemsReturned &&
+                                                        !allItemsCanceled) { %>
+                                                        <!-- Show Return Button ONLY if no items are returned/canceled -->
+                                                        <button class="btn-action btn-return"
+                                                            onclick="returnOrder('<%= order._id %>')">
+                                                            <i class="fas fa-undo"></i> Return Order
+                                                        </button>
+                                                        <% } %>
+
+                                                            <% if (allItemsFinal) { %>
+                                                                <p style="color: #666; font-weight: bold;">No further
+                                                                    actions available</p>
+                                                                <% } %>
+
+                                                                    <% if (order.status==='shipped' ) { %>
+                                                                        <p class="status-note">Order is in transit and
+                                                                            cannot be cancelled.</p>
+                                                                        <% } %>
+
+                                                                            <% if (order.status==='delivered' ) { %>
+                                                                                <a href="/user/orders/invoice/<%= order._id %>"
+                                                                                    class="btn-action btn-invoice"
+                                                                                    style="background-color: #34495e; color: white; text-decoration: none; padding: 10px 15px; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                                                                                    <i class="fas fa-file-download"></i>
+                                                                                    Download Invoice
+                                                                                </a>
+                                                                                <% } %>
+                            </div>
+                        </div>
+                        <% } %>
 
 
                 </div>
@@ -281,7 +305,8 @@
                 <p>Order not found.</p>
                 <% } %>
     </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-       <script src="/js/user/orderDetail.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="/js/user/orderDetail.js"></script>
     <%- include('../partials/footer') %>

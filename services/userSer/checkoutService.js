@@ -145,6 +145,9 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
             const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price); 
             const itemTotal = item.quantity * finalPrice;
             totalAmount += itemTotal;
+
+
+
             
             orderItems.push({
                 product_id: item.product_id,
@@ -294,7 +297,7 @@ const createRazorpayOrderService = async (userId, addressId, couponData) => {
                  unit_price: finalPrice,
                  total_amount: item.quantity * finalPrice,
                  name_snapshot: item.name_snapshot,
-                 status: 'pending' // Initial status
+                 status: 'Payment Pending' // Initial status
              });
         }
 
@@ -340,9 +343,40 @@ const createRazorpayOrderService = async (userId, addressId, couponData) => {
 
 
 
+const retryPaymentService=async(orderId)=>{
+    try {
+        const order=await Order.findById(orderId);
+        if(!order) throw new Error("Order not found");
+
+        const instance=new  Razorpay({key_id:process.env.RAZORPAY_KEY_ID,
+            key_secret:process.env.RAZORPAY_KEY_SECRET
+        });
+
+        const options={amount:Math.round(order.final_total*100),
+            currency:"INR",receipt :"retry_rcptid_"+Date.now()
+        };
+
+        const rzpOrder=await instance.orders.create(options);
+
+        order.razorpay_order_id=rzpOrder.id;
+        order.status="Payment Pending";
+
+        await order.save();
+
+        return {...rzpOrder,address_id:order.address_id};
+    } catch (error) {
+
+        throw error;
+        
+    }
+}
+
+
+
 module.exports = {
     getCheckoutData,
     placeOrderService,
     validateCoupon,
-    createRazorpayOrderService
+    createRazorpayOrderService,
+    retryPaymentService
 }
