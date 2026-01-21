@@ -38,6 +38,7 @@
                     <select name="period" id="periodSelect" class="form-control" style="width: 150px;">
                         <option value="daily" <%= filters.period === 'daily' ? 'selected' : '' %>>Today</option>
                         <option value="weekly" <%= filters.period === 'weekly' ? 'selected' : '' %>>This Week</option>
+                        <option value="monthly" <%= filters.period === 'monthly' ? 'selected' : '' %>>This Month</option>
                         <option value="yearly" <%= filters.period === 'yearly' ? 'selected' : '' %>>This Year</option>
                         <option value="custom" <%= filters.period === 'custom' ? 'selected' : '' %>>Custom Date</option>
                     </select>

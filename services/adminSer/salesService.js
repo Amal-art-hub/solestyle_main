@@ -21,10 +21,15 @@ const getSalesReport = async ({ period, startDate, endDate }) => {
         if (period === 'daily') {
 
             matchStage.createdAt = { $gte: new Date(now.setHours(0, 0, 0, 0)) };
-        } else if (period === 'weekly') {
+        } else if (period === 'weekly') 
+            {
 
             matchStage.createdAt = { $gte: new Date(now.setDate(now.getDate() - 7)) };
-        } else if (period === 'yearly') {
+        } else if (period === 'monthly') {
+            
+            matchStage.createdAt = { $gte: new Date(now.getFullYear(), now.getMonth(), 1) }; 
+        
+        }else if (period === 'yearly') {
 
             matchStage.createdAt = { $gte: new Date(now.getFullYear(), 0, 1) };
         } else if (period === 'custom' && startDate && endDate) {
