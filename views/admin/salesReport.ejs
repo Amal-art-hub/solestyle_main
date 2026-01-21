@@ -87,7 +87,11 @@
                             <th>Date</th>
                             <th>Payment</th>
                             <th>Status</th>
-                            <th style="text-align: right;">Total Amount</th>
+                            <th style="text-align: right;">Subtotal</th>
+                            <th style="text-align: right;">Offer</th>
+                            <th style="text-align: right;">Coupon</th>
+                            <th style="text-align: right;">Delivery</th>
+                            <th style="text-align: right;">Final Total</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -102,7 +106,11 @@
                                         <%= order.status.toUpperCase() %>
                                     </span>
                                 </td>
-                                <td style="text-align: right; font-weight: bold;">₹<%= order.final_total %></td>
+                                <td style="text-align: right; font-weight: bold;">₹<%=order.subtotal %></td>
+                                 <td style="text-align: right; font-weight: bold;">₹<%=order.offer_discount %></td>
+                                  <td style="text-align: right; font-weight: bold;">₹<%=order.discount_amount %></td>
+                                     <td style="text-align: right; font-weight: bold;">₹</td>
+                                     <td style="text-align: right; font-weight: bold;">₹<%= order.final_total %></td>
                             </tr>
                             <% }) %>
                         <% } else { %>

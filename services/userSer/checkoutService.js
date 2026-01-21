@@ -132,7 +132,8 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
         const address = await Address.findById(addressId);
         if (!address) throw new Error("Address not found");
 
-        let totalAmount = 0;
+           let totalOfferPrice = 0; 
+        let totalMrpPrice = 0; 
         const orderItems = [];
 
         // Build Items & Check Stock
@@ -141,10 +142,13 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
             if (variant.stock < item.quantity) {
                 throw new Error(`Stock insufficient for ${item.name_snapshot}`);
             }
-
-            const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price); 
-            const itemTotal = item.quantity * finalPrice;
-            totalAmount += itemTotal;
+            
+            const originalMRP = variant.price;
+            const { finalPrice } = await calculateFinalPrice(item.product_id, originalMRP); 
+            const itemOfferTotal=item.quantity*finalPrice;
+            totalOfferPrice +=itemOfferTotal;
+            totalMrpPrice +=item.quantity * originalMRP;
+          
 
 
 
@@ -154,31 +158,35 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
                 variant_id: item.variant_id._id,
                 quantity: item.quantity,
                 unit_price: finalPrice,
-                total_amount: itemTotal,
+                original_price:originalMRP,
+                total_amount: itemOfferTotal,
                 name_snapshot: item.name_snapshot,
                 variant_snapshot: `Size:${variant.size}, Color:${variant.color}`,
                 status: 'pending'
             });
         }
 
-        let discountAmount = couponData ? couponData.discount : 0;
-        let finalTotal = totalAmount - discountAmount;
-        if(finalTotal < 0) finalTotal = 0;
+        let totalOfferSavings=totalMrpPrice-totalOfferPrice;
+
+        let couponDiscount  = couponData ? couponData.discount : 0;
+        let finalPayable  = totalOfferPrice  - couponDiscount;
+        if(finalPayable < 0) finalPayable = 0;
 
         const orderNumber = "ORD-" + Date.now() + Math.floor(Math.random() * 1000);
 
         let orderStatus = "pending";
         if (paymentMethod === 'Wallet') {
-            await debitWallet(userId, finalTotal, "Order Payment - " + orderNumber);
+            await debitWallet(userId, finalPayable, "Order Payment - " + orderNumber);
             orderStatus = "processing";
         }
 
         const newOrder = new Order({
             user_id: userId,
             status: orderStatus,
-            subtotal: totalAmount,
-            discount_amount: discountAmount,
-            final_total: finalTotal,
+            subtotal: totalMrpPrice,
+             offer_discount: totalOfferSavings,
+            discount_amount: couponDiscount,
+            final_total: finalPayable,
             coupon_id: couponData ? couponData._id : null,
             order_number: orderNumber,
             address_id: addressId,
@@ -272,37 +280,44 @@ const validateCoupon = async (userId, code) => {
 //     }
 // };
 
-/* MODIFY THIS IN checkoutService.js */
+
 const createRazorpayOrderService = async (userId, addressId, couponData) => {
     try {
-        // 1. Get Data exactly like placeOrderService
+     
         const cart = await Cart.findOne({ user_id: userId }).populate("items.variant_id").populate("items.product_id");
         if (!cart || cart.items.length === 0) throw new Error("Cart is empty");
 
         const address = await Address.findById(addressId);
         if (!address) throw new Error("Address not found");
 
-        let totalAmount = 0;
+               let totalOfferPrice = 0;
+               let totalMrpPrice = 0;
         const orderItems = [];
 
-        // 2. Build Order Items (Same logic as placeOrder)
+       
         for (const item of cart.items) {
+            const originalMRP=item.variant_id.price;
              const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price); 
-             totalAmount += item.quantity * finalPrice;
+             totalOfferPrice += item.quantity * finalPrice;
+              totalMrpPrice += item.quantity * originalMRP;
              
              orderItems.push({
                  product_id: item.product_id,
                  variant_id: item.variant_id._id,
                  quantity: item.quantity,
                  unit_price: finalPrice,
+                 original_price: originalMRP,
+            
                  total_amount: item.quantity * finalPrice,
                  name_snapshot: item.name_snapshot,
-                 status: 'Payment Pending' // Initial status
+                 status: 'Payment Pending' 
              });
         }
 
-        let discountAmount = couponData ? couponData.discount : 0;
-        let finalTotal = totalAmount - discountAmount;
+        let totalOfferSaving=totalMrpPrice-totalOfferPrice;
+
+        let couponDiscount  = couponData ? couponData.discount : 0;
+        let finalPayable  = totalOfferPrice - couponDiscount;
 
         // 3. Create RAZORPAY ID
         const instance = new Razorpay({
@@ -311,25 +326,26 @@ const createRazorpayOrderService = async (userId, addressId, couponData) => {
         });
 
         const options = {
-            amount: Math.round(finalTotal * 100),
+            amount: Math.round(finalPayable * 100),
             currency: "INR",
             receipt: "order_rcptid_" + Date.now()
         };
         const rzpOrder = await instance.orders.create(options);
 
-        // 4. SAVE TO MONGODB (Status: "Payment Pending")
+
         const newOrder = new Order({
             user_id: userId,
-            status: "Payment Pending", // Special status
-            subtotal: totalAmount,
-            discount_amount: discountAmount,
-            final_total: finalTotal,
+            status: "Payment Pending", 
+            subtotal: totalMrpPrice,
+             offer_discount: totalOfferSaving,
+            discount_amount: couponDiscount,
+            final_total: finalPayable,
             order_number: "ORD-" + Date.now(),
             address_id: addressId,
-            shipping_address_snapshot: { ...address.toObject() }, // Quick copy
+            shipping_address_snapshot: { ...address.toObject() }, 
             payment_method: "Online",
             items: orderItems,
-            // CRITICAL: Save the Razorpay Order ID here to match it later!
+         
           razorpay_order_id: rzpOrder.id
         });
 

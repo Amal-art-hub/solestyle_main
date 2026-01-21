@@ -41,8 +41,10 @@ const getSalesReport = async ({ period, startDate, endDate }) => {
                 $project: {
                     order_number: 1,
                     final_total: 1,
+                     offer_discount:1,
                     discount_amount: 1,
                     payment_method: 1,
+                    subtotal:1,
                     status: 1,
                     createdAt: 1
                 }
@@ -81,40 +83,64 @@ const getSalesReport = async ({ period, startDate, endDate }) => {
 
         const overallSalesCount = orders.length;
         const overallOrderAmount = orders.reduce((sum, order) => sum + (order.final_total || 0), 0);
-        const overallDiscount = orders.reduce((sum, order) => sum + (order.discount_amount || 0), 0);
+        let Toffer=orders.reduce((sum,order)=>sum+(order.offer_discount ||0),0);
+        let Tcoupen= orders.reduce((sum, order) => sum + (order.discount_amount || 0), 0);
+        let overallDiscount =Toffer+Tcoupen;
 
-        return { orders, overallSalesCount, overallOrderAmount, overallDiscount };
+        return { orders, overallSalesCount, overallOrderAmount, overallDiscount,Toffer,Tcoupen };
 
     } catch (error) { throw error; }
 };
 
-
 const generateExcel = async (data) => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Sales Report');
+
+    // 1. Define Columns (Choice B Breakup)
     worksheet.columns = [
         { header: 'Order ID', key: 'order_number', width: 25 },
         { header: 'Date', key: 'date', width: 15 },
         { header: 'Payment', key: 'payment_method', width: 15 },
         { header: 'Status', key: 'status', width: 15 },
-        { header: 'Discount', key: 'discount', width: 15 },
-        { header: 'Amount', key: 'amount', width: 15 }
+        { header: 'Total MRP', key: 'mrp', width: 15 },     // Added (Choice B)
+        { header: 'Offer Given', key: 'offer', width: 15 },  // Added (Choice B)
+        { header: 'Coupon Given', key: 'coupon', width: 15 }, // Added (Choice B)
+        { header: 'Final Amount', key: 'amount', width: 15 }
     ];
+
+    // 2. Add Data Rows
     data.orders.forEach(order => {
         worksheet.addRow({
             order_number: order.order_number,
             date: new Date(order.createdAt).toLocaleDateString(),
             payment_method: order.payment_method,
             status: order.status,
-            discount: order.discount_amount || 0,
+            mrp: order.subtotal || 0,         // Using the MRP we saved
+            offer: order.offer_discount || 0, // Using the Offer savings
+            coupon: order.discount_amount || 0, // Using the Coupon savings
             amount: order.final_total
         });
     });
-    worksheet.addRow({});
-    worksheet.addRow({ order_number: 'Total:', amount: data.overallOrderAmount });
+
+    // 3. Add a Summary Row at the bottom
+    worksheet.addRow({}); // Empty row for space
+    worksheet.addRow({ 
+        order_number: 'TOTAL REVENUE:', 
+        amount: data.overallOrderAmount 
+    });
+    worksheet.addRow({ 
+        order_number: 'TOTAL OFFER GIVEN:', 
+        amount: data.Toffer 
+    });
+    worksheet.addRow({ 
+        order_number: 'TOTAL COUPON GIVEN:', 
+        amount: data.Tcoupen 
+    });
 
     return await workbook.xlsx.writeBuffer();
 };
+
+
 
 const generatePDF = async (data, period) => {
     const templatePath = path.join(__dirname, '../../views/admin/salesReportPDF.ejs');
@@ -133,4 +159,10 @@ const generatePDF = async (data, period) => {
     await browser.close();
     return pdfBuffer;
 };
-module.exports = { getSalesReport, generateExcel, generatePDF };
+
+
+
+module.exports = { 
+    getSalesReport,
+     generateExcel,
+      generatePDF };

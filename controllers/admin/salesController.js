@@ -8,7 +8,7 @@ const {
 const loadReport = async (req, res) => {
     try {
 
-        // const cart = await Cart.findOne({ user_id: userId }).populate("items.variant_id").populate("items.product_id");
+    
         const { period = 'daily', startDate, endDate } = req.query;
         const data = await getSalesReport({ period, startDate, endDate });
 

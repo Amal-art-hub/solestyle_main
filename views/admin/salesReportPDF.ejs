@@ -13,14 +13,15 @@
 <body>
     <h1>Sales Report (<%= period.toUpperCase() %>)</h1>
     
-    <table>
+   <table>
         <thead>
             <tr>
                 <th>Order ID</th>
                 <th>Date</th>
-                <th>Status</th>
-                <th>Discount</th>
-                <th>Amount</th>
+                <th>Total MRP</th>
+                <th>Offer Given</th>
+                <th>Coupon Given</th>
+                <th>Final Total</th>
             </tr>
         </thead>
         <tbody>
@@ -28,13 +29,20 @@
             <tr>
                 <td><%= order.order_number %></td>
                 <td><%= new Date(order.createdAt).toLocaleDateString() %></td>
-                <td><%= order.status %></td>
+                <td>₹<%= order.subtotal %></td>
+                <td>₹<%= order.offer_discount || 0 %></td>
                 <td>₹<%= order.discount_amount || 0 %></td>
                 <td>₹<%= order.final_total %></td>
             </tr>
             <% }) %>
         </tbody>
     </table>
+    <div class="summary">
+        <h3>Total Collected: ₹<%= stats.amount %></h3>
+        <h3>Product Offer Savings: ₹<%= stats.offerDiscount %></h3>
+        <h3>Coupon Codes Savings: ₹<%= stats.couponDiscount %></h3>
+        <h3>Total Count: <%= stats.count %></h3>
+    </div>
 
     <div class="summary">
         <h3>Total Sales: ₹<%= stats.amount %></h3>

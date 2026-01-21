@@ -10,6 +10,7 @@ const orderSchema = new mongoose.Schema({
   },
 
   subtotal: { type: Number, required: true },
+   offer_discount: { type: Number, default: 0 },
   final_total: { type: Number, required: true },
 
   order_number: { type: String, required: true, unique: true },
@@ -53,6 +54,7 @@ const orderSchema = new mongoose.Schema({
       quantity: { type: Number, required: true },
       total_amount: { type: Number, required: true },
       unit_price: { type: Number, required: true },
+       original_price: { type: Number, required: true },
       name_snapshot: { type: String },
       variant_snapshot: { type: String },
 
