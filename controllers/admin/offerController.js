@@ -50,6 +50,16 @@ const addOffer = async (req, res) => {
         res.status(statusCode.OK).json({ success: true, message: "Offer created successfully" });
     } catch (error) {
         console.error("Error adding offer:", error);
+
+                
+        if (error.type === 'CONFLICT') {
+            return res.status(statusCode.CONFLICT).json({ 
+                success: false, 
+                message: error.message,
+                conflict: true
+            });
+        }
+
         res.status(statusCode.BAD_REQUEST).json({ success: false, message: error.message || "Internal Server Error" });
     }
 };
@@ -78,6 +88,14 @@ const updateOffer = async (req, res) => {
         res.status(statusCode.OK).json({ success: true, message: "Offer updated successfully" });
     } catch (error) {
         console.error("Error updating offer:", error);
+                    
+        if (error.type === 'CONFLICT') {
+            return res.status(statusCode.CONFLICT).json({ 
+                success: false, 
+                message: error.message,
+                conflict: true
+            });
+        }
        
         res.status(statusCode.BAD_REQUEST).json({ success: false, message: error.message || "Internal Server Error" });
     }
