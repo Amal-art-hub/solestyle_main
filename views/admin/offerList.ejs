@@ -65,24 +65,9 @@
                 </div>
                 
                 <!-- Pagination Logic Here (Same as your OrderList) -->
-                <div class="pagination">
+                <div class="pagi">
     <!-- Previous Button -->
-    <% if (currentPage > 1) { %>
-        <a href="/admin/offers?page=<%= currentPage - 1 %>&search=<%= search %>">Previous</a>
-    <% } %>
-
-    <!-- Page Numbers -->
-    <% for(let i = 1; i <= totalPages; i++) { %>
-        <a href="/admin/offers?page=<%= i %>&search=<%= search %>" 
-           class="<%= i === currentPage ? 'active' : '' %>">
-           <%= i %>
-        </a>
-    <% } %>
-
-    <!-- Next Button -->
-    <% if (currentPage < totalPages) { %>
-        <a href="/admin/offers?page=<%= currentPage + 1 %>&search=<%= search %>">Next</a>
-    <% } %>
+ <%- include('../partials/pagination') %>
 </div>
 
             </section>

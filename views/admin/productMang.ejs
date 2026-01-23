@@ -88,26 +88,7 @@
         </div>
         <!-- Pagination -->
               <!-- Pagination -->
-        <% if (totalPages > 1) { %>
-            <div class="pagination">
-                <!-- Previous Button -->
-                <% if (currentPage > 1) { %>
-                    <a href="?page=<%= currentPage - 1 %>&search=<%= search %>" class="page-link">← Previous</a>
-                <% } %>
-
-                <!-- Page Numbers -->
-                <% for(let i=1; i <= totalPages; i++) { %>
-                    <a href="?page=<%= i %>&search=<%= search %>" class="page-link <%= currentPage == i ? 'active' : '' %>">
-                        <%= i %>
-                    </a>
-                <% } %>
-
-                <!-- Next Button -->
-                <% if (currentPage < totalPages) { %>
-                    <a href="?page=<%= currentPage + 1 %>&search=<%= search %>" class="page-link">Next →</a>
-                <% } %>
-            </div>
-        <% } %>
+ <%- include('../partials/pagination') %>
       </main>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

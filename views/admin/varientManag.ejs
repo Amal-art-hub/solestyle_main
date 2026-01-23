@@ -111,19 +111,7 @@
 
 <!-- Pagination -->
 <div class="pagination">
-    <% if (currentPage > 1) { %>
-        <a href="?page=<%= currentPage - 1 %>">Previous</a>
-    <% } %>
-
-    <% for(let i = 1; i <= totalPages; i++) { %>
-        <a href="?page=<%= i %>" class="<%= i === currentPage ? 'active' : '' %>">
-            <%= i %>
-        </a>
-    <% } %>
-
-    <% if (currentPage < totalPages) { %>
-        <a href="?page=<%= currentPage + 1 %>">Next</a>
-    <% } %>
+<%- include('../partials/pagination') %>
 </div>
 
 
@@ -261,6 +249,10 @@
         </div>
       </form>
     </div>
+  </div>
+
+  <div>
+    <!-- <%- include('../partials/pagination') %> -->
   </div>
   <!-- Add this before line 202 -->
    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

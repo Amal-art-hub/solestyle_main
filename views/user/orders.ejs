@@ -56,14 +56,16 @@
                     <% }) %>
 
                         <!-- Pagination Controls -->
-                        <div class="pagination">
+
+                        <%- include('../partials/pagination') %>
+                        <!-- <div class="pagination">
                             <% for(let i=1; i<=totalPages; i++) { %>
                                 <a href="/user/orders?page=<%= i %>&search=<%= searchQuery %>"
                                     class="<%= currentPage === i ? 'active' : '' %>">
                                     <%= i %>
                                 </a>
                                 <% } %>
-                        </div>
+                        </div> -->
                         <% } else { %>
                             <div class="no-orders">
                                 <p>No orders found.</p>

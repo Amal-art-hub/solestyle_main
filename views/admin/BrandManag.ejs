@@ -96,21 +96,8 @@
                         </table>
                     </div>
                     <!-- Pagination -->
-                    <div class="pagination">
-                        <% if (currentPage> 1) { %>
-                            <a
-                                href="?page=<%= currentPage - 1 %>&search=<%= typeof search !== 'undefined' ? search : '' %>">Previous</a>
-                            <% } %>
-                                <% for(let i=1; i <=totalPages; i++) { %>
-                                    <a href="?page=<%= i %>&search=<%= typeof search !== 'undefined' ? search : '' %>"
-                                        class="<%= i === currentPage ? 'active' : '' %>">
-                                        <%= i %>
-                                    </a>
-                                    <% } %>
-                                        <% if (currentPage < totalPages) { %>
-                                            <a
-                                                href="?page=<%= currentPage + 1 %>&search=<%= typeof search !== 'undefined' ? search : '' %>">Next</a>
-                                            <% } %>
+                    <div class="pagi">
+                       <%- include('../partials/pagination') %>
                     </div>
             </div>
             </section>

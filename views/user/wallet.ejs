@@ -64,28 +64,30 @@
                     <!-- Inside history-container div -->
             
             <!-- Pagination Controls -->
-            <% if (totalPages > 1) { %>
+
+
+            <%- include('../partials/pagination') %>
+            <!-- <% if (totalPages > 1) { %>
                 <div class="pagination-wrapper">
-                    <!-- PREVIOUS BUTTON -->
+                   
                     <% if (currentPage > 1) { %>
                         <a href="/user/wallet?page=<%= currentPage - 1 %>" class="pagination-btn">
                             &laquo; Prev
                         </a>
                     <% } %>
 
-                    <!-- PAGE NUMBERS -->
                     <span class="pagination-info">
                         Page <%= currentPage %> of <%= totalPages %>
                     </span>
 
-                    <!-- NEXT BUTTON -->
+                    
                     <% if (currentPage < totalPages) { %>
                         <a href="/user/wallet?page=<%= currentPage + 1 %>" class="pagination-btn">
                             Next &raquo;
                         </a>
                     <% } %>
                 </div>
-            <% } %>
+            <% } %> -->
 
         </div> <!-- End of history-container -->
     </div>

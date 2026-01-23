@@ -160,18 +160,18 @@
                         <% }) %>
                 </div>
                 <!-- Pagination -->
-                <div class="pagination">
+
+
+                <%- include('../partials/pagination') %>
+                <!-- <div class="pagination">
                     <% for(let i=1; i<=totalPages; i++) { %>
-                        <!-- <a href="?category=<%= categoryId %>&page=<%= i %>&search=<%= search %>&sort=<%= sort %>"
-                            class="<%= currentPage == i ? 'active' : '' %>">
-                            <%= i %>
-                        </a> -->
+                  
                         <a href="?category=<%= categoryId %>&page=<%= i %>&search=<%= search %>&sort=<%= sort %>&minPrice=<%= filters.minPrice %>&maxPrice=<%= filters.maxPrice %>&brand=<%= filters.brand %>"
    class="<%= currentPage == i ? 'active' : '' %>">
     <%= i %>
 </a>
                         <% } %>
-                </div>
+                </div> -->
             </main>
         </div>
         <%- include('../partials/footer') %>

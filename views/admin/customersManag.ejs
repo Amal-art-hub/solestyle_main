@@ -78,21 +78,7 @@
                     </tbody>
                 </table>
                 <!-- Pagination -->
-                <div class="pagination">
-                    <% if (currentPage> 1) { %>
-                        <a href="/admin/users?page=<%= currentPage - 1 %>&search=<%= search %>">&laquo; Previous</a>
-                        <% } %>
-                            <% for(let i=1; i <=totalPages; i++) { %>
-                                <a href="/admin/users?page=<%= i %>&search=<%= search %>"
-                                    class="<%= currentPage === i ? 'active' : '' %>">
-                                    <%= i %>
-                                </a>
-                                <% } %>
-                                    <% if (currentPage < totalPages) { %>
-                                        <a href="/admin/users?page=<%= currentPage + 1 %>&search=<%= search %>">Next
-                                            &raquo;</a>
-                                        <% } %>
-                </div>
+               <%- include('../partials/pagination') %>
             </div>
     </div>
     <!-- Link to the new JS file -->

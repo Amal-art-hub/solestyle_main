@@ -89,20 +89,7 @@
                         </table>
                     </div>
                     <!-- Pagination -->
-                    <div class="pagination">
-                        <% if (currentPage> 1) { %><a
-                                href="/admin/coupons?page=<%= currentPage - 1 %>&search=<%= search %>">Previous</a>
-                            <% } %>
-                                <% for(let i=1; i <=totalPages; i++) { %><a
-                                        href="/admin/coupons?page=<%= i %>&search=<%= search %>"
-                                        class="<%= i === currentPage ? 'active' : '' %>">
-                                        <%= i %>
-                                    </a>
-                                    <% } %>
-                                        <% if (currentPage < totalPages) { %><a
-                                                href="/admin/coupons?page=<%= currentPage + 1 %>&search=<%= search %>">Next</a>
-                                            <% } %>
-                    </div>
+                 <%- include('../partials/pagination') %>
                 </section>
             </div>
     </div>

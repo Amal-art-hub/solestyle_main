@@ -125,56 +125,9 @@
                         </table>
                     </div>
 
- <div class="pagination">
+ <div class="pagi">
 
-    <!-- 1. Logic Calculation (MUST BE FIRST) -->
-    <% 
-        let startPage = Math.max(1, currentPage - 1);
-        let endPage = Math.min(totalPages, currentPage + 1);
-
-        // Adjust window if near the start or end
-        if (currentPage <= 2) {
-            endPage = Math.min(totalPages, 3);
-        }
-        if (currentPage >= totalPages - 1) {
-            startPage = Math.max(1, totalPages - 2);
-        }
-    %>
-
-    <!-- 2. Previous Button (Icon) -->
-    <% if (currentPage > 1) { %>
-        <a href="/admin/orders?page=<%= currentPage - 1 %>&search=<%= search %>&status=<%= status %>" aria-label="Previous">
-            <i class="fas fa-chevron-left"></i>
-        </a>
-    <% } %>
-
-    <!-- 3. Page 1 & Dots (If needed) -->
-    <% if (startPage > 1) { %>
-        <a href="/admin/orders?page=1&search=<%= search %>&status=<%= status %>">1</a>
-        <% if (startPage > 2) { %> <span>...</span> <% } %>
-    <% } %>
-
-    <!-- 4. Middle Pages Loop -->
-    <% for(let i = startPage; i <= endPage; i++) { %>
-        <a href="/admin/orders?page=<%= i %>&search=<%= search %>&status=<%= status %>"
-           class="<%= i === currentPage ? 'active' : '' %>">
-            <%= i %>
-        </a>
-    <% } %>
-
-    <!-- 5. End Dots & Last Page (If needed) -->
-    <% if (endPage < totalPages) { %>
-        <% if (endPage < totalPages - 1) { %> <span>...</span> <% } %>
-        <a href="/admin/orders?page=<%= totalPages %>&search=<%= search %>&status=<%= status %>"><%= totalPages %></a>
-    <% } %>
-
-    <!-- 6. Next Button (Icon) -->
-    <% if (currentPage < totalPages) { %>
-        <a href="/admin/orders?page=<%= currentPage + 1 %>&search=<%= search %>&status=<%= status %>" aria-label="Next">
-            <i class="fas fa-chevron-right"></i>
-        </a>
-    <% } %>
-
+   <%- include('../partials/pagination') %>
 </div>
                 </section>
             </div>
