@@ -115,9 +115,9 @@ const applyCoupen = async (req, res) => {
             discount = coupon.discount_value;
         }
 
-        // if (discount > 2000) {
-        //     discount = 2000;
-        // }
+        if (discount > 2000) {
+            discount = 2000;
+        }
 
         // console.log("DEBUG: Calculated Discount", { discount, discount_type: coupon.discount_type, discount_value: coupon.discount_value });
 

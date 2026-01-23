@@ -12,9 +12,12 @@ const loadCartPage = async (req, res) => {
         const cart = await getCart(userId);
 
 
+
+
         res.render("cart", {
             cart: cart,
-            user: req.session.user
+            user: req.session.user,
+           
         });
     } catch (error) {
         console.error("Load Cart Error:", error);

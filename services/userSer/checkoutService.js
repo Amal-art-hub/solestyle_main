@@ -22,8 +22,13 @@ const getCheckoutData = async (userId) => {
             select: "price stock size color images"
         }).populate({
             path: "items.product_id",
-            select: "name categoryId"
+            select: "name categoryId isListed isDeleted"
         });
+
+        // cart = cart.toObject();
+        // cart.items = cart.items.filter(item => {
+        //     return item.variant_id && item.variant_id.stock > 0 && item.product_id && !item.product_id.isDeleted && item.product_id.isListed;
+        // })
 
 
         const coupons = await Coupon.find({
@@ -31,36 +36,61 @@ const getCheckoutData = async (userId) => {
             used_by: { $ne: userId }
         });
 
+
+
+                if (!cart) {
+            return { cart: null, addresses: [], subtotal: 0, coupons: [] };
+        }
+
         console.log("------------------------");
         console.log("DEBUG: Running getCheckoutData");
         console.log("FOUND COUPONS COUNT:", coupons.length);
         console.log("FIRST COUPON:", coupons[0]);
         console.log("------------------------");
+         
 
-        if (!cart || cart.items.length === 0) {
-            return { cart: null, addresses: [], subtotal: 0 };
+
+
+
+             cart = cart.toObject();
+        cart.items = cart.items.filter(item => {
+            const hasVariant = !!item.variant_id;
+            const hasStock = hasVariant && item.variant_id.stock >= item.quantity;
+            const isProductActive = item.product_id && 
+                                    !item.product_id.isDeleted && 
+                                    item.product_id.isListed;
+            return hasVariant && hasStock && isProductActive;
+        });
+
+
+
+
+        // if (!cart || cart.items.length === 0) {
+        //     return { cart: null, addresses: [], subtotal: 0 };
+        // }
+
+
+
+              if (cart.items.length === 0) {
+            return { cart: null, addresses: [], subtotal: 0, coupons: coupons };
         }
 
         const addresses = await Address.find({ user_id: userId });
 
-        cart = cart.toObject();
-        let subtotal = 0;
-
+                let subtotal = 0;
         for (const item of cart.items) {
-            if (item.product_id && item.variant_id) {
 
-                const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price);
-
-
-                item.finalPrice = finalPrice;
-
-                subtotal += item.quantity * finalPrice;
-            }
+            const originalMRP = item.variant_id ? item.variant_id.price : 0;
+      
+            const { finalPrice } = await calculateFinalPrice(item.product_id, originalMRP);
+            
+            item.finalPrice = finalPrice; 
+            subtotal += item.quantity * finalPrice;
         }
-
-
+       
         return { cart, addresses, subtotal, coupons };
     } catch (error) {
+        console.error("Error in getCheckoutData service:", error);
         throw error;
     }
 };
@@ -131,6 +161,16 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
 
         if (!cart || cart.items.length === 0) throw new Error("Cart is empty");
 
+
+        const validItems=cart.items.filter(item=>{
+            return item.variant_id && item.variant_id.stock >=item.quantity && item.product_id && !item.product_id.isDeleted && item.product_id.isListed; 
+        });
+
+        if(validItems.length===0){
+            throw new Error("No available items to purchase");
+        }
+
+
         const address = await Address.findById(addressId);
         if (!address) throw new Error("Address not found");
 
@@ -138,21 +178,19 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
         let totalMrpPrice = 0;
         const orderItems = [];
 
-        // Build Items & Check Stock
-        for (const item of cart.items) {
+        for (const item of validItems) {
             const variant = item.variant_id;
-            if (variant.stock < item.quantity) {
-                throw new Error(`Stock insufficient for ${item.name_snapshot}`);
-            }
+
+          
+            // if (variant.stock < item.quantity) {
+            //     throw new Error(`Stock insufficient for ${item.name_snapshot}`);
+            // }
 
             const originalMRP = variant.price;
             const { finalPrice } = await calculateFinalPrice(item.product_id, originalMRP);
             const itemOfferTotal = item.quantity * finalPrice;
             totalOfferPrice += itemOfferTotal;
             totalMrpPrice += item.quantity * originalMRP;
-
-
-
 
 
             orderItems.push({
@@ -215,7 +253,7 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
             });
         }
 
-        for (const item of cart.items) {
+        for (const item of validItems) {
             await Variant.findByIdAndUpdate(item.variant_id._id, {
                 $inc: { stock: -item.quantity }
             });
@@ -292,6 +330,18 @@ const createRazorpayOrderService = async (userId, addressId, couponData) => {
         const cart = await Cart.findOne({ user_id: userId }).populate("items.variant_id").populate("items.product_id");
         if (!cart || cart.items.length === 0) throw new Error("Cart is empty");
 
+
+             const validItems = cart.items.filter(item => {
+            return item.variant_id && 
+                   item.variant_id.stock >= item.quantity && 
+                   item.product_id && 
+                   !item.product_id.isDeleted && 
+                   item.product_id.isListed;
+        });
+        if (validItems.length === 0) throw new Error("No available items in cart");
+
+
+
         const address = await Address.findById(addressId);
         if (!address) throw new Error("Address not found");
 
@@ -300,9 +350,10 @@ const createRazorpayOrderService = async (userId, addressId, couponData) => {
         const orderItems = [];
 
 
-        for (const item of cart.items) {
+
+        for (const item of validItems) {
             const originalMRP = item.variant_id.price;
-            const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price);
+            const { finalPrice } = await calculateFinalPrice(item.product_id,originalMRP);
             totalOfferPrice += item.quantity * finalPrice;
             totalMrpPrice += item.quantity * originalMRP;
 
