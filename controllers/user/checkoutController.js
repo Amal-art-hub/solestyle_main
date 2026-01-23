@@ -92,8 +92,8 @@ const applyCoupen = async (req, res) => {
     try {
         const { code } = req.body;
         const userId = req.session.user._id;
+        console.log("error is :", code)
 
-        console.log("DEBUG: Apply Coupon Request", { code, userId });
 
         const { subtotal } = await getCheckoutData(userId);
         console.log("DEBUG: Subtotal fetched", subtotal);
@@ -115,7 +115,11 @@ const applyCoupen = async (req, res) => {
             discount = coupon.discount_value;
         }
 
-        console.log("DEBUG: Calculated Discount", { discount, discount_type: coupon.discount_type, discount_value: coupon.discount_value });
+        // if (discount > 2000) {
+        //     discount = 2000;
+        // }
+
+        // console.log("DEBUG: Calculated Discount", { discount, discount_type: coupon.discount_type, discount_value: coupon.discount_value });
 
 
         req.session.coupon = {

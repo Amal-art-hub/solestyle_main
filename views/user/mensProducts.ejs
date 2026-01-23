@@ -125,6 +125,13 @@
                     <%= p.discount %>% OFF
                 </span>
             <% } %>
+
+
+            <% if (p.isExpiringSoon) { %>
+        <span style="position: absolute; top: 40px; left: 10px; background: #d9534f; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;">
+            🔥 OFFER ENDS SOON!
+        </span>
+    <% } %>
         </div>
         <div class="info">
             <h3><%= p.name %></h3>

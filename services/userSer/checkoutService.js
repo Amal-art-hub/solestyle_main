@@ -22,12 +22,14 @@ const getCheckoutData = async (userId) => {
             select: "price stock size color images"
         }).populate({
             path: "items.product_id",
-            select: "name categoryId" 
-        }); 
+            select: "name categoryId"
+        });
 
 
-        const coupons = await Coupon.find({expiry_date:{$gte: new Date()},
-    used_by:{$ne:userId}}); 
+        const coupons = await Coupon.find({
+            expiry_date: { $gte: new Date() },
+            used_by: { $ne: userId }
+        });
 
         console.log("------------------------");
         console.log("DEBUG: Running getCheckoutData");
@@ -41,21 +43,21 @@ const getCheckoutData = async (userId) => {
 
         const addresses = await Address.find({ user_id: userId });
 
-        cart = cart.toObject(); 
+        cart = cart.toObject();
         let subtotal = 0;
 
         for (const item of cart.items) {
             if (item.product_id && item.variant_id) {
-              
+
                 const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price);
 
-               
+
                 item.finalPrice = finalPrice;
-            
+
                 subtotal += item.quantity * finalPrice;
             }
         }
-       
+
 
         return { cart, addresses, subtotal, coupons };
     } catch (error) {
@@ -70,10 +72,10 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
         // ============================================================
         if (paymentMethod === 'Online') {
             const { razorpay_order_id, razorpay_payment_id } = paymentDetails;
-            
+
             // 1. Find the "Payment Pending" order we created earlier
-            const pendingOrder = await Order.findOne({ 
-                razorpay_order_id: razorpay_order_id 
+            const pendingOrder = await Order.findOne({
+                razorpay_order_id: razorpay_order_id
             }).populate('items.variant_id');
 
             if (!pendingOrder) throw new Error("Order not found or expired");
@@ -81,7 +83,7 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
             // 2. Update Status to PLACED
             pendingOrder.status = "pending"; // Or "processing" - this means "Success"
             pendingOrder.items.forEach(item => { item.status = 'pending'; });
-            
+
             // 3. Create Payment Record
             const paymentDoc = new Payment({
                 user_id: userId,
@@ -105,14 +107,14 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
 
             // 5. Reduce Stock (Since we didn't do it in the first step)
             for (const item of pendingOrder.items) {
-                 // Check if variant exists to avoid crash
-                 if(item.variant_id){
+                // Check if variant exists to avoid crash
+                if (item.variant_id) {
                     await Variant.findByIdAndUpdate(item.variant_id._id, {
                         $inc: { stock: -item.quantity }
                     });
-                 }
+                }
             }
-            
+
             // 6. Clear Cart
             await Cart.findOneAndDelete({ user_id: userId });
 
@@ -122,18 +124,18 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
         // ============================================================
         // CASE 2: COD & WALLET (Create New Order - Old Logic)
         // ============================================================
-        
+
         const cart = await Cart.findOne({ user_id: userId })
             .populate("items.variant_id")
             .populate("items.product_id");
-            
+
         if (!cart || cart.items.length === 0) throw new Error("Cart is empty");
 
         const address = await Address.findById(addressId);
         if (!address) throw new Error("Address not found");
 
-           let totalOfferPrice = 0; 
-        let totalMrpPrice = 0; 
+        let totalOfferPrice = 0;
+        let totalMrpPrice = 0;
         const orderItems = [];
 
         // Build Items & Check Stock
@@ -142,23 +144,23 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
             if (variant.stock < item.quantity) {
                 throw new Error(`Stock insufficient for ${item.name_snapshot}`);
             }
-            
+
             const originalMRP = variant.price;
-            const { finalPrice } = await calculateFinalPrice(item.product_id, originalMRP); 
-            const itemOfferTotal=item.quantity*finalPrice;
-            totalOfferPrice +=itemOfferTotal;
-            totalMrpPrice +=item.quantity * originalMRP;
-          
+            const { finalPrice } = await calculateFinalPrice(item.product_id, originalMRP);
+            const itemOfferTotal = item.quantity * finalPrice;
+            totalOfferPrice += itemOfferTotal;
+            totalMrpPrice += item.quantity * originalMRP;
 
 
 
-            
+
+
             orderItems.push({
                 product_id: item.product_id,
                 variant_id: item.variant_id._id,
                 quantity: item.quantity,
                 unit_price: finalPrice,
-                original_price:originalMRP,
+                original_price: originalMRP,
                 total_amount: itemOfferTotal,
                 name_snapshot: item.name_snapshot,
                 variant_snapshot: `Size:${variant.size}, Color:${variant.color}`,
@@ -166,11 +168,11 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
             });
         }
 
-        let totalOfferSavings=totalMrpPrice-totalOfferPrice;
+        let totalOfferSavings = totalMrpPrice - totalOfferPrice;
 
-        let couponDiscount  = couponData ? couponData.discount : 0;
-        let finalPayable  = totalOfferPrice  - couponDiscount;
-        if(finalPayable < 0) finalPayable = 0;
+        let couponDiscount = couponData ? couponData.discount : 0;
+        let finalPayable = totalOfferPrice - couponDiscount;
+        if (finalPayable < 0) finalPayable = 0;
 
         const orderNumber = "ORD-" + Date.now() + Math.floor(Math.random() * 1000);
 
@@ -184,7 +186,7 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
             user_id: userId,
             status: orderStatus,
             subtotal: totalMrpPrice,
-             offer_discount: totalOfferSavings,
+            offer_discount: totalOfferSavings,
             discount_amount: couponDiscount,
             final_total: finalPayable,
             coupon_id: couponData ? couponData._id : null,
@@ -235,6 +237,8 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
 const validateCoupon = async (userId, code) => {
     const coupon = await Coupon.findOne({ code: code.toUpperCase() });
 
+    let Orders = await Order.find({ user_id: userId, status: "delivered" })
+
 
     if (!coupon) throw new Error("Invalid Coupon Code");
 
@@ -243,6 +247,7 @@ const validateCoupon = async (userId, code) => {
 
 
     if (coupon.used_by.includes(userId)) throw new Error("You have already used this coupon");
+
 
 
     return coupon;
@@ -283,41 +288,41 @@ const validateCoupon = async (userId, code) => {
 
 const createRazorpayOrderService = async (userId, addressId, couponData) => {
     try {
-     
+
         const cart = await Cart.findOne({ user_id: userId }).populate("items.variant_id").populate("items.product_id");
         if (!cart || cart.items.length === 0) throw new Error("Cart is empty");
 
         const address = await Address.findById(addressId);
         if (!address) throw new Error("Address not found");
 
-               let totalOfferPrice = 0;
-               let totalMrpPrice = 0;
+        let totalOfferPrice = 0;
+        let totalMrpPrice = 0;
         const orderItems = [];
 
-       
+
         for (const item of cart.items) {
-            const originalMRP=item.variant_id.price;
-             const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price); 
-             totalOfferPrice += item.quantity * finalPrice;
-              totalMrpPrice += item.quantity * originalMRP;
-             
-             orderItems.push({
-                 product_id: item.product_id,
-                 variant_id: item.variant_id._id,
-                 quantity: item.quantity,
-                 unit_price: finalPrice,
-                 original_price: originalMRP,
-            
-                 total_amount: item.quantity * finalPrice,
-                 name_snapshot: item.name_snapshot,
-                 status: 'Payment Pending' 
-             });
+            const originalMRP = item.variant_id.price;
+            const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price);
+            totalOfferPrice += item.quantity * finalPrice;
+            totalMrpPrice += item.quantity * originalMRP;
+
+            orderItems.push({
+                product_id: item.product_id,
+                variant_id: item.variant_id._id,
+                quantity: item.quantity,
+                unit_price: finalPrice,
+                original_price: originalMRP,
+
+                total_amount: item.quantity * finalPrice,
+                name_snapshot: item.name_snapshot,
+                status: 'Payment Pending'
+            });
         }
 
-        let totalOfferSaving=totalMrpPrice-totalOfferPrice;
+        let totalOfferSaving = totalMrpPrice - totalOfferPrice;
 
-        let couponDiscount  = couponData ? couponData.discount : 0;
-        let finalPayable  = totalOfferPrice - couponDiscount;
+        let couponDiscount = couponData ? couponData.discount : 0;
+        let finalPayable = totalOfferPrice - couponDiscount;
 
         // 3. Create RAZORPAY ID
         const instance = new Razorpay({
@@ -335,18 +340,18 @@ const createRazorpayOrderService = async (userId, addressId, couponData) => {
 
         const newOrder = new Order({
             user_id: userId,
-            status: "Payment Pending", 
+            status: "Payment Pending",
             subtotal: totalMrpPrice,
-             offer_discount: totalOfferSaving,
+            offer_discount: totalOfferSaving,
             discount_amount: couponDiscount,
             final_total: finalPayable,
             order_number: "ORD-" + Date.now(),
             address_id: addressId,
-            shipping_address_snapshot: { ...address.toObject() }, 
+            shipping_address_snapshot: { ...address.toObject() },
             payment_method: "Online",
             items: orderItems,
-         
-          razorpay_order_id: rzpOrder.id
+
+            razorpay_order_id: rzpOrder.id
         });
 
         await newOrder.save();
@@ -359,31 +364,33 @@ const createRazorpayOrderService = async (userId, addressId, couponData) => {
 
 
 
-const retryPaymentService=async(orderId)=>{
+const retryPaymentService = async (orderId) => {
     try {
-        const order=await Order.findById(orderId);
-        if(!order) throw new Error("Order not found");
+        const order = await Order.findById(orderId);
+        if (!order) throw new Error("Order not found");
 
-        const instance=new  Razorpay({key_id:process.env.RAZORPAY_KEY_ID,
-            key_secret:process.env.RAZORPAY_KEY_SECRET
+        const instance = new Razorpay({
+            key_id: process.env.RAZORPAY_KEY_ID,
+            key_secret: process.env.RAZORPAY_KEY_SECRET
         });
 
-        const options={amount:Math.round(order.final_total*100),
-            currency:"INR",receipt :"retry_rcptid_"+Date.now()
+        const options = {
+            amount: Math.round(order.final_total * 100),
+            currency: "INR", receipt: "retry_rcptid_" + Date.now()
         };
 
-        const rzpOrder=await instance.orders.create(options);
+        const rzpOrder = await instance.orders.create(options);
 
-        order.razorpay_order_id=rzpOrder.id;
-        order.status="Payment Pending";
+        order.razorpay_order_id = rzpOrder.id;
+        order.status = "Payment Pending";
 
         await order.save();
 
-        return {...rzpOrder,address_id:order.address_id};
+        return { ...rzpOrder, address_id: order.address_id };
     } catch (error) {
 
         throw error;
-        
+
     }
 }
 

@@ -18,15 +18,8 @@ const getFilterOptions = async () => {
 };
 
 
-
-
 const calculateFinalPrice = async (product, originalPrice) => {
     const today = new Date();
-
-
-
-
-
     const activeOffers = await Offers.find({
         status: 'active',
         start_date: { $lte: today },
@@ -34,83 +27,106 @@ const calculateFinalPrice = async (product, originalPrice) => {
     });
 
     let bestDiscount = 0;
-
+    let isExpiringSoon = false;
 
     for (const offer of activeOffers) {
+        let matchFound = false;
 
+        // Check Product Match
         if (offer.type === 'product' && offer.product_ids.some(id => id.toString() === product._id.toString())) {
-            if (offer.discount_percentage > bestDiscount) {
-                bestDiscount = offer.discount_percentage;
-            }
+            matchFound = true;
         }
 
+        // Check Category Match
         const catId = product.categoryId._id ? product.categoryId._id.toString() : product.categoryId.toString();
-
         if (offer.type === 'category' && offer.category_ids.map(id => id.toString()).includes(catId)) {
-            if (offer.discount_percentage > bestDiscount) {
-                bestDiscount = offer.discount_percentage;
+            matchFound = true;
+        }
+
+        // Use the highest discount and check if it expires soon
+        if (matchFound && offer.discount_percentage > bestDiscount) {
+            bestDiscount = offer.discount_percentage;
+            
+            // Check if THIS offer ends in less than 24 hours
+            if (offer.end_date - today <= 24 * 60 * 60 * 1000) {
+                isExpiringSoon = true;
+            } else {
+                isExpiringSoon = false;
             }
         }
     }
-
 
     if (bestDiscount > 0) {
         const discountAmount = (originalPrice * bestDiscount) / 100;
         const finalPrice = Math.round(originalPrice - discountAmount);
-        return { finalPrice, bestDiscount };
+        return { finalPrice, bestDiscount, isExpiringSoon };
     }
 
-
-    return { finalPrice: originalPrice, bestDiscount: 0 };
+    return { finalPrice: originalPrice, bestDiscount: 0, isExpiringSoon: false };
 };
+
+
+
+
 
 
 // const calculateFinalPrice = async (product, originalPrice) => {
 //     const today = new Date();
 
-//     // DEBUG 1: Check what 'Today' is
-//     console.log(`[DEBUG] Checking Price for: ${product.name} (ID: ${product._id})`);
-//     console.log(`[DEBUG] Today is: ${today.toISOString()}`);
+
 //     const activeOffers = await Offers.find({
 //         status: 'active',
 //         start_date: { $lte: today },
 //         end_date: { $gte: today }
 //     });
-//     // DEBUG 2: Did we find ANY active offers?
-//     console.log(`[DEBUG] Found ${activeOffers.length} active offers globally.`);
-//     let bestDiscount = 0;
-//     for (const offer of activeOffers) {
-//         // DEBUG 3: Check each offer
-//         console.log(`   > Checking Offer: "${offer.name}" (Type: ${offer.type}, %: ${offer.discount_percentage})`);
 
-//         let matchFound = false;
-//         // CHECK PRODUCT MATCH
-//         if (offer.type === 'product') {
-//             const isMatch = offer.product_ids.some(id => id.toString() === product._id.toString());
-//             console.log(`     - Product Match? ${isMatch}`);
-//             if (isMatch) matchFound = true;
-//         }
-//         // CHECK CATEGORY MATCH
-//         const catId = product.categoryId._id ? product.categoryId._id.toString() : product.categoryId.toString();
-//         if (offer.type === 'category') {
-//              const isMatch = offer.category_ids.some(id => id.toString() === catId);
-//              console.log(`     - Category Match? ${isMatch} (Product CatID: ${catId})`);
-//              if (isMatch) matchFound = true;
-//         }
-//         if (matchFound) {
+//     let bestDiscount = 0;
+
+//     let isExpiringSoon=false;
+
+
+//     for (const offer of activeOffers) {
+
+//         if (offer.type === 'product' && offer.product_ids.some(id => id.toString() === product._id.toString())) {
 //             if (offer.discount_percentage > bestDiscount) {
 //                 bestDiscount = offer.discount_percentage;
-//                 console.log(`     !!! NEW BEST DISCOUNT: ${bestDiscount}% !!!`);
+//               if(offer.end_date-today<=24*60*60*1000){
+//                 isExpiringSoon=true;
+//               }else{
+//                 isExpiringSoon=false;
+
+//             }
+
+
+//         }
+
+//         const catId = product.categoryId._id ? product.categoryId._id.toString() : product.categoryId.toString();
+
+//         if (offer.type === 'category' && offer.category_ids.map(id => id.toString()).includes(catId)) {
+//             if (offer.discount_percentage > bestDiscount) {
+//                 bestDiscount = offer.discount_percentage;
+//                  if(offer.end_date-today<=24*60*60*1000){
+//                 isExpiringSoon=true;
+//               }else{
+//                 isExpiringSoon=false;
+
+//             }
 //             }
 //         }
 //     }
+
+
 //     if (bestDiscount > 0) {
 //         const discountAmount = (originalPrice * bestDiscount) / 100;
 //         const finalPrice = Math.round(originalPrice - discountAmount);
-//         return { finalPrice, bestDiscount };
+//         return { finalPrice, bestDiscount ,isExpiringSoon};
 //     }
+
+
 //     return { finalPrice: originalPrice, bestDiscount: 0 };
 // };
+// }
+
 
 
 const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = '', sort = 'newest', filters = {}) => {
@@ -237,7 +253,7 @@ const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = 
         // We still calculate final offers in JS because it's complex logic.
         const processedProducts = await Promise.all(products.map(async (p) => {
             const variant = p.variantDetails;
-            const { finalPrice, bestDiscount } = await calculateFinalPrice(p, variant.price);
+            const { finalPrice, bestDiscount,isExpiringSoon } = await calculateFinalPrice(p, variant.price);
 
             return {
                 ...p,
@@ -246,7 +262,8 @@ const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = 
                 originalPrice: variant.price,
                 discount: bestDiscount,
                 stock: variant.stock,
-                variantId: variant._id
+                variantId: variant._id,
+                isExpiringSoon:isExpiringSoon
             };
         }));
 

@@ -10,9 +10,9 @@ const couponSchema = new mongoose.Schema({
   mincart_value: { type: Number, default: 0 },
 
   expiry_date: { type: Date, required: true },
-    used_by: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User' 
+  used_by: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   }],
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
 
