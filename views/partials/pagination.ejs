@@ -37,6 +37,113 @@
         cursor: default;
     }
 </style>
+
+<% 
+    // We use 'var' and unique names to avoid SyntaxErrors in EJS
+    var pagDelta = 1; 
+    var pagLeft = currentPage - pagDelta;
+    var pagRight = currentPage + pagDelta;
+    var pagRange = [];
+    for (var i = 1; i <= totalPages; i++) {
+        if (i === 1 || i === totalPages || (i >= pagLeft && i <= pagRight)) {
+            pagRange.push(i);
+        }
+    }
+
+    // Helper to build the URL with existing query parameters
+    var getPageUrl = function(pageNumber) {
+        var url = "?page=" + pageNumber;
+        if (typeof query !== 'undefined' && query) {
+            url += "&" + query;
+        } else if (typeof search !== 'undefined' && search) {
+            url += "&search=" + search;
+        }
+        return url;
+    };
+%>
+
+<div class="pagination-container">
+    <% if (currentPage > 1) { %>
+        <a href="<%= getPageUrl(currentPage - 1) %>">Prev</a>
+    <% } %>
+
+    <% var lastPagItem; %>
+    <% for (var i of pagRange) { %>
+        <% if (lastPagItem) { %>
+            <% if (i - lastPagItem === 2) { %>
+                <a href="<%= getPageUrl(lastPagItem + 1) %>"><%= lastPagItem + 1 %></a>
+            <% } else if (i - lastPagItem !== 1) { %>
+                <span>...</span>
+            <% } %>
+        <% } %>
+        <a href="<%= getPageUrl(i) %>" class="<%= i == currentPage ? 'active' : '' %>"><%= i %></a>
+        <% lastPagItem = i; %>
+    <% } %>
+
+    <% if (currentPage < totalPages) { %>
+        <a href="<%= getPageUrl(currentPage + 1) %>">Next</a>
+    <% } %>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <style>
+    .pagination-container {
+        margin-top: 40px;
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        padding: 20px 0;
+    }
+    .pagination-container a, .pagination-container span {
+        min-width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: #333;
+        border-radius: 50%;
+        border: 1px solid #eee;
+        background: #fff;
+        font-weight: 500;
+        transition: all 0.2s;
+        font-size: 0.9rem;
+    }
+    .pagination-container a:hover {
+        border-color: #111;
+        background: #fafafa;
+    }
+    .pagination-container .active {
+        background: #111;
+        color: #fff;
+        border-color: #111;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+    .pagination-container span {
+        border: none;
+        background: none;
+        cursor: default;
+    }
+</style>
 <% 
     let delta = 1; // Change this from 2 to 1 to show 3 pages total (1 left, current, 1 right)
     let left = currentPage - delta;
@@ -67,4 +174,4 @@
     <% if (currentPage < totalPages) { %>
         <a href="?page=<%= currentPage + 1 %><%= typeof search !== 'undefined' ? '&search=' + search : '' %>">Next</a>
     <% } %>
-</div>
+</div> -->

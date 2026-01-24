@@ -11,7 +11,7 @@ const statusCode = require("../../utils/statusCodes.js");
 const getOfferList=async(req,res)=>{
     try {
         const page=parseInt(req.query.page)||1;
-        const limit=10;
+        const limit=5;
         const search=req.query.search||"";
 
         const {offers,totalPages,currentPage}=await listOffers(page,limit,search);

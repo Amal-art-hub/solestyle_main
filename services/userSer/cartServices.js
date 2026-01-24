@@ -192,6 +192,7 @@ const updateQuantityService = async (userId, itemId, action) => {
 
 
         let grandTotal = 0;
+       
         // validItems.forEach(item => {
 
         //     if (item.variant_id && item.variant_id.price) {

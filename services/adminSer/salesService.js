@@ -5,7 +5,7 @@ const puppeteer = require('puppeteer');
 const ejs = require('ejs');
 const path = require('path');
 
-const getSalesReport = async ({ period, startDate, endDate }) => {
+const getSalesReport = async ({ period, startDate, endDate, page = 1, limit = 6 ,isDownload = false }) => {
     try {
         let matchStage = {
             status: "delivered",
@@ -48,6 +48,7 @@ const getSalesReport = async ({ period, startDate, endDate }) => {
                     final_total: 1,
                      offer_discount:1,
                     discount_amount: 1,
+                     delivery_charge: 1,
                     payment_method: 1,
                     subtotal:1,
                     status: 1,
@@ -84,66 +85,166 @@ const getSalesReport = async ({ period, startDate, endDate }) => {
 
 
 
-        const orders = await Order.aggregate(pipeline);
+        const allOrders  = await Order.aggregate(pipeline);
 
-        const overallSalesCount = orders.length;
-        const overallOrderAmount = orders.reduce((sum, order) => sum + (order.final_total || 0), 0);
-        let Toffer=orders.reduce((sum,order)=>sum+(order.offer_discount ||0),0);
-        let Tcoupen= orders.reduce((sum, order) => sum + (order.discount_amount || 0), 0);
+        const overallSalesCount = allOrders.length;
+        const overallOrderAmount = allOrders.reduce((sum, order) => sum + (order.final_total || 0), 0);
+        let Toffer=allOrders.reduce((sum,order)=>sum+(order.offer_discount ||0),0);
+        let Tcoupen= allOrders.reduce((sum, order) => sum + (order.discount_amount || 0), 0);
         let overallDiscount =Toffer+Tcoupen;
 
-        return { orders, overallSalesCount, overallOrderAmount, overallDiscount,Toffer,Tcoupen };
+
+
+        //      const skip = (page - 1) * limit;
+        // const orders = allOrders.slice(skip, skip + limit);
+
+                let orders;
+        if (isDownload) {
+            orders = allOrders; // Give all records for the report
+        } else {
+            const skip = (page - 1) * limit;
+            orders = allOrders.slice(skip, skip + limit); // Give only 6 for the website
+        }
+        const totalPages = Math.ceil(overallSalesCount / limit);
+
+
+
+
+
+
+        return { orders, overallSalesCount, overallOrderAmount, overallDiscount,Toffer,Tcoupen,totalPages,  
+            currentPage: page };
 
     } catch (error) { throw error; }
 };
+
 
 const generateExcel = async (data) => {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Sales Report');
 
-    // 1. Define Columns (Choice B Breakup)
+    // 1. Define Columns (Included Total Discount and Delivery Charge)
     worksheet.columns = [
         { header: 'Order ID', key: 'order_number', width: 25 },
         { header: 'Date', key: 'date', width: 15 },
         { header: 'Payment', key: 'payment_method', width: 15 },
         { header: 'Status', key: 'status', width: 15 },
-        { header: 'Total MRP', key: 'mrp', width: 15 },     // Added (Choice B)
-        { header: 'Offer Given', key: 'offer', width: 15 },  // Added (Choice B)
-        { header: 'Coupon Given', key: 'coupon', width: 15 }, // Added (Choice B)
+        { header: 'Total MRP', key: 'mrp', width: 15 },
+        { header: 'Offer Given', key: 'offer', width: 15 },
+        { header: 'Coupon Given', key: 'coupon', width: 15 },
+        { header: 'Total Discount', key: 'total_discount', width: 15 },
+        { header: 'Delivery Charge', key: 'delivery', width: 15 },
         { header: 'Final Amount', key: 'amount', width: 15 }
     ];
 
     // 2. Add Data Rows
     data.orders.forEach(order => {
+        const offer = order.offer_discount || 0;
+        const coupon = order.discount_amount || 0;
+        const delivery = order.delivery_charge || 0;
+
         worksheet.addRow({
             order_number: order.order_number,
             date: new Date(order.createdAt).toLocaleDateString(),
             payment_method: order.payment_method,
             status: order.status,
-            mrp: order.subtotal || 0,         // Using the MRP we saved
-            offer: order.offer_discount || 0, // Using the Offer savings
-            coupon: order.discount_amount || 0, // Using the Coupon savings
-            amount: order.final_total
+            mrp: order.subtotal || 0,
+            offer: offer,
+            coupon: coupon,
+            total_discount: offer + coupon,
+            delivery: delivery,
+            amount: order.final_total || 0
         });
     });
 
-    // 3. Add a Summary Row at the bottom
-    worksheet.addRow({}); // Empty row for space
+    // 3. Style the Header Row
+    worksheet.getRow(1).font = { bold: true };
+    worksheet.getRow(1).fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFE0E0E0' }
+    };
+
+    // 4. Add Summary Rows at the bottom
+    worksheet.addRow({}); // Empty row
+    
+    worksheet.addRow({ 
+        order_number: 'SUMMARY TOTALS:', 
+        amount: data.overallOrderAmount 
+    }).font = { bold: true };
+
     worksheet.addRow({ 
         order_number: 'TOTAL REVENUE:', 
         amount: data.overallOrderAmount 
     });
+    
     worksheet.addRow({ 
-        order_number: 'TOTAL OFFER GIVEN:', 
-        amount: data.Toffer 
+        order_number: 'TOTAL OFFER SAVINGS:', 
+        amount: data.Toffer || 0 
     });
+    
     worksheet.addRow({ 
-        order_number: 'TOTAL COUPON GIVEN:', 
-        amount: data.Tcoupen 
+        order_number: 'TOTAL COUPON SAVINGS:', 
+        amount: data.Tcoupen || 0 
+    });
+
+    worksheet.addRow({ 
+        order_number: 'TOTAL DISCOUNT GIVEN:', 
+        amount: data.overallDiscount || 0 
     });
 
     return await workbook.xlsx.writeBuffer();
 };
+
+
+
+// const generateExcel = async (data) => {
+//     const workbook = new ExcelJS.Workbook();
+//     const worksheet = workbook.addWorksheet('Sales Report');
+
+   
+//     worksheet.columns = [
+//         { header: 'Order ID', key: 'order_number', width: 25 },
+//         { header: 'Date', key: 'date', width: 15 },
+//         { header: 'Payment', key: 'payment_method', width: 15 },
+//         { header: 'Status', key: 'status', width: 15 },
+//         { header: 'Total MRP', key: 'mrp', width: 15 },     
+//         { header: 'Offer Given', key: 'offer', width: 15 },  
+//         { header: 'Coupon Given', key: 'coupon', width: 15 }, 
+//         { header: 'Total Discount', key: 'total_discount', width: 15 }, 
+//         { header: 'Final Amount', key: 'amount', width: 15 }
+//     ];
+
+ 
+//     data.orders.forEach(order => {
+//         worksheet.addRow({
+//             order_number: order.order_number,
+//             date: new Date(order.createdAt).toLocaleDateString(),
+//             payment_method: order.payment_method,
+//             status: order.status,
+//             mrp: order.subtotal || 0,     
+//             offer: order.offer_discount || 0, 
+//             coupon: order.discount_amount || 0, 
+//         });
+//     });
+
+   
+//     worksheet.addRow({}); 
+//     worksheet.addRow({ 
+//         order_number: 'TOTAL REVENUE:', 
+//         amount: data.overallOrderAmount 
+//     });
+//     worksheet.addRow({ 
+//         order_number: 'TOTAL OFFER GIVEN:', 
+//         amount: data.Toffer 
+//     });
+//     worksheet.addRow({ 
+//         order_number: 'TOTAL COUPON GIVEN:', 
+//         amount: data.Tcoupen 
+//     });
+
+//     return await workbook.xlsx.writeBuffer();
+// };
 
 
 
@@ -153,7 +254,12 @@ const generatePDF = async (data, period) => {
 
     const html = await ejs.renderFile(templatePath, {
         orders: data.orders,
-        stats: { count: data.overallSalesCount, amount: data.overallOrderAmount, discount: data.overallDiscount },
+        stats: { count: data.overallSalesCount, 
+            amount: data.overallOrderAmount, 
+            discount: data.overallDiscount ,
+            offerDiscount: data.Toffer,   
+            couponDiscount: data.Tcoupen 
+            },
         period
     });
 

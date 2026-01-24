@@ -55,7 +55,7 @@
             </div>
 
             <!-- SUMMARY CARDS -->
-            <div class="stats-cards">
+            <!-- <div class="stats-cards">
                 <div class="stat-card">
                     <div class="stat-icon bg-blue"><i class="fas fa-money-bill-wave"></i></div>
                     <div>
@@ -77,7 +77,50 @@
                         <h3 style="margin:0; font-size:24px;">₹<%= stats.discount.toLocaleString() %></h3>
                     </div>
                 </div>
-            </div>
+            </div> -->
+
+
+
+            <div class="stats-cards">
+    <div class="stat-card">
+        <div class="stat-icon bg-blue"><i class="fas fa-money-bill-wave"></i></div>
+        <div>
+            <p style="margin:0; color:#666; font-size:12px;">Total Sales</p>
+            <h3 style="margin:0; font-size:24px;">₹<%= stats.amount.toLocaleString() %></h3>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon bg-green"><i class="fas fa-shopping-bag"></i></div>
+        <div>
+            <p style="margin:0; color:#666; font-size:12px;">Total Orders</p>
+            <h3 style="margin:0; font-size:24px;"><%= stats.count %></h3>
+        </div>
+    </div>
+    <!-- Separate Offer Card -->
+    <div class="stat-card">
+        <div class="stat-icon bg-orange"><i class="fas fa-tag"></i></div>
+        <div>
+            <p style="margin:0; color:#666; font-size:12px;">Offers Savings</p>
+            <h3 style="margin:0; font-size:24px;">₹<%= stats.offerDiscount.toLocaleString() %></h3>
+        </div>
+    </div>
+    <!-- Separate Coupon Card -->
+    <div class="stat-card">
+        <div class="stat-icon bg-purple" style="background-color: #f3e5f5; color: #9c27b0;"><i class="fas fa-ticket-alt"></i></div>
+        <div>
+            <p style="margin:0; color:#666; font-size:12px;">Coupon Savings</p>
+            <h3 style="margin:0; font-size:24px;">₹<%= stats.couponDiscount.toLocaleString() %></h3>
+        </div>
+    </div>
+       <div class="stat-card">
+                    <div class="stat-icon bg-orange"><i class="fas fa-tag"></i></div>
+                    <div>
+                        <p style="margin:0; color:#666; font-size:12px;">Total Discount</p>
+                        <h3 style="margin:0; font-size:24px;">₹<%= stats.discount.toLocaleString() %></h3>
+                    </div>
+                </div>
+
+</div>
 
             <!-- DATA TABLE -->
             <div class="table-container">
@@ -107,11 +150,11 @@
                                         <%= order.status.toUpperCase() %>
                                     </span>
                                 </td>
-                                <td style="text-align: right; font-weight: bold;">₹<%=order.subtotal %></td>
-                                 <td style="text-align: right; font-weight: bold;">₹<%=order.offer_discount %></td>
-                                  <td style="text-align: right; font-weight: bold;">₹<%=order.discount_amount %></td>
-                                     <td style="text-align: right; font-weight: bold;">₹</td>
-                                     <td style="text-align: right; font-weight: bold;">₹<%= order.final_total %></td>
+                                <td style="text-align: right; font-weight: bold;">₹<%=(order.subtotal || 0).toLocaleString() %></td>
+                                 <td style="text-align: right; font-weight: bold;">₹<%=(order.offer_discount || 0).toLocaleString() %></td>
+                                  <td style="text-align: right; font-weight: bold;">₹<%=(order.discount_amount || 0).toLocaleString() %></td>
+                                     <td style="text-align: right; font-weight: bold;">₹<%= (order.delivery_charge || 0).toLocaleString() %></td>
+                                     <td style="text-align: right; font-weight: bold;">₹<%= (order.final_total || 0).toLocaleString() %></td>
                             </tr>
                             <% }) %>
                         <% } else { %>
@@ -120,8 +163,18 @@
                     </tbody>
                 </table>
             </div>
+             
         </div>
     </div>
+
+    <div>
+        <%- include('../partials/pagination', { 
+    currentPage: currentPage, 
+    totalPages: totalPages,
+    query: `period=${filters.period}&startDate=${filters.startDate}&endDate=${filters.endDate}`
+}) %>
+    </div>
+
 
     <!-- Scripts -->
     <script src="/js/admin/salesReport.js"></script>

@@ -8,18 +8,24 @@ const {
 const loadReport = async (req, res) => {
     try {
 
-    
-        const { period = 'daily', startDate, endDate } = req.query;
-        const data = await getSalesReport({ period, startDate, endDate });
+
+        const { period = 'daily', startDate, endDate, page = 1 } = req.query;
+        const data = await getSalesReport({
+            period, startDate, endDate, page: parseInt(page),
+            limit: 6
+        });
 
         res.render("salesReport", {
             orders: data.orders,
             stats: {
                 count: data.overallSalesCount,
                 amount: data.overallOrderAmount,
-                discount: data.overallDiscount
+                discount: data.overallDiscount,
+                offerDiscount: data.Toffer,
+                couponDiscount: data.Tcoupen
             },
-            filters: { period, startDate, endDate },
+            filters: { period, startDate, endDate }, totalPages: data.totalPages,
+            currentPage: data.currentPage,
             activePage: 'salesReport'
         });
     } catch (error) { console.error(error); res.status(500).send("Error"); }
