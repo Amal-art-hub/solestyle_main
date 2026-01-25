@@ -212,6 +212,10 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
         let finalPayable = totalOfferPrice - couponDiscount;
         if (finalPayable < 0) finalPayable = 0;
 
+        if(paymentMethod === 'COD' && finalPayable > 1000){
+            throw new Error('COD not available for orders above ₹1000')
+        }
+
         const orderNumber = "ORD-" + Date.now() + Math.floor(Math.random() * 1000);
 
         let orderStatus = "pending";
