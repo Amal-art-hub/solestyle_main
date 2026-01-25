@@ -19,7 +19,7 @@ const Cart = require("../../models/cart");
 
 const loadCheckout = async (req, res) => {
     try {
-        console.log("DEBUG: HIT loadCheckout CONTROLLER");
+       
         const userId = req.session.user._id;
         const { cart, addresses, subtotal, coupons } = await getCheckoutData(userId);
         const wallet = await getWallet(userId);

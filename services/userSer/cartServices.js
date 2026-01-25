@@ -148,10 +148,10 @@ const updateQuantityService = async (userId, itemId, action) => {
             path: 'items.product_id',
             select: 'name isDeleted isListed categoryId'
         });
-        if (!cart) thrownewError("Cart not found");
+        if (!cart) throw new Error("Cart not found");
 
         const item = cart.items.id(itemId);
-        if (!item) thrownewError("Item not found in cart");
+        if (!item) throw new Error("Item not found in cart");
 
         if (!item.variant_id) {
             throw new Error("Product Variant no longer exists");
@@ -192,26 +192,29 @@ const updateQuantityService = async (userId, itemId, action) => {
 
 
         let grandTotal = 0;
+        let totalMRP = 0; 
        
-        // validItems.forEach(item => {
 
+        // await Promise.all(validItems.map(async (item) => {
         //     if (item.variant_id && item.variant_id.price) {
-        //         grandTotal += item.quantity * item.variant_id.price;
+              
+        //         const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price);
+        //         grandTotal += item.quantity * finalPrice;
         //     }
-        // });
+        // }));
 
-        await Promise.all(validItems.map(async (item) => {
-            if (item.variant_id && item.variant_id.price) {
-                // Calculate ACTIVE offer price
-                const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price);
-                grandTotal += item.quantity * finalPrice;
-            }
+
+                await Promise.all(validItems.map(async (item) => {
+            const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price);
+            grandTotal += (item.quantity * finalPrice);
+            totalMRP += (item.quantity * item.variant_id.price); 
         }));
 
         return {
             success: true,
             newQty: newQty,
-            optTotal: grandTotal
+            optTotal: grandTotal,
+            totalSavings: totalMRP - grandTotal
         };
 
     } catch (error) {

@@ -9,11 +9,10 @@ const getSalesReport = async ({ period, startDate, endDate, page = 1, limit = 6 
     try {
         let matchStage = {
             status: "delivered",
-            // final_total:{$gte:10000}
-            // payment_method:"COD"
+          
 
         };
-    // payment_method: { type: String, enum: ['COD', 'Online', 'Wallet'] },
+   
 
        
 
@@ -39,6 +38,10 @@ const getSalesReport = async ({ period, startDate, endDate, page = 1, limit = 6 
                 $lte: new Date(new Date(endDate).setHours(23, 59, 59, 999))
             };
         }
+
+
+          // final_total:{$gte:10000}
+            // payment_method:"COD"
 
         const pipeline = [
             { $match: matchStage },

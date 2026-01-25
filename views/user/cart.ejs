@@ -107,12 +107,15 @@
                 <div class="cart-summary">
                     <h2>Order Summary</h2>
 
-                    <!-- LOGIC: Calculate Total using the NEW finalPrice (Offer Price) -->
-                    <% const validItems=cart.items.filter(item=>
-                        item.variant_id.stock >= item.quantity &&
-                        !item.product_id.isDeleted &&
-                        item.product_id.isListed
-                        );
+                 
+
+                        <% const validItems=cart.items.filter(item=>
+    item.variant_id && // Added this check
+    item.variant_id.stock >= item.quantity &&
+    item.product_id && // Added this for extra safety
+    !item.product_id.isDeleted &&
+    item.product_id.isListed
+); 
 
                         // NEW: Use finalPrice for total instead of variant_id.price
                         const total = validItems.reduce((acc, item) => acc + (item.quantity * item.finalPrice), 0);
@@ -142,13 +145,22 @@
                         <hr>
 
                         <!-- NEW: Show Total Savings from Offers -->
-                        <% if (totalSavings> 0) { %>
+                        <!-- <% if (totalSavings> 0) { %>
                             <div class="summary-row" style="color: #27ae60;">
                                 <span>Your Savings</span>
                                 <span>- ₹<%= totalSavings %></span>
                             </div>
                             <hr>
-                            <% } %>
+                            <% } %> -->
+
+
+
+                            <!-- UPDATED: Added id="savings-row" and id="total-savings" -->
+<div id="savings-row" class="summary-row" style="color: #27ae60; <%= totalSavings > 0 ? '' : 'display: none;' %>">
+    <span>Your Savings</span>
+    <span>- ₹<span id="total-savings"><%= totalSavings %></span></span>
+</div>
+<hr id="savings-hr" style="<%= totalSavings > 0 ? '' : 'display: none;' %>">
 
                                 <div class="summary-total">
                                     <span>Total</span>

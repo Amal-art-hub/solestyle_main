@@ -12,7 +12,7 @@ const loadReport = async (req, res) => {
         const { period = 'daily', startDate, endDate, page = 1 } = req.query;
         const data = await getSalesReport({
             period, startDate, endDate, page: parseInt(page),
-            limit: 6
+            limit: 6,isDownload: false
         });
 
         res.render("salesReport", {
@@ -35,7 +35,7 @@ const downloadExcel = async (req, res) => {
     try {
         const { period, startDate, endDate } = req.query;
 
-        const data = await getSalesReport({ period, startDate, endDate });
+        const data = await getSalesReport({ period, startDate, endDate,isDownload: true });
 
         const buffer = await generateExcel(data);
 
@@ -50,7 +50,7 @@ const downloadPDF = async (req, res) => {
     try {
         const { period, startDate, endDate } = req.query;
 
-        const data = await getSalesReport({ period, startDate, endDate });
+        const data = await getSalesReport({ period, startDate, endDate,isDownload: true  });
         const buffer = await generatePDF(data, period || 'Custom');
 
 

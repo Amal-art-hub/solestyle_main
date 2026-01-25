@@ -83,7 +83,8 @@ const result = await updateQuantityService(userId, itemId, action);
         res.status(statusCode.OK).json({ success:true, 
             message:"Quantity updated",
          newQty: result.newQty,
-        cartTotal: result.optTotal  });
+        cartTotal: result.optTotal,
+         totalSavings: result.totalSavings  });
 
     }catch (error) {
         res.status(statusCode.BAD_REQUEST).json({
