@@ -84,29 +84,39 @@
 
                     <!-- Payment Section -->
                     <!-- Payment Section -->
+                     <% 
+   let finalAmount = subtotal; 
+   if (typeof discount !== 'undefined' && discount) {
+       finalAmount = subtotal - discount; 
+   } 
+%>
                     <div class="payment-section">
                         <div class="section-title">
                             <i class="fas fa-credit-card"></i> Payment Method
                         </div>
 
                         <!-- COD Option -->
-                        <label class="payment-option">
-                            <input type="radio" name="paymentMethod" value="COD" checked>
+                        <label class="payment-option finalAmount > 1000 ? 'disabled' : '' %>">
+                            <input type="radio" name="paymentMethod" value="COD"  <%= finalAmount > 1000 ? 'disabled' : 'checked' %>>
                             <span>Cash on Delivery (COD)</span>
+                                <% if (finalAmount > 1000) { %>
+        <span style="font-size: 0.75rem; color: #dc3545; margin-left: 8px;">
+            (Not available for orders above ₹1000)
+        </span>
+    <% } %>
                             <i class="fas fa-money-bill-wave" style="margin-left:auto; color:#666;"></i>
                         </label>
 
                         <!-- Online Option (Disabled) -->
                         <label class="payment-option ">
-                            <input type="radio" name="paymentMethod" value="Online">
+                            <input type="radio" name="paymentMethod" value="Online"  <%= finalAmount > 1000 ? 'checked' : '' %>>
                             <span>Online Payment</span>
                             <!-- <span style="font-size:0.75rem; background:#eee; padding:2px 6px; border-radius:4px; margin-left:8px;">Coming Soon</span> -->
                             <i class="fas fa-lock" style="margin-left:auto; color:#999;"></i>
                         </label>
 
                         <!-- [UPDATED] Wallet Option -->
-                        <% let finalAmount=subtotal; if (typeof discount !=='undefined' && discount) {
-                            finalAmount=subtotal - discount; } let canUseWallet=wallet.balance>= finalAmount;
+                        <% let canUseWallet=wallet.balance>= finalAmount;
                             %>
                             <label class="payment-option <%= canUseWallet ? '' : 'disabled' %>">
                                 <input type="radio" name="paymentMethod" value="Wallet" <%=canUseWallet ? ''
@@ -220,54 +230,7 @@
                             </div>
                             <% }) %>
                     </div>
-                    <!-- COUPON SECTION -->
-                    <!-- <div class="coupon-section">
-                        <label class="coupon-label">Have a Coupon?</label>
-                        <div class="coupon-input-group">
-                            <input type="text" id="couponCode" class="coupon-input" placeholder="Enter code">
-                            <button type="button" onclick="applyCoupon()" id="applyBtn" class="coupon-btn apply">
-                                Apply
-                            </button>
-                            <button type="button" onclick="removeCoupon()" id="removeBtn" class="coupon-btn remove">
-                                Remove
-                            </button>
-                        </div>
-                        <div id="couponMessage" class="coupon-msg"></div>
-                    </div> -->
-                    <!-- 
-
-
-
-
-                                        <div class="coupon-section">
-                        <label class="coupon-label">Have a Coupon?</label>
-                        <div class="coupon-input-group">
-                      
-                            <input type="text" id="couponCode" class="coupon-input" placeholder="Enter code"
-                                value="<%= (typeof coupon !== 'undefined' && coupon) ? coupon.code : '' %>"
-                                <%= (typeof coupon !== 'undefined' && coupon) ? 'disabled' : '' %> >
-
-                         
-                            <% if (typeof coupon !== 'undefined' && coupon) { %>
-                          
-                                <button type="button" onclick="applyCoupon()" id="applyBtn" class="coupon-btn apply" style="display: none;">
-                                    Apply
-                                </button>
-                                <button type="button" onclick="removeCoupon()" id="removeBtn" class="coupon-btn remove" style="display: block;">
-                                    Remove
-                                </button>
-                            <% } else { %>
-                         
-                                <button type="button" onclick="applyCoupon()" id="applyBtn" class="coupon-btn apply" style="display: block;">
-                                    Apply
-                                </button>
-                                <button type="button" onclick="removeCoupon()" id="removeBtn" class="coupon-btn remove" style="display: none;">
-                                    Remove
-                                </button>
-                            <% } %>
-                        </div>
-                        <div id="couponMessage" class="coupon-msg"></div>
-                    </div> -->
+          
 
 
 
@@ -306,41 +269,7 @@
 
 
 
-                    <!-- Coupon Modal -->
-                    <!-- <div id="couponModal" class="modal-overlay" style="display: none;">
-            <div class="modal-content" style="max-width: 500px;">
-                <span class="close-btn" onclick="closeModal('couponModal')">&times;</span>
-                <h3 style="text-align:center; color: #2c3e50;">Available Coupons</h3>
-
-                <div class="coupon-list" style="margin-top: 20px;">
-                    <% if (coupons && coupons.length> 0) { %>
-                        <% coupons.forEach(coupon=> { %>
-                            <div class="coupon-item"
-                                style="background: #f8f9fa; padding: 15px; margin-bottom: 10px; border-left: 5px solid #27ae60; border-radius: 4px;">
-                                <div style="font-weight: bold; font-size: 1.1rem; color: #27ae60;">
-                                    <%= coupon.code %>
-                                </div>
-                                <div style="color: #666;">
-                                    <%= coupon.description %>
-                                </div>
-                                <div style="font-size: 0.9rem; margin-top: 5px;">
-                                    <strong>
-                                        <%= coupon.discount_value %>% OFF
-                                    </strong>
-                                    (Min Order: ₹<%= coupon.mincart_value %>)
-                                </div>
-                                <div style="font-size: 0.8rem; color: #999;">Expires: <%= new
-                                        Date(coupon.expiry_date).toLocaleDateString() %>
-                                </div>
-                            </div>
-                            <% }) %>
-                                <% } else { %>
-                                    <p style="text-align: center;">You have no rewards yet. Invite friends to earn them!
-                                    </p>
-                                    <% } %>
-                </div>
-            </div>
-        </div> -->
+            
 
                     <hr>
 
