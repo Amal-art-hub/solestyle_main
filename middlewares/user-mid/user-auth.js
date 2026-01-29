@@ -3,7 +3,7 @@ const User = require("../../models/user");
 const checkUserStatus = async (req, res, next) => {
   try {
     if (req.session.user) {
-      const user = await User.findById(req.session._id);
+      const user = await User.findById(req.session.user._id);
 
       if (user && user.isBlock) {
         req.session.destroy((err) => {
@@ -30,4 +30,23 @@ const checkUserStatus = async (req, res, next) => {
 };
 
 
-module.exports={checkUserStatus};
+const isAuth = (req, res, next) => {
+
+  console.log("isaUTH IS WORKING")
+  if (req.session.user) {
+    //  console.log("do have session")
+    next();
+  } else {
+    console.log("dont have session")
+    const isAjax = req.xhr || (req.headers.accept && req.headers.accept.includes('json'));
+    if (isAjax) {
+      // 2. Send 401 (Unauthorized) status - Axios will see this as an ERROR
+      return res.status(401).json({ success: false, message: "Please login" });
+    }
+    // 3. Normal redirect for regular browser requests (like clicking a link)
+    res.redirect("/login");
+  }
+}
+
+
+module.exports = { checkUserStatus, isAuth };

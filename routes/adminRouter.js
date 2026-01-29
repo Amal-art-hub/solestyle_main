@@ -10,6 +10,7 @@ const orderController=require("../controllers/admin/orderController");
 const offerController=require("../controllers/admin/offerController");
 const coupenController=require("../controllers/admin/coupenController");
 const salesController=require("../controllers/admin/salesController");
+const dashBoardcontroller=require("../controllers/admin/dashBoardcontroller");
 const { upload, variantUpload } = require("../middlewares/admin-mid/multer");
 const { isAdminLoggedIn } = require("../middlewares/admin-mid/admin-auth");
 
@@ -21,7 +22,15 @@ router.get("/logout", adminController.logout)
 
 
 
-router.get("/dashboard", isAdminLoggedIn, adminController.loadDashboard);
+router.get("/dashboard", isAdminLoggedIn, dashBoardcontroller.loadDashboard);
+router.get("/api/dashboard/chart",isAdminLoggedIn,dashBoardcontroller.getChartDataAPI)
+
+
+
+
+
+
+
 router.get("/users", isAdminLoggedIn, customerController.getCustomers);
 router.patch("/unblockCustomer", isAdminLoggedIn, customerController.unblockCoustomer);
 router.patch("/blockCustomer", isAdminLoggedIn, customerController.blockCustomer);

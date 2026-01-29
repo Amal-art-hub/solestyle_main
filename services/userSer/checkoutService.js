@@ -38,27 +38,27 @@ const getCheckoutData = async (userId) => {
 
 
 
-                if (!cart) {
+        if (!cart) {
             return { cart: null, addresses: [], subtotal: 0, coupons: [] };
         }
 
-        console.log("------------------------");
-        console.log("DEBUG: Running getCheckoutData");
-        console.log("FOUND COUPONS COUNT:", coupons.length);
-        console.log("FIRST COUPON:", coupons[0]);
-        console.log("------------------------");
-         
+        // console.log("------------------------");
+        // console.log("DEBUG: Running getCheckoutData");
+        // console.log("FOUND COUPONS COUNT:", coupons.length);
+        // console.log("FIRST COUPON:", coupons[0]);
+        // console.log("------------------------");
 
 
 
 
-             cart = cart.toObject();
+
+        cart = cart.toObject();
         cart.items = cart.items.filter(item => {
             const hasVariant = !!item.variant_id;
             const hasStock = hasVariant && item.variant_id.stock >= item.quantity;
-            const isProductActive = item.product_id && 
-                                    !item.product_id.isDeleted && 
-                                    item.product_id.isListed;
+            const isProductActive = item.product_id &&
+                !item.product_id.isDeleted &&
+                item.product_id.isListed;
             return hasVariant && hasStock && isProductActive;
         });
 
@@ -71,23 +71,23 @@ const getCheckoutData = async (userId) => {
 
 
 
-              if (cart.items.length === 0) {
+        if (cart.items.length === 0) {
             return { cart: null, addresses: [], subtotal: 0, coupons: coupons };
         }
 
         const addresses = await Address.find({ user_id: userId });
 
-                let subtotal = 0;
+        let subtotal = 0;
         for (const item of cart.items) {
 
             const originalMRP = item.variant_id ? item.variant_id.price : 0;
-      
+
             const { finalPrice } = await calculateFinalPrice(item.product_id, originalMRP);
-            
-            item.finalPrice = finalPrice; 
+
+            item.finalPrice = finalPrice;
             subtotal += item.quantity * finalPrice;
         }
-       
+
         return { cart, addresses, subtotal, coupons };
     } catch (error) {
         console.error("Error in getCheckoutData service:", error);
@@ -162,11 +162,11 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
         if (!cart || cart.items.length === 0) throw new Error("Cart is empty");
 
 
-        const validItems=cart.items.filter(item=>{
-            return item.variant_id && item.variant_id.stock >=item.quantity && item.product_id && !item.product_id.isDeleted && item.product_id.isListed; 
+        const validItems = cart.items.filter(item => {
+            return item.variant_id && item.variant_id.stock >= item.quantity && item.product_id && !item.product_id.isDeleted && item.product_id.isListed;
         });
 
-        if(validItems.length===0){
+        if (validItems.length === 0) {
             throw new Error("No available items to purchase");
         }
 
@@ -181,7 +181,7 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
         for (const item of validItems) {
             const variant = item.variant_id;
 
-          
+
             // if (variant.stock < item.quantity) {
             //     throw new Error(`Stock insufficient for ${item.name_snapshot}`);
             // }
@@ -212,7 +212,7 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
         let finalPayable = totalOfferPrice - couponDiscount;
         if (finalPayable < 0) finalPayable = 0;
 
-        if(paymentMethod === 'COD' && finalPayable > 1000){
+        if (paymentMethod === 'COD' && finalPayable > 1000) {
             throw new Error('COD not available for orders above ₹1000')
         }
 
@@ -335,12 +335,12 @@ const createRazorpayOrderService = async (userId, addressId, couponData) => {
         if (!cart || cart.items.length === 0) throw new Error("Cart is empty");
 
 
-             const validItems = cart.items.filter(item => {
-            return item.variant_id && 
-                   item.variant_id.stock >= item.quantity && 
-                   item.product_id && 
-                   !item.product_id.isDeleted && 
-                   item.product_id.isListed;
+        const validItems = cart.items.filter(item => {
+            return item.variant_id &&
+                item.variant_id.stock >= item.quantity &&
+                item.product_id &&
+                !item.product_id.isDeleted &&
+                item.product_id.isListed;
         });
         if (validItems.length === 0) throw new Error("No available items in cart");
 
@@ -357,7 +357,7 @@ const createRazorpayOrderService = async (userId, addressId, couponData) => {
 
         for (const item of validItems) {
             const originalMRP = item.variant_id.price;
-            const { finalPrice } = await calculateFinalPrice(item.product_id,originalMRP);
+            const { finalPrice } = await calculateFinalPrice(item.product_id, originalMRP);
             totalOfferPrice += item.quantity * finalPrice;
             totalMrpPrice += item.quantity * originalMRP;
 

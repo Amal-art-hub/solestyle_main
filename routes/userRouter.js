@@ -13,7 +13,9 @@ const wishlistController = require("../controllers/user/wishlistController");
 
 console.log(cartController);
 
-const { checkUserStatus } = require("../middlewares/user-mid/user-auth");
+const { checkUserStatus,
+    isAuth
+} = require("../middlewares/user-mid/user-auth");
 const { loadCategories } = require("../middlewares/user-mid/categoryMiddleware");
 router.use(loadCategories);
 
@@ -68,99 +70,99 @@ router.get("/kids-products", checkUserStatus, productController.getKidsProducts)
 
 //---------------------------------------------------------------------------------------------profile
 //opening profile 
-router.get("/user/profile", checkUserStatus, profileController.loadProfile);
+router.get("/user/profile", isAuth, checkUserStatus, profileController.loadProfile);
 
 
 //--------------------------------------------submitting the edit profile
 
-router.post("/user/profile/edit", checkUserStatus, profileController.updateProfile);
+router.post("/user/profile/edit", isAuth, checkUserStatus, profileController.updateProfile);
 
 
 //---------------------------------------------------updating password
-router.post("/user/profile/password", checkUserStatus, profileController.updatePassword);
+router.post("/user/profile/password", isAuth, checkUserStatus, profileController.updatePassword);
 //-----------------------------------email changing
-router.get("/user/profile/email", checkUserStatus, profileController.loadChangeEmail);
+router.get("/user/profile/email", isAuth, checkUserStatus, profileController.loadChangeEmail);
 //-------------------------------------sending email
-router.post("/user/profile/email", checkUserStatus, profileController.requestEmailOtp);
+router.post("/user/profile/email", isAuth, checkUserStatus, profileController.requestEmailOtp);
 //------------------------------submiting otp for verify
-router.post("/user/verify-email-otp", checkUserStatus, profileController.verifyEmailOtp);
+router.post("/user/verify-email-otp", isAuth, checkUserStatus, profileController.verifyEmailOtp);
 
 
 
 //----------------------------------------------------------------------------------------address list
-router.get("/user/addresses", checkUserStatus, profileController.loadAddressPage);
+router.get("/user/addresses", isAuth, checkUserStatus, profileController.loadAddressPage);
 
-router.post("/user/profile/addresses/add", checkUserStatus, profileController.addAddress);
+router.post("/user/profile/addresses/add", isAuth, checkUserStatus, profileController.addAddress);
 
-router.put("/user/profile/addresses/edit/:id", checkUserStatus, profileController.editAddress);
+router.put("/user/profile/addresses/edit/:id", isAuth, checkUserStatus, profileController.editAddress);
 
-router.delete("/user/profile/addresses/delete/:id", checkUserStatus, profileController.deleteAddress);
+router.delete("/user/profile/addresses/delete/:id", isAuth, checkUserStatus, profileController.deleteAddress);
 
 
 
 //-----------------------------------------------------------------------------------------cart list
-router.get("/user/cart", checkUserStatus, cartController.loadCartPage);
+router.get("/user/cart", isAuth, checkUserStatus, cartController.loadCartPage);
 
 
-router.post("/cart/add", checkUserStatus, cartController.addToCart);
+router.post("/cart/add", isAuth, checkUserStatus, cartController.addToCart);
 
-router.patch("/cart/update", checkUserStatus, cartController.updateCartQty);
+router.patch("/cart/update", isAuth, checkUserStatus, cartController.updateCartQty);
 
-router.delete("/cart/remove/:itemId", checkUserStatus, cartController.removeCartItem);
+router.delete("/cart/remove/:itemId", isAuth, checkUserStatus, cartController.removeCartItem);
 
 
 
 //=======================================================================================checkout
 
-router.get("/checkout", checkUserStatus, checkoutController.loadCheckout);
+router.get("/checkout", isAuth, checkUserStatus, checkoutController.loadCheckout);
 
-router.post("/checkout/place-order", checkUserStatus, checkoutController.placeOrder);
+router.post("/checkout/place-order", isAuth, checkUserStatus, checkoutController.placeOrder);
 
-router.get('/order-success/:id', checkUserStatus, checkoutController.orderSuccess);
+router.get('/order-success/:id', isAuth, checkUserStatus, checkoutController.orderSuccess);
 //------------------------------------------------------------------------------------coupen apply
-router.post("/checkout/apply-coupon", checkUserStatus, checkoutController.applyCoupen);
-router.post("/checkout/remove-coupon", checkUserStatus, checkoutController.removeCoupon);
+router.post("/checkout/apply-coupon", isAuth, checkUserStatus, checkoutController.applyCoupen);
+router.post("/checkout/remove-coupon", isAuth, checkUserStatus, checkoutController.removeCoupon);
 //----------------------------------------------------------------------------------------razorpay
-router.post("/checkout/razorpay-order", checkUserStatus, checkoutController.createRazorpayOrder);
-router.get("/checkout/payment-failure", checkUserStatus, checkoutController.paymentFailed);
+router.post("/checkout/razorpay-order", isAuth, checkUserStatus, checkoutController.createRazorpayOrder);
+router.get("/checkout/payment-failure", isAuth, checkUserStatus, checkoutController.paymentFailed);
 
 router.post('/checkout/webhook', checkoutController.verifyRazorpayWebhook);
 
-router.post("/retry-payment", checkUserStatus, checkoutController.retryPayment)
+router.post("/retry-payment", isAuth, checkUserStatus, checkoutController.retryPayment)
 
 
 //==========================================================================================orders
 
-router.get("/user/orders", checkUserStatus, ordersController.listOrder);
-router.get("/orders/:id", checkUserStatus, orderDetailController.getOrderDetails);
+router.get("/user/orders", isAuth, checkUserStatus, ordersController.listOrder);
+router.get("/orders/:id", isAuth, checkUserStatus, orderDetailController.getOrderDetails);
 
 
 //---------------------------------------------------------------------------------------------------canceling
-router.put("/user/orders/cancel-item/:orderId/:itemId", checkUserStatus, orderDetailController.cancelOrderItem);
-router.put("/user/orders/cancel/:orderId", checkUserStatus, orderDetailController.cancelOrder);
+router.put("/user/orders/cancel-item/:orderId/:itemId", isAuth, checkUserStatus, orderDetailController.cancelOrderItem);
+router.put("/user/orders/cancel/:orderId", isAuth, checkUserStatus, orderDetailController.cancelOrder);
 
 
 
 //--------------------------------------------------------------------------------------------returning
-router.put("/user/orders/return-item/:orderId/:itemId", checkUserStatus, orderDetailController.returnOrderItem);
+router.put("/user/orders/return-item/:orderId/:itemId", isAuth, checkUserStatus, orderDetailController.returnOrderItem);
 
-router.put("/user/orders/return/:orderId", checkUserStatus, orderDetailController.returnOrder);
+router.put("/user/orders/return/:orderId", isAuth, checkUserStatus, orderDetailController.returnOrder);
 
 //-----------------------------------------------------------------------------------------invoice
-router.get("/user/orders/invoice/:orderId", checkUserStatus, orderDetailController.downloadInvoice);
+router.get("/user/orders/invoice/:orderId", isAuth, checkUserStatus, orderDetailController.downloadInvoice);
 
 
 
 
 //-----------------------------------------------------------------------------------------wallet
 
-router.get("/user/wallet", checkUserStatus, walletController.loadWalletPage);
+router.get("/user/wallet", isAuth, checkUserStatus, walletController.loadWalletPage);
 
 
 //wishlist
-router.get("/user/wishlist", checkUserStatus, wishlistController.loadWishlist);
-router.post("/user/wishlist/add", checkUserStatus, wishlistController.addToWishlist);
-router.delete("/user/wishlist/remove/:id", checkUserStatus, wishlistController.removeFromWishlist);
+router.get("/user/wishlist", isAuth, checkUserStatus, wishlistController.loadWishlist);
+router.post("/user/wishlist/add", isAuth, checkUserStatus, wishlistController.addToWishlist);
+router.delete("/user/wishlist/remove/:id", isAuth, checkUserStatus, wishlistController.removeFromWishlist);
 
 
 
