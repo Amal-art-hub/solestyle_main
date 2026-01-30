@@ -1,6 +1,33 @@
 
 document.addEventListener('DOMContentLoaded', function() {
    
+
+
+
+
+
+
+
+    const startDateInput = document.getElementById('startDate');
+    const endDateInput = document.getElementById('endDate');
+    // 2. Disable future dates
+    const today = new Date().toISOString().split('T')[0];
+    if (startDateInput) startDateInput.setAttribute('max', today);
+    if (endDateInput) endDateInput.setAttribute('max', today);
+    // 3. (Optional) Validation: Start date can't be after end date
+    if (startDateInput && endDateInput) {
+        startDateInput.addEventListener('change', function() {
+            endDateInput.setAttribute('min', this.value);
+        });
+    }
+
+
+
+
+
+
+
+
     const periodSelect = document.getElementById('periodSelect');
     const customDateInputs = document.getElementById('customDateInputs');
     

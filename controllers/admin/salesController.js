@@ -7,9 +7,26 @@ const {
 
 const loadReport = async (req, res) => {
     try {
+        
+
+        console.log("loadReprt function running")
+
+
+
 
 
         const { period = 'daily', startDate, endDate, page = 1 } = req.query;
+
+             const today = new Date();
+if (new Date(startDate) > today || new Date(endDate) > today) {
+    return res.render("salesReport", {
+      
+        error: "Dates cannot be in the future!" 
+    });
+}
+
+
+
         const data = await getSalesReport({
             period, startDate, endDate, page: parseInt(page),
             limit: 6,isDownload: false

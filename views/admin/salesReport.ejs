@@ -44,8 +44,11 @@
                     </select>
 
                     <div id="customDateInputs" class="<%= filters.period === 'custom' ? '' : 'hidden' %>" style="display: flex; gap: 10px;">
-                        <input type="date" name="startDate" value="<%= filters.startDate %>" class="form-control" placeholder="Start Date">
-                        <input type="date" name="endDate" value="<%= filters.endDate %>" class="form-control" placeholder="End Date">
+                        <!-- <input type="date" name="startDate" value="<%= filters.startDate %>" class="form-control" placeholder="Start Date">
+                        <input type="date" name="endDate" value="<%= filters.endDate %>" class="form-control" placeholder="End Date"> -->
+                        <!-- Add the id attributes like this -->
+<input type="date" name="startDate" id="startDate" value="<%= filters.startDate %>" class="form-control">
+<input type="date" name="endDate" id="endDate" value="<%= filters.endDate %>" class="form-control">
                     </div>
 
                     <button type="submit" class="btn-download" style="background-color: #333; color: white;">
