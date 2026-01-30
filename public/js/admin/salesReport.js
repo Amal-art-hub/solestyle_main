@@ -18,7 +18,18 @@ document.addEventListener('DOMContentLoaded', function () {
     if (startDateInput && endDateInput) {
         startDateInput.addEventListener('change', function () {
             endDateInput.setAttribute('min', this.value);
+
+             if (endDateInput.value && endDateInput.value < this.value) {
+                endDateInput.value = '';
+            }
+
         });
+
+           endDateInput.addEventListener('change', function () {
+            startDateInput.setAttribute('max', this.value || today);
+        });
+       
+        
     }
 
 
@@ -30,16 +41,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const periodSelect = document.getElementById('periodSelect');
     const customDateInputs = document.getElementById('customDateInputs');
-        const applyFilterBtn = document.getElementById('applyFilterBtn');
+    const applyFilterBtn = document.getElementById('applyFilterBtn');
 
     periodSelect.addEventListener('change', function () {
         if (this.value === 'custom') {
             customDateInputs.classList.remove('hidden');
-             applyFilterBtn.classList.remove('hidden');
+            applyFilterBtn.classList.remove('hidden');
             // customDateInputs.style.display = 'flex';
         } else {
             customDateInputs.classList.add('hidden');
-              applyFilterBtn.classList.add('hidden');
+            applyFilterBtn.classList.add('hidden');
             // customDateInputs.style.display = 'none';
             this.closest('form').submit();
         }

@@ -7,29 +7,40 @@ const {
 
 const loadReport = async (req, res) => {
     try {
-        
-
-        console.log("loadReprt function running")
-
-
-
 
 
         const { period = 'daily', startDate, endDate, page = 1 } = req.query;
 
-             const today = new Date();
-if (new Date(startDate) > today || new Date(endDate) > today) {
-    return res.render("salesReport", {
-      
-        error: "Dates cannot be in the future!" 
-    });
-}
+        const sDate = new Date(startDate);
+        const eDate = new Date(endDate);
+        const today = new Date();
+        // 2. The "Proper" Validation Block
+        if (period === 'custom') {
+            // Check if dates are valid (not 'ABC' or empty)
+            if (isNaN(sDate.getTime()) || isNaN(eDate.getTime())) {
+                return res.render("salesReport", {
+                    error: "Please provide valid Start and End dates!"
+                });
+            }
+            // Check if Start is after End
+            if (sDate > eDate) {
+                return res.render("salesReport", {
+                    error: "Start Date cannot be after End Date!"
+                });
+            }
+            // Check for Future Dates
+            if (sDate > today || eDate > today) {
+                return res.render("salesReport", {
+                    error: "Dates cannot be in the future!"
+                });
+            }
+        }
 
 
 
         const data = await getSalesReport({
             period, startDate, endDate, page: parseInt(page),
-            limit: 6,isDownload: false
+            limit: 6, isDownload: false
         });
 
         res.render("salesReport", {
@@ -52,7 +63,7 @@ const downloadExcel = async (req, res) => {
     try {
         const { period, startDate, endDate } = req.query;
 
-        const data = await getSalesReport({ period, startDate, endDate,isDownload: true });
+        const data = await getSalesReport({ period, startDate, endDate, isDownload: true });
 
         const buffer = await generateExcel(data);
 
@@ -67,7 +78,7 @@ const downloadPDF = async (req, res) => {
     try {
         const { period, startDate, endDate } = req.query;
 
-        const data = await getSalesReport({ period, startDate, endDate,isDownload: true  });
+        const data = await getSalesReport({ period, startDate, endDate, isDownload: true });
         const buffer = await generatePDF(data, period || 'Custom');
 
 
