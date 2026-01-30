@@ -1,6 +1,6 @@
 
-document.addEventListener('DOMContentLoaded', function() {
-   
+document.addEventListener('DOMContentLoaded', function () {
+
 
 
 
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (endDateInput) endDateInput.setAttribute('max', today);
     // 3. (Optional) Validation: Start date can't be after end date
     if (startDateInput && endDateInput) {
-        startDateInput.addEventListener('change', function() {
+        startDateInput.addEventListener('change', function () {
             endDateInput.setAttribute('min', this.value);
         });
     }
@@ -30,24 +30,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const periodSelect = document.getElementById('periodSelect');
     const customDateInputs = document.getElementById('customDateInputs');
-    
-    periodSelect.addEventListener('change', function() {
+        const applyFilterBtn = document.getElementById('applyFilterBtn');
+
+    periodSelect.addEventListener('change', function () {
         if (this.value === 'custom') {
             customDateInputs.classList.remove('hidden');
-            customDateInputs.style.display = 'flex';
+             applyFilterBtn.classList.remove('hidden');
+            // customDateInputs.style.display = 'flex';
         } else {
             customDateInputs.classList.add('hidden');
-            customDateInputs.style.display = 'none';
+              applyFilterBtn.classList.add('hidden');
+            // customDateInputs.style.display = 'none';
+            this.closest('form').submit();
         }
     });
 
-   
+
     const filterForm = document.getElementById('filterForm');
-    filterForm.addEventListener('submit', function(e) {
+    filterForm.addEventListener('submit', function (e) {
         if (periodSelect.value === 'custom') {
             const startDate = document.querySelector('input[name="startDate"]').value;
             const endDate = document.querySelector('input[name="endDate"]').value;
-            
+
             if (!startDate || !endDate) {
                 e.preventDefault();
                 Swal.fire('Error', 'Please select both Start and End dates for custom filter', 'warning');
@@ -70,6 +74,6 @@ function downloadReport(type) {
         downloadUrl += `&startDate=${startDate}&endDate=${endDate}`;
     }
 
-    
+
     window.location.href = downloadUrl;
 }
