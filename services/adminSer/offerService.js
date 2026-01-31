@@ -18,6 +18,8 @@ const validateOfferData = (data) => {
         throw new Error("Discount must be between 1% and 99%");
     }
 
+    
+
     if (!data.start_date || !data.end_date) {
         throw new Error("Start Date and End Date are required");
     }
@@ -28,6 +30,11 @@ const validateOfferData = (data) => {
     if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
         throw new Error("Invalid dates provided");
     }
+
+        if (!isUpdate && startDate < today) {
+        throw new Error("Start Date cannot be in the past");
+    }
+
 
     if (endDate < startDate) {
         throw new Error("End Date cannot be before Start Date");
