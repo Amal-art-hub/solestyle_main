@@ -1,4 +1,4 @@
-const Coupen = require("../../models/Coupen");
+
 const Coupon = require("../../models/Coupen");
 
 
@@ -58,8 +58,11 @@ const createCouponService = async (data) => {
 
 const editCoupenService=async(id,data)=>{
 
-    if(!data.code||data.code.trim()==="")throw new Error("Coupen code is required");
-    if(data.discount_value<=0)throw new Error("Invalid Discount value");
+     validateCouponData(data); 
+
+    // if(!data.code||data.code.trim()==="")throw new Error("Coupen code is required");
+    // if(data.discount_value<=0)throw new Error("Invalid Discount value");
+   
     const existing=await Coupon.findOne({
         code:data.code.toUpperCase(),
         _id:{$ne:id}
