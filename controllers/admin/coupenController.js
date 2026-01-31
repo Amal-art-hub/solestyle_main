@@ -1,15 +1,15 @@
 const {
-listCoupons,
-createCouponService,
-editCoupenService,
-deleteCoupenService
+    listCoupons,
+    createCouponService,
+    editCouponService,
+    deleteCoupenService
 } = require("../../services/adminSer/coupenServices");
 
 const statusCode = require("../../utils/statusCodes.js");
 
 
 
-const getCoupenList =async(req,res)=>{
+const getCoupenList = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const search = req.query.search || "";
@@ -22,7 +22,7 @@ const getCoupenList =async(req,res)=>{
             activePage: "coupons"
         });
     } catch (error) {
-             console.error(error);
+        console.error(error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).send("Error");
     }
 }
@@ -39,27 +39,27 @@ const addCoupon = async (req, res) => {
 };
 
 
-const editCoupen=async(req,res)=>{
+const editCoupen = async (req, res) => {
     try {
-        await editCoupenService(req.params.id,req.body);
-        res.status(statusCode.OK).json({success:true,message:"Coupen updated successfully"});
+        await editCouponService(req.params.id, req.body);
+        res.status(statusCode.OK).json({ success: true, message: "Coupen updated successfully" });
     } catch (error) {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).json({success:false,message:error.message});
-        
+        res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
+
     }
 }
 
-const deleteCoupen=async(req,res)=>{
+const deleteCoupen = async (req, res) => {
     try {
         await deleteCoupenService(req.params.id);
-        res.status(statusCode.OK).json({success:true,message:"Coupen deleted"});
+        res.status(statusCode.OK).json({ success: true, message: "Coupen deleted" });
     } catch (error) {
-        res.status(statusCode.INTERNAL_SERVER_ERROR).json({success:false,message:"Failed to delete coupen"});
+        res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to delete coupen" });
     }
 }
 
 
-module.exports={
+module.exports = {
     getCoupenList,
     addCoupon,
     editCoupen,
