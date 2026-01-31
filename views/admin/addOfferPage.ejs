@@ -64,11 +64,11 @@
                             <div class="row">
                                 <div class="col-6">
                                     <label>Start Date</label>
-                                    <input type="date" name="start_date" class="form-control" >
+                                    <input type="date" name="start_date" class="form-control"  min="<%= new Date().toISOString().split('T')[0] %>" >
                                 </div>
                                 <div class="col-6">
                                     <label>End Date</label>
-                                    <input type="date" name="end_date" class="form-control" >
+                                    <input type="date" name="end_date" class="form-control"       min="<%= new Date().toISOString().split('T')[0] %>">
                                 </div>
                             </div>
 

@@ -82,12 +82,14 @@
                                     <label>Start Date</label>
                                     <!-- Format Date to YYYY-MM-DD for input value -->
                                     <input type="date" name="start_date" class="form-control" 
-                                           value="<%= new Date(offer.start_date).toISOString().split('T')[0] %>" >
+                                           value="<%= new Date(offer.start_date).toISOString().split('T')[0] %>"  
+                                                      min="<%= new Date().toISOString().split('T')[0] %>">
                                 </div>
                                 <div class="col-6">
                                     <label>End Date</label>
                                     <input type="date" name="end_date" class="form-control" 
-                                           value="<%= new Date(offer.end_date).toISOString().split('T')[0] %>" >
+                                           value="<%= new Date(offer.end_date).toISOString().split('T')[0] %>" 
+                                                      min="<%= new Date().toISOString().split('T')[0] %>">
                                 </div>
                             </div>
 
