@@ -88,11 +88,71 @@ async function removeItem(itemId) {
     }
 }
 
-// 3. Checkout Navigation
+
 function proceedToCheckout() {
+    // Instead of SweetAlert, we simply "drop the curtain" again
+    const loader = document.getElementById('global-page-loader');
+    if (loader) {
+        loader.classList.remove('fade-out'); // Shows the white screen+spinner instantly
+    }
+    
+    // Now move to checkout
     window.location.href = '/checkout';
 }
 
+// 3. Checkout Navigation
+// function proceedToCheckout() {
+//        Swal.fire({
+//         title: 'Processing...',
+//         text: 'Preparing your checkout',
+//         allowOutsideClick: false,
+//         showConfirmButton: false,
+//         willOpen: () => {
+//             Swal.showLoading();
+//         }
+//     });
+//     window.location.href = '/checkout';
+// }
+
+
+
+// function proceedToCheckout() {
+//     // 1. Trigger the Swal
+//     Swal.fire({
+//         title: 'Processing...',
+//         text: 'Preparing your checkout',
+//         allowOutsideClick: false,
+//         showConfirmButton: false,
+//         didOpen: () => {
+//             Swal.showLoading();
+            
+//             // 2. Wait 500ms so the user actually SEES the animation 
+//             // before we navigate away
+//             setTimeout(() => {
+//                 window.location.href = '/checkout';
+//             }, 500); 
+//         }
+//     });
+// }
+
+
+
+// function proceedToCheckout() {
+//     Swal.fire({
+//         title: 'Processing...',
+//         text: 'Preparing your checkout',
+//         allowOutsideClick: false,
+//         showConfirmButton: false,
+//         didOpen: () => {
+//             Swal.showLoading();
+//             // Small delay so the user actually SEES the animation 
+//             // before the browser reloads for the next page
+//             setTimeout(() => {
+//                 window.location.href = '/checkout';
+//             }, 600);
+//         }
+//     });
+// }
 
 
 

@@ -1,121 +1,170 @@
-<!-- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= typeof title !== 'undefined' ? title : 'SoleStyle - Premium Footwear' %></title>
-    <link rel="stylesheet" href="/css/homestyle.css">
-    <link rel="stylesheet" href="/css/signup.css">
-    <link rel="stylesheet" href="/css/verifyOtp.css">
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
+    <title>
+        <%= typeof title !=='undefined' ? title : 'SoleStyle - Premium Footwear' %>
+    </title>
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="/css/user/homestyle.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- CRITICAL INLINE CSS: This stops the "writing" flash instantly -->
+    <style>
+        #global-page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            z-index: 99999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease, visibility 0.5s;
+        }
+
+        #global-page-loader.fade-out {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        /* Essential for the portal dropdown to appear in the right spot */
+        .user-menu-container {
+            position: relative;
+        }
+    </style>
 </head>
-<body> -->
-<!-- Header -->
-<header class="header">
-    <div class="container">
-        <div class="header-content">
-            <!-- Logo -->
-            <div class="logo">
-                <a href="/">👟 SoleStyle</a>
-            </div>
 
-            <!-- Navigation -->
-            <!-- <nav class="main-nav">
-    <a href="/mens-products?category=<%= menCategoryId %>">Men</a>
-  <a href="/womens-products?category=<%= womenCategoryId %>">Women</a>
-  <a href="/kids-products?category=<%= kidsCategoryId %>">Kids</a>
-                </nav> -->
+<body>
 
-            <nav class="main-nav">
-                <% if(locals.menCategoryId) { %>
-                    <a href="/mens-products?category=<%= menCategoryId %>">Men</a>
-                    <% } %>
+    <div id="global-page-loader">
+    <div id="top-progress-bar"></div>
+    <div class="runner-track">
+        <div class="shoe-runner">👟</div>
+        <div class="track-line"></div>
+    </div>
+</div>
 
-                        <% if(locals.womenCategoryId) { %>
-                            <a href="/womens-products?category=<%= womenCategoryId %>">Women</a>
-                            <% } %>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <a href="/">👟 SoleStyle</a>
+                </div>
 
-                                <% if(locals.kidsCategoryId) { %>
-                                    <a href="/kids-products?category=<%= kidsCategoryId %>">Kids</a>
-                                    <% } %>
-            </nav>
-
-            <!-- Search Bar -->
-            <div class="search-bar">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <path d="m21 21-4.35-4.35"></path>
-                </svg>
-                <input type="text" placeholder="Search products...">
-            </div>
-
-            <!-- Right Side Icons -->
-            <div class="header-actions">
-                <% if (typeof user !=='undefined' && user) { %>
-                    <!-- Logged In: Show User Icon -->
-                    <button class="icon-btn user-menu-trigger" onclick="toggleUserMenu()">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="12" cy="7" r="4"></circle>
-                        </svg>
-                    </button>
-                    <div class="user-dropdown" id="userDropdown">
-                        <div class="user-info">
-                            <strong>
-                                <%= user.name %>
-                            </strong>
-                            <span>
-                                <%= user.email %>
-                            </span>
-                        </div>
-                        <hr>
-                        <a href="/user/profile">My Profile </a>
-                        <a href="/user/orders">My Orders</a>
-                        <a href="/user/settings">Settings</a>
-                        <a href="/user/settings">payment method</a>
-                        <a href="/user/settings">address book</a>
-                        <a href="/user/wallet">wallet</a>
-                        <a href="/user/settings">Coupen</a>
-                        <a href="/user/settings">Refferals</a>
-                        <hr>
-                        <a href="/logout" class="logout-link">Logout</a>
-                    </div>
-                    <!-- Wishlist Icon -->
-             <!-- Wishlist Icon -->
-<a href="/user/wishlist" class="icon-btn" style="text-decoration: none; color: inherit;">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-    </svg>
-</a>
-                    <!-- Cart Icon -->
-        <!-- Cart Icon Linked to /cart -->
-<a href="/user/cart" class="icon-btn cart-btn" style="text-decoration: none; color: inherit;">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="9" cy="21" r="1"></circle>
-        <circle cx="20" cy="21" r="1"></circle>
-        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-    </svg>
-    
-    <!-- Dynamic Badge Count -->
-    <% if (locals.cartCount && cartCount > 0) { %>
-        <span class="cart-badge"><%= cartCount %></span>
-    <% } %>
-</a>
-                    <% } else { %>
-                        <!-- Not Logged In: Show Login/Signup 
-                        <button class="btn-text" onclick="openAuthModal('login')">Login</button>
-                        <button class="btn-primary-small" onclick="openAuthModal('signup')">Sign Up</button>  -->
-                        <a href="/Login" class="btn-text">Login</a>
-                        <a href="/signup" class="btn-primary-small">Sign Up</a>
+                <nav class="main-nav">
+                    <% if(locals.menCategoryId) { %>
+                        <a href="/mens-products?category=<%= menCategoryId %>">Men</a>
                         <% } %>
+                            <% if(locals.womenCategoryId) { %>
+                                <a href="/womens-products?category=<%= womenCategoryId %>">Women</a>
+                                <% } %>
+                                    <% if(locals.kidsCategoryId) { %>
+                                        <a href="/kids-products?category=<%= kidsCategoryId %>">Kids</a>
+                                        <% } %>
+                </nav>
 
+                <div class="search-bar">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <input type="text" placeholder="Search products...">
+                </div>
 
+                <div class="header-actions">
+                    <% if (typeof user !=='undefined' && user) { %>
 
+                        <!-- WRAP THE BUTTON AND DROPDOWN IN THIS CONTAINER -->
+                        <div class="user-menu-container">
+                            <button class="icon-btn user-menu-trigger" onclick="toggleUserMenu()">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </button>
 
+                            <div class="user-dropdown" id="userDropdown">
+                                <div class="user-info">
+                                    <strong>
+                                        <%= user.name %>
+                                    </strong>
+                                    <span>
+                                        <%= user.email %>
+                                    </span>
+                                </div>
+                                <hr>
+                                <a href="/user/profile">My Profile</a>
+                                <a href="/user/orders">My Orders</a>
+                                <a href="/user/settings">Settings</a>
+                                <a href="/user/settings">payment method</a>
+                                <a href="/user/settings">address book</a>
+                                <a href="/user/wallet">wallet</a>
+                                <a href="/user/settings">Coupon</a>
+                                <a href="/user/settings">Referrals</a>
+                                <hr>
+                                <a href="/logout" class="logout-link">Logout</a>
+                            </div>
+                        </div>
+
+                        <a href="/user/wishlist" class="icon-btn" style="text-decoration: none; color: inherit;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                </path>
+                            </svg>
+                        </a>
+
+                        <a href="/user/cart" class="icon-btn cart-btn" style="text-decoration: none; color: inherit;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            <% if (locals.cartCount && cartCount> 0) { %>
+                                <span class="cart-badge">
+                                    <%= cartCount %>
+                                </span>
+                                <% } %>
+                        </a>
+
+                        <% } else { %>
+                            <a href="/Login" class="btn-text">Login</a>
+                            <a href="/signup" class="btn-primary-small">Sign Up</a>
+                            <% } %>
+                </div>
             </div>
         </div>
-    </div>
-</header>
+    </header>
+
+    <script>
+        window.addEventListener('load', function () {
+            const loader = document.getElementById('global-page-loader');
+            if (loader) {
+                loader.classList.add('fade-out');
+            }
+        });
+
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('userDropdown');
+            if (dropdown) {
+                dropdown.classList.toggle('show');
+            }
+        }
+
+        window.addEventListener('click', function (e) {
+            if (!e.target.closest('.user-menu-container')) {
+                const dropdown = document.getElementById('userDropdown');
+                if (dropdown) dropdown.classList.remove('show');
+            }
+        });
+    </script>
