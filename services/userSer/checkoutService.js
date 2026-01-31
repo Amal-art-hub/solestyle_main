@@ -216,7 +216,13 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
             throw new Error('COD not available for orders above ₹1000')
         }
 
-        const orderNumber = "ORD-" + Date.now() + Math.floor(Math.random() * 1000);
+        // const orderNumber = "ORD-" + Date.now() + Math.floor(Math.random() * 1000);
+
+
+        // Generates something like ORD-20240131-A7XC2
+const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+const randomPart = Math.random().toString(36).substring(2, 7).toUpperCase();
+const orderNumber = `ORD-${datePart}-${randomPart}`;
 
         let orderStatus = "pending";
         if (paymentMethod === 'Wallet') {
@@ -295,37 +301,6 @@ const validateCoupon = async (userId, code) => {
     return coupon;
 };
 
-// const createRazorpayOrderService = async (userId, couponData) => {
-//     try {
-
-//         const { subtotal } = await getCheckoutData(userId);
-//         let totalAmount = subtotal;
-//         if (couponData) {
-//             totalAmount = subtotal - couponData.discount;
-//         }
-
-
-//         console.log("---------------- DEBUG RAZORPAY ----------------");
-//         console.log("Key ID Exists?", !!process.env.RAZORPAY_KEY_ID);
-//         console.log("Key Secret Exists?", !!process.env.RAZORPAY_KEY_SECRET);
-//         console.log("Key ID Value:", process.env.RAZORPAY_KEY_ID);
-//         console.log("------------------------------------------------");
-//         const instance = new Razorpay({
-//             key_id: process.env.RAZORPAY_KEY_ID,
-//             key_secret: process.env.RAZORPAY_KEY_SECRET,
-//         });
-
-//         const options = {
-//             amount: Math.round(totalAmount * 100),
-//             currency: "INR",
-//             receipt: "order_rcptid_" + Date.now()
-//         };
-//         const order = await instance.orders.create(options);
-//         return order;
-//     } catch (error) {
-//         throw error;
-//     }
-// };
 
 
 const createRazorpayOrderService = async (userId, addressId, couponData) => {
@@ -392,6 +367,11 @@ const createRazorpayOrderService = async (userId, addressId, couponData) => {
         };
         const rzpOrder = await instance.orders.create(options);
 
+        const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+const randomPart = Math.random().toString(36).substring(2, 7).toUpperCase();
+// Update inside the new Order({...}) object:
+const order_number= `ORD-${datePart}-${randomPart}`
+
 
         const newOrder = new Order({
             user_id: userId,
@@ -400,7 +380,7 @@ const createRazorpayOrderService = async (userId, addressId, couponData) => {
             offer_discount: totalOfferSaving,
             discount_amount: couponDiscount,
             final_total: finalPayable,
-            order_number: "ORD-" + Date.now(),
+            order_number: order_number,
             address_id: addressId,
             shipping_address_snapshot: { ...address.toObject() },
             payment_method: "Online",
