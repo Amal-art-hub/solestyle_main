@@ -11,6 +11,7 @@ const offerController=require("../controllers/admin/offerController");
 const coupenController=require("../controllers/admin/coupenController");
 const salesController=require("../controllers/admin/salesController");
 const dashBoardcontroller=require("../controllers/admin/dashBoardcontroller");
+const ledgerController = require("../controllers/admin/ledgerController");
 const { upload, variantUpload } = require("../middlewares/admin-mid/multer");
 const { isAdminLoggedIn } = require("../middlewares/admin-mid/admin-auth");
 
@@ -109,6 +110,9 @@ router.get("/sales-report/download/excel", isAdminLoggedIn, salesController.down
 router.get("/sales-report/download/pdf", isAdminLoggedIn, salesController.downloadPDF); 
 
 
+
+
+router.get("/ledger", isAdminLoggedIn, ledgerController.loadLedger);
 
 
 module.exports = router;

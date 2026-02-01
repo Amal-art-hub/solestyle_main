@@ -1,0 +1,131 @@
+
+<link rel="stylesheet" href="/css/admin/dashboard-side.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+      <link rel="stylesheet" href="/css/admin/ledger.css">
+
+
+<div class="container">
+    <%- include('../partials/adminSideBar', { activePage: 'ledger' }) %>
+    
+    <div class="main-content">
+        <div class="page-header">
+            <div>
+                <h2 class="fw-bold">Financial Ledger</h2>
+                <p class="text-muted">Track every rupee moving in and out of SoleStyle</p>
+            </div>
+            <div class="action-btns">
+                <button class="btn btn-outline-primary"><i class="fas fa-download"></i> Export CSV</button>
+            </div>
+        </div>
+        <!-- Expanded Summary Section -->
+        <div class="stats-grid mb-4">
+            <div class="premium-card sale">
+                <div class="card-icon"><i class="fas fa-arrow-up"></i></div>
+                <div class="card-data">
+                    <span class="label">Gross Sales</span>
+                    <h3 class="value">₹<%= totalSales.toLocaleString() %></h3>
+                </div>
+            </div>
+            <div class="premium-card refund">
+                <div class="card-icon"><i class="fas fa-arrow-down"></i></div>
+                <div class="card-data">
+                    <span class="label">Total Refunds</span>
+                    <h3 class="value">₹<%= totalRefunds.toLocaleString() %></h3>
+                </div>
+            </div>
+            <div class="premium-card net">
+                <div class="card-icon"><i class="fas fa-wallet"></i></div>
+                <div class="card-data">
+                    <span class="label">Net Revenue</span>
+                    <h3 class="value">₹<%= netBalance.toLocaleString() %></h3>
+                </div>
+            </div>
+             <div class="premium-card trans">
+                <div class="card-icon"><i class="fas fa-exchange-alt"></i></div>
+                <div class="card-data">
+                    <span class="label">Transactions</span>
+                    <h3 class="value"><%= ledger.length %></h3>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Inside main-content, before the Table -->
+<div class="filter-section premium-card mb-4">
+    <form action="/admin/ledger" method="GET" class="d-flex align-items-center gap-3 flex-wrap">
+        <div class="filter-group">
+            <select name="period" class="form-select" onchange="this.form.submit()">
+                <option value="daily" <%= filters.period === 'daily' ? 'selected' : '' %>>Today</option>
+                <option value="weekly" <%= filters.period === 'weekly' ? 'selected' : '' %>>This Week</option>
+                <option value="monthly" <%= filters.period === 'monthly' ? 'selected' : '' %>>This Month</option>
+                <option value="yearly" <%= filters.period === 'yearly' ? 'selected' : '' %>>This Year</option>
+                <option value="custom" <%= filters.period === 'custom' ? 'selected' : '' %>>Custom Range</option>
+            </select>
+        </div>
+        <% if (filters.period === 'custom') { %>
+            <div class="custom-dates d-flex gap-2 align-items-center">
+                <input type="date" name="startDate" class="form-control" value="<%= filters.startDate %>">
+                <span>to</span>
+                <input type="date" name="endDate" class="form-control" value="<%= filters.endDate %>">
+                <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+            </div>
+        <% } %>
+    </form>
+</div>
+        <!-- Table Controls -->
+        <div class="table-container shadow-sm border rounded bg-white">
+  
+            <div class="table-responsive" style="min-height: 400px;">
+                <table class="table table-hover align-middle mb-0" id="ledgerTable">
+                    <thead>
+                        <tr>
+                            <th class="ps-4">DATE</th>
+                            <th>DESCRIPTION</th>
+                            <th>USER</th>
+                            <th>METHOD</th>
+                            <th>TYPE</th>
+                            <th class="text-end pe-4">AMOUNT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% ledger.forEach(entry => { %>
+                            <tr>
+                                <td class="ps-4"><%= new Date(entry.date).toLocaleDateString() %></td>
+                                <td>
+                                    <div class="d-flex flex-column">
+                                        <span class="fw-bold text-dark"><%= entry.description %></span>
+                                        <small class="text-muted"><%= entry.method %> Payment</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="user-info">
+                                        <span class="d-block text-dark"><%= entry.userName %></span>
+                                        <small class="text-muted"><%= entry.userEmail %></small>
+                                    </div>
+                                </td>
+                                <td><span class="pay-method"><%= entry.method %></span></td>
+                                <td>
+                                    <span class="status-pill pill-<%= entry.type %>">
+                                        <%= entry.type.toUpperCase() %>
+                                    </span>
+                                </td>
+                                <td class="text-end pe-4">
+                                    <span class="amount-text text-<%= entry.type %>">
+                                        <%= entry.type === 'credit' ? '+' : '-' %> ₹<%= entry.amount.toLocaleString() %>
+                                    </span>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+     <div class="pagination-wrapper mt-4">
+            <%- include('../partials/pagination', { currentPage: currentPage, totalPages: totalPages, query: query }) %>
+        </div>
+<script src="/js/admin/ledger.js"></script>
