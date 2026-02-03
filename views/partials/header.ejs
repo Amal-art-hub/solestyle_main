@@ -15,11 +15,8 @@
 
     <!-- CRITICAL INLINE CSS: This stops the "writing" flash instantly -->
     <style>
-
-    
-
-/* debugging */
-/* 
+        /* debugging */
+        /* 
 .container { border: 2px solid blue !important; }        
 .header-content { border: 2px solid cyan !important; }   
 .header-actions { border: 2px solid yellow !important; } 
@@ -95,7 +92,7 @@
                 <div class="header-actions">
                     <% if (typeof user !=='undefined' && user) { %>
 
-                   
+
 
 
                         <!-- </div> -->
@@ -123,7 +120,7 @@
                                 <% } %>
                         </a>
 
-                             <!-- WRAP THE BUTTON AND DROPDOWN IN THIS CONTAINER -->
+                        <!-- WRAP THE BUTTON AND DROPDOWN IN THIS CONTAINER -->
                         <div class="user-menu-container">
                             <button class="icon-btn user-menu-trigger" onclick="toggleUserMenu()">
                                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -134,27 +131,29 @@
                             </button>
 
 
-                        <div class="user-dropdown" id="userDropdown">
-                            <div class="user-info">
-                                <strong>
-                                    <%= user.name %>
-                                </strong>
-                                <span>
-                                    <%= user.email %>
-                                </span>
+                            <div class="user-dropdown" id="userDropdown">
+                                <div class="user-info">
+                                    <strong>
+                                        <%= user.name %>
+                                    </strong>
+                                    <span>
+                                        <%= user.email %>
+                                    </span>
+                                </div>
+                                <hr>
+                                <a href="/user/profile">My Profile</a>
+                                <a href="/user/orders">My Orders</a>
+                               
+                               
+                                <a href="/user/addresses">address book</a>
+                                <a href="/user/wallet">wallet</a>
+                                <!-- <a href="/user/settings">Coupon</a> -->
+                                <a href="javascript:void(0)" onclick="openModal('couponModal')">Coupons / Rewards</a>
+
+                             
+                                <hr>
+                                <a href="/logout" class="logout-link">Logout</a>
                             </div>
-                            <hr>
-                            <a href="/user/profile">My Profile</a>
-                            <a href="/user/orders">My Orders</a>
-                            <a href="/user/settings">Settings</a>
-                            <a href="/user/settings">payment method</a>
-                            <a href="/user/settings">address book</a>
-                            <a href="/user/wallet">wallet</a>
-                            <a href="/user/settings">Coupon</a>
-                            <a href="/user/settings">Referrals</a>
-                            <hr>
-                            <a href="/logout" class="logout-link">Logout</a>
-                        </div>
                         </div>
 
                         <% } else { %>
@@ -191,4 +190,27 @@
                 if (dropdown) dropdown.classList.remove('show');
             }
         });
+           
+        /* --- Replace your existing openModal function with this --- */
+function openModal(id) {
+    const modal = document.getElementById(id); // Look for the "Box"
+    
+    if (modal) {
+        // We found it! (You are on the Profile page)
+        modal.style.display = 'flex';
+    } else {
+        // Not found! (You are on Home/Cart/Products)
+        // Take the user to the Profile page where the box exists
+        window.location.href = '/user/profile'; 
+    }
+}
+
+/* Add this too, to close the modal */
+function closeModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) modal.style.display = 'none';
+}
+
+    
+
     </script>
