@@ -35,9 +35,9 @@
         }
 
         /* Essential for the portal dropdown to appear in the right spot */
-        .user-menu-container {
+        /* .user-menu-container {
             position: relative;
-        }
+        } */
     </style>
 </head>
 
@@ -147,12 +147,16 @@
     </header>
 
     <script>
-        window.addEventListener('load', function () {
-            const loader = document.getElementById('global-page-loader');
-            if (loader) {
-                loader.classList.add('fade-out');
-            }
-        });
+    // NEW CODE (Much faster)
+document.addEventListener('DOMContentLoaded', function () {
+    const loader = document.getElementById('global-page-loader');
+    if (loader) {
+        // We add a tiny 300ms delay just so the user sees the animation briefly
+        setTimeout(() => {
+            loader.classList.add('fade-out');
+        }, 50);
+    }
+});
 
         function toggleUserMenu() {
             const dropdown = document.getElementById('userDropdown');
