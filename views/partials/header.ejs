@@ -15,6 +15,20 @@
 
     <!-- CRITICAL INLINE CSS: This stops the "writing" flash instantly -->
     <style>
+
+    
+
+/* debugging */
+/* 
+.container { border: 2px solid blue !important; }        
+.header-content { border: 2px solid cyan !important; }   
+.header-actions { border: 2px solid yellow !important; } 
+.user-menu-container { border: 2px solid red !important; } 
+.user-dropdown { border: 2px solid green !important; } */
+
+
+
+
         #global-page-loader {
             position: fixed;
             top: 0;
@@ -44,12 +58,12 @@
 <body>
 
     <div id="global-page-loader">
-    <div id="top-progress-bar"></div>
-    <div class="runner-track">
-        <div class="shoe-runner">👟</div>
-        <div class="track-line"></div>
+        <div id="top-progress-bar"></div>
+        <div class="runner-track">
+            <div class="shoe-runner">👟</div>
+            <div class="track-line"></div>
+        </div>
     </div>
-</div>
 
     <header class="header">
         <div class="container">
@@ -81,38 +95,10 @@
                 <div class="header-actions">
                     <% if (typeof user !=='undefined' && user) { %>
 
-                        <!-- WRAP THE BUTTON AND DROPDOWN IN THIS CONTAINER -->
-                        <div class="user-menu-container">
-                            <button class="icon-btn user-menu-trigger" onclick="toggleUserMenu()">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="12" cy="7" r="4"></circle>
-                                </svg>
-                            </button>
+                   
 
-                            <div class="user-dropdown" id="userDropdown">
-                                <div class="user-info">
-                                    <strong>
-                                        <%= user.name %>
-                                    </strong>
-                                    <span>
-                                        <%= user.email %>
-                                    </span>
-                                </div>
-                                <hr>
-                                <a href="/user/profile">My Profile</a>
-                                <a href="/user/orders">My Orders</a>
-                                <a href="/user/settings">Settings</a>
-                                <a href="/user/settings">payment method</a>
-                                <a href="/user/settings">address book</a>
-                                <a href="/user/wallet">wallet</a>
-                                <a href="/user/settings">Coupon</a>
-                                <a href="/user/settings">Referrals</a>
-                                <hr>
-                                <a href="/logout" class="logout-link">Logout</a>
-                            </div>
-                        </div>
+
+                        <!-- </div> -->
 
                         <a href="/user/wishlist" class="icon-btn" style="text-decoration: none; color: inherit;">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -137,6 +123,40 @@
                                 <% } %>
                         </a>
 
+                             <!-- WRAP THE BUTTON AND DROPDOWN IN THIS CONTAINER -->
+                        <div class="user-menu-container">
+                            <button class="icon-btn user-menu-trigger" onclick="toggleUserMenu()">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="12" cy="7" r="4"></circle>
+                                </svg>
+                            </button>
+
+
+                        <div class="user-dropdown" id="userDropdown">
+                            <div class="user-info">
+                                <strong>
+                                    <%= user.name %>
+                                </strong>
+                                <span>
+                                    <%= user.email %>
+                                </span>
+                            </div>
+                            <hr>
+                            <a href="/user/profile">My Profile</a>
+                            <a href="/user/orders">My Orders</a>
+                            <a href="/user/settings">Settings</a>
+                            <a href="/user/settings">payment method</a>
+                            <a href="/user/settings">address book</a>
+                            <a href="/user/wallet">wallet</a>
+                            <a href="/user/settings">Coupon</a>
+                            <a href="/user/settings">Referrals</a>
+                            <hr>
+                            <a href="/logout" class="logout-link">Logout</a>
+                        </div>
+                        </div>
+
                         <% } else { %>
                             <a href="/Login" class="btn-text">Login</a>
                             <a href="/signup" class="btn-primary-small">Sign Up</a>
@@ -147,16 +167,16 @@
     </header>
 
     <script>
-    // NEW CODE (Much faster)
-document.addEventListener('DOMContentLoaded', function () {
-    const loader = document.getElementById('global-page-loader');
-    if (loader) {
-        // We add a tiny 300ms delay just so the user sees the animation briefly
-        setTimeout(() => {
-            loader.classList.add('fade-out');
-        }, 50);
-    }
-});
+        // NEW CODE (Much faster)
+        document.addEventListener('DOMContentLoaded', function () {
+            const loader = document.getElementById('global-page-loader');
+            if (loader) {
+                // We add a tiny 300ms delay just so the user sees the animation briefly
+                setTimeout(() => {
+                    loader.classList.add('fade-out');
+                }, 50);
+            }
+        });
 
         function toggleUserMenu() {
             const dropdown = document.getElementById('userDropdown');

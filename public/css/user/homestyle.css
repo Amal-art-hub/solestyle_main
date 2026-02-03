@@ -144,7 +144,7 @@ body {
 }
 
 /* User Dropdown */
-.user-menu-trigger {
+/* .user-menu-trigger {
     position: relative;
 }
 
@@ -152,13 +152,36 @@ body {
     display: none;
     position: absolute;
     top: 100%;
-    right: 0;
+    right: 0 !important;
     background: #fff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     border-radius: 0 0 8px 8px;;
     min-width: 250px;
     padding: 10px 0;
     z-index: 1001;
+} */
+
+
+/* User Dropdown */
+.user-menu-container {
+    position: static; /* Untraps the menu from the icon */
+}
+
+.user-menu-trigger {
+    position: relative;
+}
+
+.user-dropdown {
+    display: none;
+    position: fixed;         /* CHANGE THIS: It now looks at the monitor edge */
+    top: 70px;               /* Adjust this to sit right below the header */
+    right: 0 !important;     /* SUCCESS: This snaps it to the absolute far-right monitor edge */
+    background: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 8px 0 0 8px; /* Curve only the left side for a sleek look */
+    min-width: 250px;
+    padding: 10px 0;
+    z-index: 10000;          /* Make sure it's on top of everything */
 }
 
 .user-dropdown.show {
