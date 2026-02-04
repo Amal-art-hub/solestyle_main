@@ -2,14 +2,14 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema({
-  name: { type: String,  trim: true },
+  name: { type: String, trim: true },
   email: { type: String, unique: true, lowercase: true, trim: true },
   password: { type: String },
-  googleId:{type:String,unique:true,sparse: true},
-  phone: { type: String, unique: true ,sparse:true,default:null},
+  googleId: { type: String, unique: true, sparse: true },
+  phone: { type: String, unique: true, sparse: true, default: null },
   isVerified: { type: Boolean, default: false },
   isBlock: { type: Boolean, default: false },
-    referralCode: {
+  referralCode: {
     type: String,
     unique: true,
     sparse: true // Important: Allows multiple users to have 'null' if they have no code
