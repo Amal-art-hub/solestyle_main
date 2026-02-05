@@ -169,7 +169,7 @@ router.delete("/user/wishlist/remove/:id", isAuth, checkUserStatus, wishlistCont
 
 
 
-
+// router.delete("/user/cart/clear", isAuth, checkUserStatus, cartController.removeAllItem)
 
 
 

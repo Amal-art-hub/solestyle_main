@@ -192,22 +192,22 @@ const updateQuantityService = async (userId, itemId, action) => {
 
 
         let grandTotal = 0;
-        let totalMRP = 0; 
-       
+        let totalMRP = 0;
+
 
         // await Promise.all(validItems.map(async (item) => {
         //     if (item.variant_id && item.variant_id.price) {
-              
+
         //         const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price);
         //         grandTotal += item.quantity * finalPrice;
         //     }
         // }));
 
 
-                await Promise.all(validItems.map(async (item) => {
+        await Promise.all(validItems.map(async (item) => {
             const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price);
             grandTotal += (item.quantity * finalPrice);
-            totalMRP += (item.quantity * item.variant_id.price); 
+            totalMRP += (item.quantity * item.variant_id.price);
         }));
 
         return {
@@ -236,10 +236,23 @@ const removeItemService = async (userId, itemId) => {
 };
 
 
+// const removeallItemsService = async (user_Id) => {
+//     try {
+//         return await Cart.findOneAndUpdate({ user_id: user_Id },
+//             { $set: { items: [] } },
+//             { new: true }
+//         )
+//     } catch (error) {
+//         console.error("removing all by button problem:", error);
+//     }
+// }
+
+
 
 module.exports = {
     getCart,
     addToCartService,
     updateQuantityService,
-    removeItemService
+    removeItemService,
+    // removeallItemsService
 }
