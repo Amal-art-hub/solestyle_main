@@ -4,6 +4,7 @@ const {
     generateExcel,
     generatePDF
 } = require("../../services/adminSer/salesService");
+const statusCode = require("../../utils/statusCodes");
 
 const loadReport = async (req, res) => {
     try {
