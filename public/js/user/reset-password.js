@@ -29,7 +29,11 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault();
 
         if (newPass.value !== confirmPass.value) {
-            alert("Passwords do not match!");
+            Swal.fire({
+                icon: 'warning',
+                title: 'Mismatch',
+                text: "Passwords do not match!"
+            });
             return;
         }
 

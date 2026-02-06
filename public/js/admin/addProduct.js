@@ -11,47 +11,55 @@ let filesToProcess = [];
 let currentFileIndex = 0;
 
 
-if (imageInput) { 
+if (imageInput) {
 
-imageInput.addEventListener('change', (e) => {
-  const files = Array.from(e.target.files);
-  
-  if (files.length < 3) {
-    alert('Please select at least 3 images');
-    e.target.value = '';
-    return;
-  }
-  
-  if (files.length > 10) {
-    alert('Maximum 10 images allowed');
-    e.target.value = '';
-    return;
-  }
-  
-  filesToProcess = files;
-  currentFileIndex = 0;
-  croppedFiles = [];
-  previewContainer.innerHTML = '';
-  
-  processNextImage();
-});
+  imageInput.addEventListener('change', (e) => {
+    const files = Array.from(e.target.files);
+
+    if (files.length < 3) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Images Required',
+        text: 'Please select at least 3 images'
+      });
+      e.target.value = '';
+      return;
+    }
+
+    if (files.length > 10) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Too Many Images',
+        text: 'Maximum 10 images allowed'
+      });
+      e.target.value = '';
+      return;
+    }
+
+    filesToProcess = files;
+    currentFileIndex = 0;
+    croppedFiles = [];
+    previewContainer.innerHTML = '';
+
+    processNextImage();
+  });
 }
 
 function processNextImage() {
   if (currentFileIndex < filesToProcess.length) {
     const file = filesToProcess[currentFileIndex];
     const reader = new FileReader();
-    
+
     imageCounter.textContent = `(${currentFileIndex + 1} of ${filesToProcess.length})`;
-    
+
     reader.onload = (e) => {
       cropperImage.src = e.target.result;
       cropperContainer.style.display = 'block';
-      
+
       if (cropper) {
         cropper.destroy();
       }
-      
+
       cropper = new Cropper(cropperImage, {
         aspectRatio: 1,
         viewMode: 1,
@@ -59,32 +67,32 @@ function processNextImage() {
         responsive: true
       });
     };
-    
+
     reader.readAsDataURL(file);
   } else {
     cropperContainer.style.display = 'none';
   }
 }
 
-if (cropBtn) { 
+if (cropBtn) {
 
-cropBtn.addEventListener('click', () => {
-  if (!cropper) return;
-  
-  cropper.getCroppedCanvas({
-    width: 800,
-    height: 800
-  }).toBlob((blob) => {
-    croppedFiles.push(blob);
-    
-    const img = document.createElement('img');
-    img.src = URL.createObjectURL(blob);
-    previewContainer.appendChild(img);
-    
-    currentFileIndex++;
-    processNextImage();
-  }, 'image/jpeg', 0.95);
-});
+  cropBtn.addEventListener('click', () => {
+    if (!cropper) return;
+
+    cropper.getCroppedCanvas({
+      width: 800,
+      height: 800
+    }).toBlob((blob) => {
+      croppedFiles.push(blob);
+
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(blob);
+      previewContainer.appendChild(img);
+
+      currentFileIndex++;
+      processNextImage();
+    }, 'image/jpeg', 0.95);
+  });
 }
 
 
@@ -94,7 +102,7 @@ cropBtn.addEventListener('click', () => {
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
 
-  
+
   // 1. Get Values
   const name = document.getElementById('name').value.trim();
   const desc = document.getElementById('description').value.trim();
@@ -104,79 +112,83 @@ form.addEventListener('submit', async (e) => {
   // 2. Validate Empty Fields
   // 2. Validate Empty Fields with SweetAlert
   if (!name) {
-      Swal.fire({
-          icon: 'error',
-          title: 'Missing Input',
-          text: 'Product Name is required!',
-          confirmButtonColor: '#d33'
-      });
-      return;
-  }
-  if (!description) { // Make sure variable name matches (desc vs description)
-      Swal.fire({
-          icon: 'error',
-          title: 'Missing Input',
-          text: 'Description is required!',
-          confirmButtonColor: '#d33'
-      });
-      return;
-  }
-  if (!category) {
-      Swal.fire({
-          icon: 'warning',
-          title: 'Selection Needed',
-          text: 'Please select a Category!',
-          confirmButtonColor: '#f39c12'
-      });
-      return;
-  }
-  if (!brand) {
-      Swal.fire({
-          icon: 'warning',
-          title: 'Selection Needed',
-          text: 'Please select a Brand!',
-          confirmButtonColor: '#f39c12'
-      });
-      return;
-  }
-  
-  if (cropBtn && croppedFiles.length < 3) {
-    alert('Please crop at least 3 images');
+    Swal.fire({
+      icon: 'error',
+      title: 'Missing Input',
+      text: 'Product Name is required!',
+      confirmButtonColor: '#d33'
+    });
     return;
   }
-  
+  if (!description) { // Make sure variable name matches (desc vs description)
+    Swal.fire({
+      icon: 'error',
+      title: 'Missing Input',
+      text: 'Description is required!',
+      confirmButtonColor: '#d33'
+    });
+    return;
+  }
+  if (!category) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Selection Needed',
+      text: 'Please select a Category!',
+      confirmButtonColor: '#f39c12'
+    });
+    return;
+  }
+  if (!brand) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Selection Needed',
+      text: 'Please select a Brand!',
+      confirmButtonColor: '#f39c12'
+    });
+    return;
+  }
+
+  if (cropBtn && croppedFiles.length < 3) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Validation Error',
+      text: 'Please crop at least 3 images'
+    });
+    return;
+  }
+
   // const formData = new FormData(form);
-  
+
   //Clear original file input
   // formData.delete('images');
-  
+
   // // Add cropped images
   // croppedFiles.forEach((blob, index) => {
   //   formData.append('images', blob, `product-${Date.now()}-${index}.jpg`);
   // });
 
-    const data = {
+  const data = {
     name: name,
     description: desc,
     category: cat,
     brand: brand
   };
-  
+
   const submitBtn = form.querySelector('.btn-submit');
   submitBtn.textContent = 'Adding Product...';
   submitBtn.disabled = true;
-  
+
   try {
     const response = await fetch('/admin/products/add', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json' // <--- The Golden Key 🔑
       },
-      body: JSON.stringify(data) 
+      body: JSON.stringify(data)
     });
-    
+
     if (response.ok) {
-        await Swal.fire({
+      await Swal.fire({
         icon: 'success',
         title: 'Success!',
         text: 'Product added successfully!',
@@ -185,9 +197,9 @@ form.addEventListener('submit', async (e) => {
       window.location.href = '/admin/products';
     } else {
 
-           const errorResult = await response.json();
-      
-    
+      const errorResult = await response.json();
+
+
       Swal.fire({
         icon: 'error',
         title: 'Failed',
@@ -199,7 +211,11 @@ form.addEventListener('submit', async (e) => {
     }
   } catch (error) {
     console.error('Error:', error);
-    alert('Error adding product');
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'An error occurred while adding the product. Please try again.'
+    });
     submitBtn.textContent = 'Add Product';
     submitBtn.disabled = false;
   }

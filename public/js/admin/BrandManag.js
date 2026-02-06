@@ -1,20 +1,28 @@
 async function toggleStatus(id) {
     try {
-        
+
         const response = await fetch(`/admin/blockBrand?id=${id}`, {
             method: 'PATCH'
         });
 
-        const data = await response.json(); 
-        
-        if (data.success) { 
+        const data = await response.json();
+
+        if (data.success) {
             location.reload();
         } else {
-            alert("Failed to change status: " + (data.message || "Unknown error"));
+            Swal.fire({
+                icon: 'error',
+                title: 'Update Failed',
+                text: data.message || "Failed to change status"
+            });
         }
     } catch (error) {
         console.error("Error:", error);
-        alert("An error occurred");
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: "An error occurred while blocking/unblocking the brand."
+        });
     }
 }
 
@@ -33,13 +41,27 @@ document.getElementById('addBrandForm')?.addEventListener('submit', async functi
         const result = await response.json();
 
         if (result.success) {
-            alert(result.message);
+            await Swal.fire({
+                icon: 'success',
+                title: 'Brand Added',
+                text: result.message,
+                timer: 1500,
+                showConfirmButton: false
+            });
             location.reload();
         } else {
-            alert(result.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: result.message || "Failed to add brand"
+            });
         }
     } catch (error) {
-        alert("Error adding brand");
+        Swal.fire({
+            icon: 'error',
+            title: 'Request Failed',
+            text: "Error adding brand. Please try again."
+        });
     }
 });
 // Edit Modal Functions (If we implemented Edit Brand)
@@ -84,12 +106,26 @@ document.getElementById('editBrandForm')?.addEventListener('submit', async funct
         const result = await response.json();
 
         if (result.success) {
-            alert(result.message);
+            await Swal.fire({
+                icon: 'success',
+                title: 'Brand Updated',
+                text: result.message,
+                timer: 1500,
+                showConfirmButton: false
+            });
             location.reload();
         } else {
-            alert(result.message);
+            Swal.fire({
+                icon: 'error',
+                title: 'Update Failed',
+                text: result.message || "Failed to update brand"
+            });
         }
     } catch (error) {
-        alert("Error updating brand");
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: "Error updating brand."
+        });
     }
 });

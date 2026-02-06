@@ -62,7 +62,11 @@ async function openEditModal(button) {
     }
   } catch (error) {
     console.error('Error loading images:', error);
-    alert('Error loading variant images');
+    Swal.fire({
+      icon: 'error',
+      title: 'Load Error',
+      text: 'Error loading variant images'
+    });
   }
 
   document.getElementById('editModal').style.display = 'block';
@@ -104,21 +108,25 @@ function toggleImageDelete(imageName) {
   const index = imagesToDelete.indexOf(imageName);
 
   if (index > -1) {
-   
+
     imagesToDelete.splice(index, 1);
   } else {
 
     const remainingImages = currentVariantImages.length - imagesToDelete.length;
 
     if (remainingImages <= 1) {
-      alert('Cannot delete this image. You must keep at least 3 images.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Delete Rule',
+        text: 'Cannot delete this image. You must keep at least 1 image.'
+      });
       return;
     }
 
     imagesToDelete.push(imageName);
   }
 
-  
+
   document.getElementById('deletedImages').value = JSON.stringify(imagesToDelete);
 
 
@@ -176,21 +184,21 @@ window.onclick = function (event) {
 async function toggleVariant(button) {
   // 1. Get the ID needed for the action
   const variantId = button.dataset.id;
-  
+
   // 2. The New "Gate" (Confirmation Popup)
   const confirmation = await Swal.fire({
-      title: 'Are you sure?',
-      text: "Do you want to change the status of this variant?",
-      icon: 'question',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, change it!'
+    title: 'Are you sure?',
+    text: "Do you want to change the status of this variant?",
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, change it!'
   });
 
   // 3. Stop if they said "Cancel"
   if (!confirmation.isConfirmed) {
-      return;
+    return;
   }
 
   // 4. Send Request (Only runs if Confirmed)
@@ -223,7 +231,17 @@ async function toggleVariant(button) {
 
 // Delete Variant
 async function deleteVariant(variantId) {
-  if (!confirm('Are you sure you want to delete this variant?')) {
+  const confirmation = await Swal.fire({
+    title: 'Are you sure?',
+    text: "You won't be able to revert this!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, delete it!'
+  });
+
+  if (!confirmation.isConfirmed) {
     return;
   }
 
@@ -238,14 +256,28 @@ async function deleteVariant(variantId) {
     const result = await response.json();
 
     if (result.success) {
-      alert(result.message);
+      await Swal.fire({
+        icon: 'success',
+        title: 'Deleted!',
+        text: result.message,
+        timer: 1500,
+        showConfirmButton: false
+      });
       location.reload();
     } else {
-      alert(result.message || 'Error deleting variant');
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: result.message || 'Error deleting variant'
+      });
     }
   } catch (error) {
     console.error('Error:', error);
-    alert('Error deleting variant');
+    Swal.fire({
+      icon: 'error',
+      title: 'Delete Error',
+      text: 'Something went wrong while deleting the variant.'
+    });
   }
 }
 
@@ -262,13 +294,21 @@ document.addEventListener('DOMContentLoaded', function () {
       console.log('Files selected:', files.length);
 
       if (files.length < 3) {
-        alert('Please select at least 3 images');
+        Swal.fire({
+          icon: 'warning',
+          title: 'Selection Error',
+          text: 'Please select at least 3 images'
+        });
         e.target.value = '';
         return;
       }
 
       if (files.length > 10) {
-        alert('Maximum 10 images allowed');
+        Swal.fire({
+          icon: 'warning',
+          title: 'Too Many Images',
+          text: 'Maximum 10 images allowed'
+        });
         e.target.value = '';
         return;
       }
@@ -381,7 +421,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Add variant form submission with cropped images
   // Add variant form submission with cropped images
-    // Add variant form submission
+  // Add variant form submission
   const addForm = document.getElementById('addVariantForm');
   if (addForm) {
     addForm.addEventListener('submit', async function (e) {
@@ -394,12 +434,12 @@ document.addEventListener('DOMContentLoaded', function () {
       const stockVal = document.getElementById('addStock').value.trim();
 
       if (!sizeVal || !colorVal || !priceVal || !stockVal) {
-          Swal.fire({
-            icon: 'warning',
-            title: 'Missing Details',
-            text: 'Please fill in Size, Color, Price, and Stock!'
-          });
-          return; // Stop here! Don't annoy the server.
+        Swal.fire({
+          icon: 'warning',
+          title: 'Missing Details',
+          text: 'Please fill in Size, Color, Price, and Stock!'
+        });
+        return; // Stop here! Don't annoy the server.
       }
       // --------------------------------------
 
@@ -410,8 +450,8 @@ document.addEventListener('DOMContentLoaded', function () {
       // CASE 1: Using Cropper
       if (croppedFiles.length > 0) {
         if (croppedFiles.length < 3) {
-           Swal.fire({ icon: 'warning', title: 'Images Required', text: 'Please crop at least 3 images' });
-           return;
+          Swal.fire({ icon: 'warning', title: 'Images Required', text: 'Please crop at least 3 images' });
+          return;
         }
 
         formData = new FormData();
@@ -430,7 +470,7 @@ document.addEventListener('DOMContentLoaded', function () {
         // CASE 2: No Cropping (Standard file input)
         const fileInput = document.getElementById('variantImages');
         if (fileInput && fileInput.files.length < 3) {
-            Swal.fire({ icon: 'warning', title: 'Images Required', text: 'Please select at least 3 images' });
+          Swal.fire({ icon: 'warning', title: 'Images Required', text: 'Please select at least 3 images' });
           return;
         }
         // Create FormData directly
@@ -448,35 +488,35 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         if (response.ok) {
-            await Swal.fire({
-                icon: 'success',
-                title: 'Success!',
-                text: 'Variant added successfully!',
-                timer: 1500,
-                showConfirmButton: false
-            });
-            location.reload();
+          await Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: 'Variant added successfully!',
+            timer: 1500,
+            showConfirmButton: false
+          });
+          location.reload();
         } else {
-            const resData = await response.json();
-            Swal.fire({
-                icon: 'error',
-                title: 'Failed',
-                text: resData.message || 'Error adding variant'
-            });
-            submitBtn.textContent = originalBtnText;
-            submitBtn.disabled = false;
+          const resData = await response.json();
+          Swal.fire({
+            icon: 'error',
+            title: 'Failed',
+            text: resData.message || 'Error adding variant'
+          });
+          submitBtn.textContent = originalBtnText;
+          submitBtn.disabled = false;
         }
       } catch (err) {
-            console.error(err);
-            Swal.fire({ icon: 'error', title: 'Error', text: 'Something went wrong.' });
-            submitBtn.textContent = originalBtnText;
-            submitBtn.disabled = false;
+        console.error(err);
+        Swal.fire({ icon: 'error', title: 'Error', text: 'Something went wrong.' });
+        submitBtn.textContent = originalBtnText;
+        submitBtn.disabled = false;
       }
     });
   }
 
 
-  
+
   // Edit variant form validation and submission
   const editForm = document.getElementById('editVariantForm');
   if (editForm) {
@@ -488,12 +528,20 @@ document.addEventListener('DOMContentLoaded', function () {
       const totalImages = remainingImages + newImagesCount;
 
       if (totalImages < 1) {
-        alert(`Total images must be at least 3. Currently: ${remainingImages} existing - ${imagesToDelete.length} to delete + ${newImagesCount} new = ${totalImages} total`);
+        Swal.fire({
+          icon: 'warning',
+          title: 'Image Required',
+          text: `Total images must be at least 1. Current total: ${totalImages}`
+        });
         return;
       }
 
       if (totalImages > 10) {
-        alert(`Total images cannot exceed 10. Currently: ${totalImages} total`);
+        Swal.fire({
+          icon: 'warning',
+          title: 'Limit Exceeded',
+          text: `Total images cannot exceed 10. Currently: ${totalImages}`
+        });
         return;
       }
 
@@ -521,13 +569,28 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         if (response.ok) {
+          await Swal.fire({
+            icon: 'success',
+            title: 'Updated!',
+            text: 'Variant updated successfully!',
+            timer: 1500,
+            showConfirmButton: false
+          });
           location.reload();
         } else {
-          alert('Error updating variant');
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Error updating variant'
+          });
         }
       } catch (error) {
         console.error('Error:', error);
-        alert('Error updating variant');
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Error updating variant'
+        });
       }
     });
   }
@@ -566,7 +629,11 @@ function processNextImage() {
         // Check if Cropper is available
         if (typeof Cropper === 'undefined') {
           console.error('Cropper library is not loaded!');
-          alert('Error: Image cropping library not loaded. Please refresh the page.');
+          Swal.fire({
+            icon: 'error',
+            title: 'Library Error',
+            text: 'Image cropping library not loaded. Please refresh the page.'
+          });
           return;
         }
 
@@ -625,7 +692,11 @@ function processNextEditImage() {
         // Check if Cropper is available
         if (typeof Cropper === 'undefined') {
           console.error('Cropper library not loaded!');
-          alert('Error: Image cropping library not loaded. Please refresh the page.');
+          Swal.fire({
+            icon: 'error',
+            title: 'Library Error',
+            text: 'Image cropping library not loaded. Please refresh the page.'
+          });
           return;
         }
 
