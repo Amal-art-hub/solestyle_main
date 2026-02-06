@@ -89,17 +89,27 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Show error message
+  // function showError(message) {
+  //   let errorElement = document.getElementById("error-message");
+  //   if (!errorElement) {
+  //     errorElement = document.createElement("div");
+  //     errorElement.id = "error-message";
+  //     errorElement.className = "error-message";
+  //     document.querySelector(".signup-form").prepend(errorElement);
+  //   }
+  //   errorElement.textContent = message;
+  //   errorElement.scrollIntoView({ behavior: "smooth", block: "center" });
+  // }
+
+
   function showError(message) {
-    let errorElement = document.getElementById("error-message");
-    if (!errorElement) {
-      errorElement = document.createElement("div");
-      errorElement.id = "error-message";
-      errorElement.className = "error-message";
-      document.querySelector(".signup-form").prepend(errorElement);
-    }
-    errorElement.textContent = message;
-    errorElement.scrollIntoView({ behavior: "smooth", block: "center" });
-  }
+    Swal.fire({
+        icon: 'error',
+        title: 'Signup Error',
+        text: message,
+        confirmButtonColor: '#ff4444'
+    });
+}
 
   // Toggle password visibility
   window.togglePassword = function (fieldId) {

@@ -46,15 +46,15 @@ async function sendVerificationEmail(email, otp) {
 }
 
 //checking user is existed already
-async function checkExistingUser(email) {
-  return await User.findOne({ email });
+async function checkExistingUser(email,phone) {
+  return await User.findOne({ $or:[{email:email},{phone:phone}]});
 }
 
 // Create a new user and save to DB
 // Create a new user with Referral Logic
 async function createUser({ firstName, lastName, email, phone, password, referralCode }) {
   const name = `${firstName} ${lastName}`;
-  
+
   // 1. Generate a Code for THIS new user (e.g. JOHN4821)
   const myReferralCode = firstName.toUpperCase() + Math.floor(1000 + Math.random() * 9000);
 
@@ -62,39 +62,39 @@ async function createUser({ firstName, lastName, email, phone, password, referra
 
   // 2. Check if they were invited (Referral Code provided)
   if (referralCode) {
-      const referrer = await User.findOne({ referralCode: referralCode .toUpperCase()});
-      if (referrer) {
-          console.log("DEBUG: Found Referrer:", referrer.name);
-          referredByUserId = referrer._id;
+    const referrer = await User.findOne({ referralCode: referralCode.toUpperCase() });
+    if (referrer) {
+      console.log("DEBUG: Found Referrer:", referrer.name);
+      referredByUserId = referrer._id;
 
 
-                   const today = new Date();
-          const activeReferralOffer = await Offers.findOne({
-              type: 'referral',
-              status: 'active',
-              start_date: { $lte: today },
-              end_date: { $gte: today }
-          });
-          // 2. Determine Discount (Default to 10% if no offer exists)
-          const discountVal = activeReferralOffer ? activeReferralOffer.discount_percentage : 10;
-          const description = activeReferralOffer ? activeReferralOffer.name : "Referral Reward";
-          
-          // 3. Give Reward to Referrer (Create a Coupon)
-          const rewardCoupon = new Coupon({
-              code: `REF-${Math.floor(100000 + Math.random() * 900000)}`, // Unique coupon code
-              description: `Referral Reward for inviting ${description}`,
-              discount_type: "Percentage",
-              discount_value: discountVal, 
-              mincart_value: 500,
-              expiry_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Expires in 7 days
-              userId: referrer._id,
-              status: "active"
-          });
-          console.log("DEBUG: Attempting to save Coupon:", rewardCoupon);
-          await rewardCoupon.save();
-          console.log(`Referral Reward given to ${referrer.name}`);
-            console.log("DEBUG: Coupon Saved Successfully!");
-      }
+      const today = new Date();
+      const activeReferralOffer = await Offers.findOne({
+        type: 'referral',
+        status: 'active',
+        start_date: { $lte: today },
+        end_date: { $gte: today }
+      });
+      // 2. Determine Discount (Default to 10% if no offer exists)
+      const discountVal = activeReferralOffer ? activeReferralOffer.discount_percentage : 10;
+      const description = activeReferralOffer ? activeReferralOffer.name : "Referral Reward";
+
+      // 3. Give Reward to Referrer (Create a Coupon)
+      const rewardCoupon = new Coupon({
+        code: `REF-${Math.floor(100000 + Math.random() * 900000)}`, // Unique coupon code
+        description: `Referral Reward for inviting ${description}`,
+        discount_type: "Percentage",
+        discount_value: discountVal,
+        mincart_value: 500,
+        expiry_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Expires in 7 days
+        userId: referrer._id,
+        status: "active"
+      });
+      console.log("DEBUG: Attempting to save Coupon:", rewardCoupon);
+      await rewardCoupon.save();
+      console.log(`Referral Reward given to ${referrer.name}`);
+      console.log("DEBUG: Coupon Saved Successfully!");
+    }
   }
 
   const newUser = new User({
@@ -105,7 +105,7 @@ async function createUser({ firstName, lastName, email, phone, password, referra
     referralCode: myReferralCode, // Save their new code
     referredBy: referredByUserId  // Link them to who invited them
   });
-  
+
   return await newUser.save();
 }
 
@@ -120,6 +120,8 @@ async function verifyOtpService(session, otp) {
       };
     }
 
+
+
     if (otp !== session.userOtp) {
       return {
         success: false,
@@ -129,9 +131,9 @@ async function verifyOtpService(session, otp) {
     }
 
     // OTP is correct – create user
-    const { firstName, lastName, email, phone, password,referralCode  } = session.userData;
+    const { firstName, lastName, email, phone, password, referralCode } = session.userData;
 
-    await createUser({ firstName, lastName, email, phone, password,referralCode  });
+    await createUser({ firstName, lastName, email, phone, password, referralCode });
 
     // Clean up session
     session.userOtp = null;

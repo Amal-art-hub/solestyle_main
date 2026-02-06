@@ -92,9 +92,11 @@ const signup = async (req, res) => {
     if (password !== confirmPassword) {
       return res.status(statusCode.BAD_REQUEST).json({ message: "Password do not match" });
     }
-    const existingUser = await checkExistingUser(email);
+    const existingUser = await checkExistingUser(email,phone);
     if (existingUser) {
-      return res.status(statusCode.CONFLICT).json({ message: "User already exists" });
+
+      const message=(existingUser.email.toLowerCase()===email.toLowerCase())?"Email already exists":"Phone number already in use";
+      return res.status(statusCode.CONFLICT).json({ message});
     }
     const otp = generateOtp();
     // Enhanced logging for OTP debugging
