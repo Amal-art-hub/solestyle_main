@@ -94,7 +94,7 @@ const cancelOrderService = async (orderId, reason) => {
 
 
         if (order.payment_method !== "COD") {
-            await walletService.creditWallet(
+            await creditWallet(
                 order.user_id,
                 order.final_total,
                 `Refund for cancellation of Order #${order.order_number}`
