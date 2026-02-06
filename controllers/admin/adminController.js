@@ -10,7 +10,7 @@ const loadLogin = (req, res) => {
     if (req.session.admin) {
       return res.redirect("/admin/dashboard");
     }
-    return res.render("adminlogin", { message: null });
+    return res.status(statusCode.OK).render("adminlogin", { message: null });
   } catch (error) {
     console.error("Admin login page load error:", error);
     return res.status(statusCode.INTERNAL_SERVER_ERROR).send("Server error");
@@ -102,7 +102,7 @@ const logout = (req, res) => {
 module.exports = {
   loadLogin,
   login,
- 
+
   logout,
 
 };

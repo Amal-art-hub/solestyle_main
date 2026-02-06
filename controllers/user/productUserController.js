@@ -30,7 +30,7 @@ const getMensProducts = async (req, res) => {
         const data = await getProductsByCategory(categoryId, page, 12, search, sort, filters);
 
         // Fix 4: Correct object syntax for render
-        res.render("mensProducts", {
+        res.status(statusCode.OK).render("mensProducts", {
             ...data,
             search,
             sort,
@@ -51,13 +51,13 @@ const getProductDetails = async (req, res) => {
         const data = await getProductDetailService(req.params.id);
         if (!data) return res.redirect("/");
 
-        res.render("productDetails", {
+        res.status(statusCode.OK).render("productDetails", {
             product: data.product,
             variants: data.variants,
             relatedProducts: data.relatedProducts,
             // currentVariant: data.variants[0],
-                        currentVariant: req.query.variantId 
-                ? data.variants.find(v => v._id.toString() === req.query.variantId) || data.variants[0] 
+            currentVariant: req.query.variantId
+                ? data.variants.find(v => v._id.toString() === req.query.variantId) || data.variants[0]
                 : data.variants[0],
             reviews: data.reviews,      // <--- Add this
             avgRating: data.avgRating,
@@ -95,7 +95,7 @@ const getWomenProducts = async (req, res) => {
         const data = await getProductsByCategory(categoryId, page, 12, search, sort, filters);
 
         // Fix 4: Correct object syntax for render
-        res.render("mensProducts", {
+        res.status(statusCode.OK).render("mensProducts", {
             ...data,
             search,
             sort,
@@ -117,7 +117,7 @@ const getKidsProducts = async (req, res) => {
     try {
         const categoryId = req.query.category;
 
-       
+
         if (!categoryId) {
             return res.redirect("/");
         }
@@ -126,16 +126,16 @@ const getKidsProducts = async (req, res) => {
         const search = req.query.search || "";
         const sort = req.query.sort || "newest";
 
-        const filters = { 
+        const filters = {
             brand: req.query.brand,
             minPrice: req.query.minPrice,
             maxPrice: req.query.maxPrice
         };
 
-        
+
         const data = await getProductsByCategory(categoryId, page, 12, search, sort, filters);
 
-        res.render("mensProducts", {
+        res.status(statusCode.OK).render("mensProducts", {
             ...data,
             search,
             sort,

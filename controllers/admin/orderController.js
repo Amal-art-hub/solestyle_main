@@ -15,7 +15,7 @@ const getOrderList = async (req, res) => {
     const status = req.query.status || "";
 
     const data = await getAllOrders(page, limit, search, status);
-    res.render("orderList", {
+    res.status(statusCode.OK).render("orderList", {
       orders: data.orders,
       currentPage: data.currentPage,
       totalPages: data.totalPages,
@@ -40,7 +40,7 @@ const changeStatus = async (req, res) => {
     const updatedOrder = await updateOrderStatus(orderId, status);
     console.log("[DEBUG] Order updated:", updatedOrder);
 
-    res.json({
+    res.status(statusCode.OK).json({
       success: true,
       message: "Order status updated successfully",
       newStatus: updatedOrder.status
@@ -61,7 +61,7 @@ const getOrderDetails = async (req, res) => {
       return res.status(statusCode.NOT_FOUND).json({ success: false, message: "Order not found" });
     }
 
-    res.json({ success: true, order });
+    res.status(statusCode.OK).json({ success: true, order });
   } catch (error) {
     console.error("Error fetching order details:", error);
     res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Internal Server Error" });
@@ -69,25 +69,25 @@ const getOrderDetails = async (req, res) => {
 };
 
 
-const approveReturn=async(req,res)=>{
+const approveReturn = async (req, res) => {
   try {
-    const {orderId,itemId}=req.body;
-    const result=await approveReturnService(orderId,itemId);
-    res.json(result);
+    const { orderId, itemId } = req.body;
+    const result = await approveReturnService(orderId, itemId);
+    res.status(statusCode.OK).json(result);
   } catch (error) {
-        console.error("Approve Return Error:", error);
-        res.status(500).json({ success: false, message: error.message });
+    console.error("Approve Return Error:", error);
+    res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
   }
 }
 
 const rejectReturn = async (req, res) => {
-    try {
-        const { orderId, itemId } = req.body;
-        const result = await rejectReturnService(orderId, itemId);
-        res.json(result);
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-    }
+  try {
+    const { orderId, itemId } = req.body;
+    const result = await rejectReturnService(orderId, itemId);
+    res.status(statusCode.OK).json(result);
+  } catch (error) {
+    res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
+  }
 };
 
 

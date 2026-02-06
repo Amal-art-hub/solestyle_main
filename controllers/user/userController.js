@@ -44,8 +44,8 @@ const loadHomepage = async (req, res) => {
 const loadSignup = async (req, res) => {
   try {
 
-      const referralCode = req.query.ref || ""; 
-    return res.render("signup",{referralCode});
+    const referralCode = req.query.ref || "";
+    return res.render("signup", { referralCode });
   } catch (error) {
     console.log("signup page error :", error);
     res.status(statusCode.INTERNAL_SERVER_ERROR).send("Server Error");
@@ -71,7 +71,7 @@ const verifyOtp = async (req, res) => {
       });
     }
 
-    res.json({
+    res.status(statusCode.OK).json({
       success: true,
       redirectUrl: result.redirectUrl,
     });
@@ -87,15 +87,14 @@ const verifyOtp = async (req, res) => {
 // Signup handler – generate OTP and redirect to verification page
 const signup = async (req, res) => {
   try {
-    const { firstName, lastName, email, phone, password, confirmPassword ,referralCode } =
+    const { firstName, lastName, email, phone, password, confirmPassword, referralCode } =
       req.body;
     if (password !== confirmPassword) {
-     return res.status(statusCode.BAD_REQUEST).json({message:"PaPassword do not match"});
-      
+      return res.status(statusCode.BAD_REQUEST).json({ message: "Password do not match" });
     }
     const existingUser = await checkExistingUser(email);
     if (existingUser) {
-   return res.status(statusCode.CONFLICT).json({message:"User already exists"});
+      return res.status(statusCode.CONFLICT).json({ message: "User already exists" });
     }
     const otp = generateOtp();
     // Enhanced logging for OTP debugging
@@ -116,13 +115,13 @@ const signup = async (req, res) => {
     );
     console.log("===================================");
     if (!emailSent) {
-      return res.json({ message: "Failed to send verification email" });
+      return res.status(statusCode.INTERNAL_SERVER_ERROR).json({ message: "Failed to send verification email" });
     }
- 
+
     req.session.userOtp = otp;
-    req.session.userData = { firstName, lastName, email, phone, password,referralCode  };
-  
-    return res.json({ success: true, redirect: "/verify-otp" });
+    req.session.userData = { firstName, lastName, email, phone, password, referralCode };
+
+    return res.status(statusCode.OK).json({ success: true, redirect: "/verify-otp" });
   } catch (error) {
     console.error("signup error", error);
     res.status(statusCode.INTERNAL_SERVER_ERROR).json({ message: "Server error during signup" });
@@ -141,7 +140,7 @@ const resendOtp = async (req, res) => {
       });
     }
 
-    res.json({
+    res.status(statusCode.OK).json({
       success: true,
       message: result.message,
     });

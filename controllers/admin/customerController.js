@@ -12,7 +12,7 @@ const getCustomers = async (req, res) => {
         const limit = 10;
 
         const data = await getCustomerData(search, page, limit);
-        res.render("customersManag", {
+        res.status(statusCode.OK).render("customersManag", {
             data: data.userData,
             totalPages: data.totalPages,
             currentPage: data.currentPage,
@@ -27,22 +27,22 @@ const getCustomers = async (req, res) => {
 };
 
 const blockCustomer = async (req, res) => {
-  try {
-    const id = req.query.id;
-    await blockCustomerById(id);
-    
-    res.status(statusCode.OK).json({ success: true, message: "Customer blocked successfully" });
-  } catch (error) {
-    console.log(error.message);
-    res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Error blocking customer" });
-  }
+    try {
+        const id = req.query.id;
+        await blockCustomerById(id);
+
+        res.status(statusCode.OK).json({ success: true, message: "Customer blocked successfully" });
+    } catch (error) {
+        console.log(error.message);
+        res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Error blocking customer" });
+    }
 }
 
 const unblockCoustomer = async (req, res) => {
     try {
         const id = req.query.id;
         await unblockCoustomerById(id);
-        
+
         res.status(statusCode.OK).json({ success: true, message: "Customer unblocked successfully" });
     } catch (error) {
         console.log(error);

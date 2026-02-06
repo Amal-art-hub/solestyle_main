@@ -1,4 +1,5 @@
 const User = require("../../models/user");
+const statusCode = require("../../utils/statusCodes");
 
 const checkUserStatus = async (req, res, next) => {
   try {
@@ -9,7 +10,7 @@ const checkUserStatus = async (req, res, next) => {
         req.session.destroy((err) => {
           if (err) {
             console.log("Error destroyed session:", err);
-            return res.json({
+            return res.status(statusCode.FORBIDDEN).json({
               success: false,
               status: "blocked",
               message: "You have been blocked, please contact support.",
@@ -25,7 +26,7 @@ const checkUserStatus = async (req, res, next) => {
     }
   } catch (error) {
     console.log("error in user auth middleware:", error);
-    res.status(500).send("Internal server error");
+    res.status(statusCode.INTERNAL_SERVER_ERROR).send("Internal server error");
   }
 };
 
@@ -41,7 +42,7 @@ const isAuth = (req, res, next) => {
     const isAjax = req.xhr || (req.headers.accept && req.headers.accept.includes('json'));
     if (isAjax) {
       // 2. Send 401 (Unauthorized) status - Axios will see this as an ERROR
-      return res.status(401).json({ success: false, message: "Please login" });
+      return res.status(statusCode.UNAUTHORIZED).json({ success: false, message: "Please login" });
     }
     // 3. Normal redirect for regular browser requests (like clicking a link)
     res.redirect("/login");

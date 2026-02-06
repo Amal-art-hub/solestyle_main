@@ -20,16 +20,16 @@ const listOrder = async (req, res) => {
     const searchQuery = req.query.search || "";
     const result = await OrdersListService(userId, page, limit, searchQuery);
 
-    res.render("orders", {
+    res.status(statusCode.OK).render("orders", {
       orders: result.orders,
       currentPage: page,
       totalPages: result.totalPages,
       searchQuery,
       user
-    })
+    });
   } catch (error) {
     console.error(error);
-    res.status(statusCode.INTERNAL_SERVER_ERROR).render(page - 404);
+    res.status(statusCode.INTERNAL_SERVER_ERROR).render("page-404");
   }
 }
 

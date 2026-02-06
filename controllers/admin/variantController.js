@@ -10,11 +10,11 @@ const statusCode = require("../../utils/statusCodes.js");
 const getVariants = async (req, res) => {
     try {
         const { productId } = req.params;
-        const page=parseInt(req.query.page)||1;
-        const limit=10;
-        const { product,variants,currentPage,totalPages } = await getVariantsByProduct(productId,page,limit);
+        const page = parseInt(req.query.page) || 1;
+        const limit = 10;
+        const { product, variants, currentPage, totalPages } = await getVariantsByProduct(productId, page, limit);
 
-        res.render("varientManag", {
+        res.status(statusCode.OK).render("varientManag", {
             product,
             variants,
             currentPage,
@@ -37,7 +37,7 @@ const getVariantDetails = async (req, res) => {
             return res.status(statusCode.NOT_FOUND).json({ success: false, message: 'Variant not found' });
         }
 
-        res.json({ success: true, variant });
+        res.status(statusCode.OK).json({ success: true, variant });
     } catch (error) {
         console.error("Error getting variant details:", error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server Error" });
@@ -52,7 +52,7 @@ const addVariant = async (req, res) => {
         console.log("Request body:", req.body);
         console.log("Files received:", req.files ? req.files.length : 0);
 
-       
+
         if (!req.files || req.files.length < 3) {
             console.log("Validation failed: Not enough images");
             return res.status(statusCode.BAD_REQUEST).json({

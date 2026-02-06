@@ -19,7 +19,7 @@ const Cart = require("../../models/cart");
 
 const loadCheckout = async (req, res) => {
     try {
-       
+
         const userId = req.session.user._id;
         const { cart, addresses, subtotal, coupons } = await getCheckoutData(userId);
         const wallet = await getWallet(userId);
@@ -128,17 +128,17 @@ const applyCoupen = async (req, res) => {
             _id: coupon._id
         };
 
-        res.json({ success: true, discount, newTotal: subtotal - discount });
+        res.status(statusCode.OK).json({ success: true, discount, newTotal: subtotal - discount });
 
     } catch (error) {
         console.error("DEBUG: Apply Coupon Error", error.message);
-        res.status(400).json({ success: false, message: error.message });
+        res.status(statusCode.BAD_REQUEST).json({ success: false, message: error.message });
     }
 };
 
 const removeCoupon = async (req, res) => {
     req.session.coupon = null;
-    res.json({ success: true });
+    res.status(statusCode.OK).json({ success: true });
 };
 
 
@@ -150,13 +150,13 @@ const createRazorpayOrder = async (req, res) => {
         const { addressId } = req.body;
 
         const order = await createRazorpayOrderService(userId, addressId, couponData);
-        res.status(200).json({
+        res.status(statusCode.OK).json({
             success: true,
             order: order
         });
     } catch (error) {
         console.error("Razorpay Error:", error);
-        res.status(500).json({
+        res.status(statusCode.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: error.message || "Failed to create payment order"
         });
@@ -175,7 +175,7 @@ const paymentFailed = async (req, res) => {
         });
     } catch (error) {
         console.error("Payment Failure Page Error:", error);
-        res.status(500).render("page-404");
+        res.status(statusCode.INTERNAL_SERVER_ERROR).render("page-404");
     }
 };
 
@@ -235,7 +235,7 @@ const verifyRazorpayWebhook = async (req, res) => {
         }
 
 
-        res.json({ status: 'ok' });
+        res.status(statusCode.OK).json({ status: 'ok' });
     } catch (error) {
         console.error("Webhook Error:", error);
         res.status(200).json({ status: 'error' });

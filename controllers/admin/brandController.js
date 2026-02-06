@@ -13,7 +13,7 @@ const getBrandPage = async (req, res) => {
         const search = req.query.search || "";
         const data = await getAllBrands(page, 4, search);
 
-        res.render("BrandManag", {
+        res.status(statusCode.OK).render("BrandManag", {
             data: data.brands,
             currentPage: data.currentPage,
             totalPages: data.totalPages,

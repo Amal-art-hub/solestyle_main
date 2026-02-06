@@ -13,9 +13,9 @@ const getProductList = async (req, res) => {
     const sort = req.query.sort || "newest";
 
 
-    const data = await getAllProducts(page, 5, search,sort);
+    const data = await getAllProducts(page, 5, search, sort);
 
-    res.render("productMang", {
+    res.status(statusCode.OK).render("productMang", {
       products: data.products,
       currentPage: data.currentPage,
       totalPages: data.totalPages,
@@ -48,7 +48,7 @@ const getAddProduct = async (req, res) => {
   try {
     const { categories, brands } = await getCateAndBrands();
 
-    res.render("addProduct", { categories, brands, activePage: 'products' });
+    res.status(statusCode.OK).render("addProduct", { categories, brands, activePage: 'products' });
   } catch (error) {
     console.log(error);
     res.status(statusCode.INTERNAL_SERVER_ERROR).send("Internal error");
@@ -83,7 +83,7 @@ const getEditProduct = async (req, res) => {
       return res.status(statusCode.NOT_FOUND).send("Product not found");
     }
 
-    res.render("editProduct", {
+    res.status(statusCode.OK).render("editProduct", {
       product,
       categories,
       brands,

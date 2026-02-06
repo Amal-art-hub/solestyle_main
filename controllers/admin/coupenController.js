@@ -14,7 +14,7 @@ const getCoupenList = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const search = req.query.search || "";
         const { coupons, totalPages, currentPage } = await listCoupons(page, 10, search);
-        res.render("coupenList", {
+        res.status(statusCode.OK).render("coupenList", {
             coupons,
             totalPages,
             currentPage,

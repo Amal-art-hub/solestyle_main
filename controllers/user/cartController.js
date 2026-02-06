@@ -15,10 +15,10 @@ const loadCartPage = async (req, res) => {
 
 
 
-        res.render("cart", {
+        res.status(statusCode.OK).render("cart", {
             cart: cart,
             user: req.session.user,
-           
+
         });
     } catch (error) {
         console.error("Load Cart Error:", error);
@@ -35,15 +35,15 @@ const addToCart = async (req, res) => {
         const userId = req.session.user._id;
         const { variantId, quantity } = req.body;
         await addToCartService(userId, variantId, quantity);
-        res.status(statusCode.OK).json({ 
-            success: true, 
-            message: "Product added to cart successfully" 
+        res.status(statusCode.OK).json({
+            success: true,
+            message: "Product added to cart successfully"
         });
     } catch (error) {
         console.error("Add Cart Error:", error.message);
-       
-        res.status(statusCode.BAD_REQUEST).json({ 
-            success: false, 
+
+        res.status(statusCode.BAD_REQUEST).json({
+            success: false,
             message: error.message || "Failed to add to cart"
         });
     }
@@ -51,41 +51,43 @@ const addToCart = async (req, res) => {
 
 
 
-const updateCartQty=async (req,res)=> {
-try {
-const userId= req.session.user._id;
-const { itemId, action }= req.body;
+const updateCartQty = async (req, res) => {
+    try {
+        const userId = req.session.user._id;
+        const { itemId, action } = req.body;
 
-const result = await updateQuantityService(userId, itemId, action);
+        const result = await updateQuantityService(userId, itemId, action);
 
-        res.status(statusCode.OK).json({ success:true, 
-            message:"Quantity updated",
-         newQty: result.newQty,
-        cartTotal: result.optTotal,
-         totalSavings: result.totalSavings  });
+        res.status(statusCode.OK).json({
+            success: true,
+            message: "Quantity updated",
+            newQty: result.newQty,
+            cartTotal: result.optTotal,
+            totalSavings: result.totalSavings
+        });
 
-    }catch (error) {
+    } catch (error) {
         res.status(statusCode.BAD_REQUEST).json({
-            success:false,
+            success: false,
             message: error.message
         });
     }
 };
 
 
-const removeCartItem=async (req,res)=> {
-try {
-const userId= req.session.user._id;
-const { itemId }= req.params;
+const removeCartItem = async (req, res) => {
+    try {
+        const userId = req.session.user._id;
+        const { itemId } = req.params;
 
-await removeItemService(userId, itemId);
+        await removeItemService(userId, itemId);
 
-        res.status(statusCode.OK).json({ success:true, message:"Item removed" });
+        res.status(statusCode.OK).json({ success: true, message: "Item removed" });
 
-    }catch (error) {
+    } catch (error) {
         res.status(statusCode.INTERNAL_SERVER_ERROR).json({
-            success:false,
-            message:"Server Error"
+            success: false,
+            message: "Server Error"
         });
     }
 };

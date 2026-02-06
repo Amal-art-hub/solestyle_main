@@ -18,19 +18,19 @@ const loadReport = async (req, res) => {
         if (period === 'custom') {
             // Check if dates are valid (not 'ABC' or empty)
             if (isNaN(sDate.getTime()) || isNaN(eDate.getTime())) {
-                return res.render("salesReport", {
+                return res.status(statusCode.BAD_REQUEST).render("salesReport", {
                     error: "Please provide valid Start and End dates!"
                 });
             }
             // Check if Start is after End
             if (sDate > eDate) {
-                return res.render("salesReport", {
+                return res.status(statusCode.BAD_REQUEST).render("salesReport", {
                     error: "Start Date cannot be after End Date!"
                 });
             }
             // Check for Future Dates
             if (sDate > today || eDate > today) {
-                return res.render("salesReport", {
+                return res.status(statusCode.BAD_REQUEST).render("salesReport", {
                     error: "Dates cannot be in the future!"
                 });
             }
@@ -43,7 +43,7 @@ const loadReport = async (req, res) => {
             limit: 6, isDownload: false
         });
 
-        res.render("salesReport", {
+        res.status(statusCode.OK).render("salesReport", {
             orders: data.orders,
             stats: {
                 count: data.overallSalesCount,
@@ -56,7 +56,7 @@ const loadReport = async (req, res) => {
             currentPage: data.currentPage,
             activePage: 'salesReport'
         });
-    } catch (error) { console.error(error); res.status(500).send("Error"); }
+    } catch (error) { console.error(error); res.status(statusCode.INTERNAL_SERVER_ERROR).send("Error"); }
 };
 
 const downloadExcel = async (req, res) => {
@@ -70,8 +70,8 @@ const downloadExcel = async (req, res) => {
 
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         res.setHeader('Content-Disposition', 'attachment; filename=sales-report.xlsx');
-        res.send(buffer);
-    } catch (error) { console.error(error); res.status(500).send("Excel Error"); }
+        res.status(statusCode.OK).send(buffer);
+    } catch (error) { console.error(error); res.status(statusCode.INTERNAL_SERVER_ERROR).send("Excel Error"); }
 };
 
 const downloadPDF = async (req, res) => {
@@ -85,8 +85,8 @@ const downloadPDF = async (req, res) => {
 
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', 'attachment; filename=sales-report.pdf');
-        res.send(buffer);
-    } catch (error) { console.error(error); res.status(500).send("PDF Error"); }
+        res.status(statusCode.OK).send(buffer);
+    } catch (error) { console.error(error); res.status(statusCode.INTERNAL_SERVER_ERROR).send("PDF Error"); }
 };
 
 module.exports = { loadReport, downloadExcel, downloadPDF };

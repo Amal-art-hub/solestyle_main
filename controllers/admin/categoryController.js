@@ -12,7 +12,7 @@ const categoryInfo = async (req, res) => {
     const search = req.query.search || "";
     const data = await getAllCategories(page, 4, search);
 
-    res.render("CategoryManag", {
+    res.status(statusCode.OK).render("CategoryManag", {
       cat: data.categories,
       totalPages: data.totalPages,
       currentPage: data.currentPage,

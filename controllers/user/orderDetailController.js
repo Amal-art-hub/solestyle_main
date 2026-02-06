@@ -41,7 +41,7 @@ const cancelOrderItem = async (req, res) => {
         const { reason } = req.body;
 
         const result = await cancelOrderItemService(orderId, itemId, reason);
-        res.json(result);
+        res.status(statusCode.OK).json(result);
     } catch (error) {
         res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
     }
@@ -55,7 +55,7 @@ const cancelOrder = async (req, res) => {
         const { reason } = req.body;
 
         const result = await cancelOrderService(orderId, reason);
-        res.json(result);
+        res.status(statusCode.OK).json(result);
     } catch (error) {
         res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
     }
@@ -107,14 +107,14 @@ const downloadInvoice = async (req, res) => {
         // 2. Launch Puppeteer
         const browser = await puppeteer.launch({ headless: 'new' });
         const page = await browser.newPage();
-       
+
         await page.setContent(html, { waitUntil: 'networkidle0' });
         const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
         await browser.close();
-      
+
         res.setHeader('Content-Type', 'application/pdf');
         res.setHeader('Content-Disposition', `attachment; filename=invoice-${order.order_id}.pdf`);
-        res.send(pdfBuffer);
+        res.status(statusCode.OK).send(pdfBuffer);
     } catch (error) {
         console.error("Invoice Error:", error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).send("Could not generate invoice");

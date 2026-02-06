@@ -20,14 +20,14 @@ const statusCode = require("../../utils/statusCodes");
 //--------------------------------------------------------------------------------- Load User Profile
 const loadProfile = async (req, res) => {
     try {
-           const userId = req.session.user._id; 
-        
-        const user = await getUserProfile(userId);
-        const coupons = await getCoupons(userId); 
+        const userId = req.session.user._id;
 
-               const referralOffer = await Offers.findOne({ type: 'referral', status: 'active' });
-        const referralDiscount = referralOffer ? referralOffer.discount_percentage : 10; 
-        res.render("profile", { user,coupons,referralDiscount  })
+        const user = await getUserProfile(userId);
+        const coupons = await getCoupons(userId);
+
+        const referralOffer = await Offers.findOne({ type: 'referral', status: 'active' });
+        const referralDiscount = referralOffer ? referralOffer.discount_percentage : 10;
+        res.status(statusCode.OK).render("profile", { user, coupons, referralDiscount })
     } catch (error) {
         console.error("Profile looad Error:", error);
         res.redirect("/");
@@ -71,7 +71,7 @@ const updatePassword = async (req, res) => {
 const loadChangeEmail = async (req, res) => {
     try {
         console.log("debugging:", req.session.user);
-        res.render("profile-emailchange", { user: req.session.user })
+        res.status(statusCode.OK).render("profile-emailchange", { user: req.session.user })
     } catch (error) {
         console.log("error in loading email", error);
     }
@@ -81,9 +81,9 @@ const loadChangeEmail = async (req, res) => {
 const requestEmailOtp = async (req, res) => {
     try {
         const result = await requestEmailChange(req.session.user._id, req.body.newEmail);
-        if (!result.success) return res.status(statusCode.BAD_REQUEST).json({success:false,message:"Failed"});
+        if (!result.success) return res.status(statusCode.BAD_REQUEST).json({ success: false, message: "Failed" });
         req.session.emailChange = { email: req.body.newEmail, otp: result.otp };
-        res.render("changeEmailVerifyOtp", { newEmail: req.body.newEmail });
+        res.status(statusCode.OK).render("changeEmailVerifyOtp", { newEmail: req.body.newEmail });
 
     } catch (error) {
         console.error("result email otp error:", error);
@@ -102,18 +102,17 @@ const verifyEmailOtp = async (req, res) => {
         );
 
         if (!result.success) {
-            // FIX: Send JSON, not HTML (Render)
-            return res.json({ success: false, message: result.message });
+            return res.status(statusCode.BAD_REQUEST).json({ success: false, message: result.message });
         }
 
         // Success Case
         req.session.emailChange = null;
         // FIX: Send JSON success
-        return res.json({ success: true, message: "Email changed successfully!" });
+        return res.status(statusCode.OK).json({ success: true, message: "Email changed successfully!" });
 
     } catch (error) {
         console.log(error);
-        return res.json({ success: false, message: "Server Error" });
+        return res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server Error" });
     }
 }
 
@@ -131,7 +130,7 @@ const validateAddress = (data) => {
 const loadAddressPage = async (req, res) => {
     try {
         const addresses = await getAddressByUserId(req.session.user._id);
-        res.render("addresses", { addresses, user: req.session.user });
+        res.status(statusCode.OK).render("addresses", { addresses, user: req.session.user });
     } catch (error) {
         console.error(error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).render("page-404")

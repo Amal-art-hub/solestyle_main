@@ -3,7 +3,7 @@ const { getDashboardStats,
     getTopSellingProducts,
     getTopSellingCategories,
     getTopSellingBrands
- } = require("../../services/adminSer/dashboardService");
+} = require("../../services/adminSer/dashboardService");
 const statusCode = require("../../utils/statusCodes.js");
 const loadDashboard = async (req, res) => {
     try {
@@ -14,9 +14,9 @@ const loadDashboard = async (req, res) => {
             getTopSellingCategories(),
             getTopSellingBrands()
         ]);
-        res.render("dashboard", { 
+        res.status(statusCode.OK).render("dashboard", {
             stats, chartData, topProducts, topCategories, topBrands,
-            activePage: 'dashboard' 
+            activePage: 'dashboard'
         });
     } catch (error) {
         console.error(error);
@@ -24,13 +24,13 @@ const loadDashboard = async (req, res) => {
     }
 };
 
-const getChartDataAPI=async(req,res)=>{
+const getChartDataAPI = async (req, res) => {
     try {
-        const {filter}=req.query;
-        const data=await getSalesChartData(filter);
-        res.json(data);
+        const { filter } = req.query;
+        const data = await getSalesChartData(filter);
+        res.status(statusCode.OK).json(data);
     } catch (error) {
-        res.status(500).json({success:false,error:"Database failed"});
+        res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, error: "Database failed" });
     }
 }
 
@@ -39,7 +39,7 @@ const getChartDataAPI=async(req,res)=>{
 
 
 
-module.exports={
-     loadDashboard,
-     getChartDataAPI
+module.exports = {
+    loadDashboard,
+    getChartDataAPI
 }
