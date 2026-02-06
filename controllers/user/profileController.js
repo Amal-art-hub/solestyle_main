@@ -81,7 +81,7 @@ const loadChangeEmail = async (req, res) => {
 const requestEmailOtp = async (req, res) => {
     try {
         const result = await requestEmailChange(req.session.user._id, req.body.newEmail);
-        if (!result.success) return res.json({ success: false, message: "Failed" });
+        if (!result.success) return res.status(statusCode.BAD_REQUEST).json({success:false,message:"Failed"});
         req.session.emailChange = { email: req.body.newEmail, otp: result.otp };
         res.render("changeEmailVerifyOtp", { newEmail: req.body.newEmail });
 
