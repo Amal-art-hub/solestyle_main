@@ -62,9 +62,12 @@
                                     <tr data-id="<%= variant._id %>">
                                         <td>
                                             <% if (variant.images && variant.images.length> 0) { %>
-                                                <img src="/uploads/variant-images/<%= variant.images[2] %>"
+                                                <!-- <img src="/uploads/variant-images/<%= variant.images[2] %>"
                                                     alt="<%= variant.color %>"
-                                                    style="width:60px;height:60px;object-fit:cover;">
+                                                    style="width:60px;height:60px;object-fit:cover;"> -->
+                                          <img src="<%= variant.images[2].startsWith('http') ? variant.images[2] : '/uploads/variant-images/' + variant.images[2] %>" 
+     alt="<%= variant.color %>" 
+     style="width:60px;height:60px;object-fit:cover;border-radius:4px;">
                                                 <% } else { %>
                                                     <span class="no-image">No Image</span>
                                                     <% } %>

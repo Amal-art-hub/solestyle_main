@@ -21,7 +21,7 @@
             %>
 
             <div class="product-detail-container">
-             
+
                 <div class="breadcrumbs">
                     <a href="/">Home</a> >
                     <a href="/mens-products?category=<%= product.categoryId._id %>">
@@ -33,27 +33,29 @@
                 </div>
 
                 <div class="product-main-wrapper">
-                  
+
                     <div class="product-gallery">
                         <div class="thumbnails-column">
                             <% if (variants && variants.length> 0 && variants[0].images) { %>
                                 <% variants[0].images.forEach((img, index)=> { %>
                                     <div class="thumbnail-wrapper <%= index === 2? 'active' : '' %>"
                                         data-image="<%= img %>">
-                                        <img src="/uploads/variant-images/<%= img %>" alt="Thumbnail">
+                                        <img src="<%= img.startsWith('http') ? img : '/uploads/variant-images/' + img %>"
+                                            alt="Thumbnail">
                                     </div>
                                     <% }) %>
                                         <% } %>
                         </div>
                         <div class="main-image-wrapper">
-                           
-                            <img id="mainImage" src="/uploads/variant-images/<%= currentVariant.images[2] %>"
+
+                            <img id="mainImage"
+                                src="<%= currentVariant.images[2].startsWith('http') ? currentVariant.images[2] : '/uploads/variant-images/' + currentVariant.images[2] %>"
                                 alt="<%= product.name %>">
                             <div class="zoom-lens"></div>
                         </div>
                     </div>
 
-                   
+
                     <div class="product-info-column">
                         <h1 class="product-title">
                             <%= product.name %>
@@ -61,7 +63,7 @@
                         <p class="brand-name">Brand: <span>
                                 <%= product.brandId.name %>
                             </span></p>
-                       
+
                         <div class="product-rating" style="color: #ffc107; margin-bottom: 10px;">
                             <% for(let i=1; i<=5; i++) { %>
                                 <i class="<%= i <= Math.round(avgRating || 0) ? 'fas' : 'far' %> fa-star"></i>
@@ -70,49 +72,59 @@
                                             Reviews)</span>
                         </div>
 
-                       <div class="price-section">
-    <% if (currentVariant.offerPercentage > 0) { %>
-        <!-- Case A: Active Offer Exists -->
-        
-        <!-- 1. Discounted (Sale) Price -->
-        <span class="current-price" style="color: #d9534f; font-weight: bold; font-size: 1.5em;">
-            ₹<span id="displayPrice"><%= currentVariant.discountedPrice %></span>
-        </span>
+                        <div class="price-section">
+                            <% if (currentVariant.offerPercentage> 0) { %>
+                                <!-- Case A: Active Offer Exists -->
 
-        <!-- 2. Original Price (Struck through) -->
-        <span class="original-price" id="displayOriginalPrice" 
-              style="text-decoration: line-through; color: #888; margin-left: 10px; font-size: 1.1em;">
-            ₹<%= currentVariant.basePrice %>
-        </span>
+                                <!-- 1. Discounted (Sale) Price -->
+                                <span class="current-price"
+                                    style="color: #d9534f; font-weight: bold; font-size: 1.5em;">
+                                    ₹<span id="displayPrice">
+                                        <%= currentVariant.discountedPrice %>
+                                    </span>
+                                </span>
 
-        <!-- 3. Offer Badge -->
-        <span class="offer-badge" id="displayBadge" 
-              style="background: #28a745; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-left: 10px; vertical-align: middle;">
-            <%= currentVariant.offerPercentage %>% OFF
-        </span>
+                                <!-- 2. Original Price (Struck through) -->
+                                <span class="original-price" id="displayOriginalPrice"
+                                    style="text-decoration: line-through; color: #888; margin-left: 10px; font-size: 1.1em;">
+                                    ₹<%= currentVariant.basePrice %>
+                                </span>
 
-    <% } else { %>
-        <!-- Case B: No Offer (Regular Price) -->
-        <span class="current-price" style="color: #333; font-weight: bold; font-size: 1.5em;">
-            ₹<span id="displayPrice"><%= currentVariant.price %></span>
-        </span>
-        
-        <!-- Hidden elements for JS to toggle if user switches variant -->
-        <span class="original-price" id="displayOriginalPrice" style="display:none; text-decoration: line-through; color: #888; margin-left: 10px;"></span>
-        <span class="offer-badge" id="displayBadge" style="display:none; background: #28a745; color: white; padding: 2px 8px; margin-left: 10px;"></span>
-    <% } %>
+                                <!-- 3. Offer Badge -->
+                                <span class="offer-badge" id="displayBadge"
+                                    style="background: #28a745; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-left: 10px; vertical-align: middle;">
+                                    <%= currentVariant.offerPercentage %>% OFF
+                                </span>
 
-    <!-- Stock Status Logic -->
-    <% if (currentVariant.stock > 0) { %>
-        <span class="stock-status in-stock" style="display: block; margin-top: 5px; color: #28a745;">
-            In Stock
-        </span>
-    <% } else { %>
-        <span class="stock-status out-of-stock" style="display: block; margin-top: 5px; color: #dc3545;">
-            Out of Stock
-        </span>
-    <% } %>
-</div>
+                                <% } else { %>
+                                    <!-- Case B: No Offer (Regular Price) -->
+                                    <span class="current-price"
+                                        style="color: #333; font-weight: bold; font-size: 1.5em;">
+                                        ₹<span id="displayPrice">
+                                            <%= currentVariant.price %>
+                                        </span>
+                                    </span>
+
+                                    <!-- Hidden elements for JS to toggle if user switches variant -->
+                                    <span class="original-price" id="displayOriginalPrice"
+                                        style="display:none; text-decoration: line-through; color: #888; margin-left: 10px;"></span>
+                                    <span class="offer-badge" id="displayBadge"
+                                        style="display:none; background: #28a745; color: white; padding: 2px 8px; margin-left: 10px;"></span>
+                                    <% } %>
+
+                                        <!-- Stock Status Logic -->
+                                        <% if (currentVariant.stock> 0) { %>
+                                            <span class="stock-status in-stock"
+                                                style="display: block; margin-top: 5px; color: #28a745;">
+                                                In Stock
+                                            </span>
+                                            <% } else { %>
+                                                <span class="stock-status out-of-stock"
+                                                    style="display: block; margin-top: 5px; color: #dc3545;">
+                                                    Out of Stock
+                                                </span>
+                                                <% } %>
+                        </div>
 
                         <div class="description-box">
                             <p>
@@ -137,23 +149,18 @@
                         <!-- Variant Selection -->
                         <div class="variant-selector">
                             <h3>Select Size (UK/India)</h3>
-                     <div class="size-options">
-    <% variants.forEach(v => { %>
-        <!-- Update this div with NEW data attributes -->
-        <div class="size-box <%= v._id.toString() === currentVariant._id.toString() ? 'selected' : '' %>"
-            data-price="<%= v.discountedPrice || v.price %>" 
-            data-stock="<%= v.stock %>"
-            data-variant-id="<%= v._id %>" 
-            data-color="<%= v.color %>"
-            data-image="<%= v.images[0] %>"
-            
-            data-original-price="<%= v.basePrice %>"   
-            data-discount="<%= v.offerPercentage || 0 %>"
-        >
-            <%= v.size %>
-        </div>
-    <% }) %>
-</div>
+                            <div class="size-options">
+                                <% variants.forEach(v=> { %>
+                                    <!-- Update this div with NEW data attributes -->
+                                    <div class="size-box <%= v._id.toString() === currentVariant._id.toString() ? 'selected' : '' %>"
+                                        data-price="<%= v.discountedPrice || v.price %>" data-stock="<%= v.stock %>"
+                                        data-variant-id="<%= v._id %>" data-color="<%= v.color %>"
+                                        data-image="<%= v.images[0] %>" data-original-price="<%= v.basePrice %>"
+                                        data-discount="<%= v.offerPercentage || 0 %>">
+                                        <%= v.size %>
+                                    </div>
+                                    <% }) %>
+                            </div>
                         </div>
 
                         <input type="hidden" id="selectedVariantId" value="<%= currentVariant._id %>">
@@ -223,8 +230,9 @@
                         <% relatedProducts.forEach(p=> { %>
                             <div class="product-card small">
                                 <!-- <a href="/product/<%= p._id %>"> -->
-                                    <a href="/product/<%= p._id %>?variantId=<%= p.variantId %>">
-                                    <img src="/uploads/variant-images/<%= p.image %>" alt="<%= p.name %>">
+                                <a href="/product/<%= p._id %>?variantId=<%= p.variantId %>">
+                                    <img src="<%= p.image.startsWith('http') ? p.image : '/uploads/variant-images/' + p.image %>"
+                                        alt="<%= p.name %>">
                                     <div class="info">
                                         <h3>
                                             <%= p.name %>

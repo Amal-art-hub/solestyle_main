@@ -19,9 +19,10 @@
                         <div class="order-card-body">
                             <!-- Image Section (Show first item's image) -->
                             <div class="order-image">
-                                <% let imgSrc='/uploads/variant-images/default.jpg' ; if(order.items[0].variant_id &&
+                                <% var imgSrc='/uploads/variant-images/default.jpg' ; if(order.items[0].variant_id &&
                                     order.items[0].variant_id.images && order.items[0].variant_id.images.length> 0) {
-                                    imgSrc = '/uploads/variant-images/' + order.items[0].variant_id.images[2];
+                                    const img = order.items[0].variant_id.images[2];
+                                    imgSrc = img.startsWith('http') ? img : '/uploads/variant-images/' + img;
                                     }
                                     %>
                                     <img src="<%= imgSrc %>" alt="Product Image">
@@ -58,7 +59,7 @@
                         <!-- Pagination Controls -->
 
                         <%- include('../partials/pagination') %>
-                        <!-- <div class="pagination">
+                            <!-- <div class="pagination">
                             <% for(let i=1; i<=totalPages; i++) { %>
                                 <a href="/user/orders?page=<%= i %>&search=<%= searchQuery %>"
                                     class="<%= currentPage === i ? 'active' : '' %>">
@@ -66,12 +67,12 @@
                                 </a>
                                 <% } %>
                         </div> -->
-                        <% } else { %>
-                            <div class="no-orders">
-                                <p>No orders found.</p>
-                                <a href="/mens-products" class="btn-shop">Start Shopping</a>
-                            </div>
-                            <% } %>
+                            <% } else { %>
+                                <div class="no-orders">
+                                    <p>No orders found.</p>
+                                    <a href="/mens-products" class="btn-shop">Start Shopping</a>
+                                </div>
+                                <% } %>
         </div>
     </div>
     <script src="/js/user/orders.js"></script>

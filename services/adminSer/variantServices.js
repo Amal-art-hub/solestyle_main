@@ -37,7 +37,7 @@ const createVariant = async (productId, data, files) => {
     try {
         const { size, color, price, stock } = data;
 
-        const images = files.map(file => file.filename);
+        const images = files.map(file => file.path);
 
         const newVariant = new Variant({
             productId,
@@ -83,7 +83,7 @@ const updateVariant = async (id, data, files) => {
 
     
         if (files && files.length > 0) {
-            const newImages = files.map(file => file.filename);
+            const newImages = files.map(file => file.path);
             currentImages = [...currentImages, ...newImages];
             console.log('After adding new images:', currentImages.length, 'total images');
         }

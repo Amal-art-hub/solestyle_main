@@ -1,0 +1,177 @@
+<link rel="stylesheet" href="../css/admin/dashboard-side.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="/css/admin/bannerManag.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<body>
+    <div class="container">
+        <!-- 1. Sidebar -->
+        <%- include("../partials/adminSideBar", { activePage: 'Banners' }) %>
+
+        <div class="main-content">
+            <section class="content-main">
+                <div class="content-header">
+                    <div>
+                        <h2 class="content-title card-title">Banner & Brand Management</h2>
+                    </div>
+                </div>
+
+                <!-- 2. Add New Banner Slider Card -->
+                <div class="card mb-4" style="padding: 20px;">
+                    <h4>Add New Slider Banner</h4>
+                    <p class="text-muted small">These images appear in the main carousel on the home page.</p>
+                    <form id="addBannerForm" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label>Banner Image</label>
+                            <input type="file" name="image" class="form-control" required accept="image/*" />
+                        </div>
+                        <div class="form-row mt-2" style="display: flex; gap: 10px;">
+                            <div class="form-group flex-fill">
+                                <input type="text" name="title" placeholder="Title (e.g. Summer Sale)" class="form-control" required />
+                            </div>
+                            <div class="form-group flex-fill">
+                                <input type="text" name="subtitle" placeholder="Subtitle (e.g. 50% Off)" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="form-row mt-2" style="display: flex; gap: 10px;">
+                            <div class="form-group flex-fill">
+                                <input type="text" name="link" placeholder="Redirect Link (e.g. /shop)" class="form-control" />
+                            </div>
+                            <div class="form-group flex-fill">
+                                <input type="number" name="order" placeholder="Display Order (0, 1, 2...)" class="form-control" value="0" />
+                            </div>
+                        </div>
+                        <button type="submit" class="btn-search mt-3">Add Banner</button>
+                    </form>
+                </div>
+
+                <!-- 3. Existing Banners List -->
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Image</th>
+                                <th>Title</th>
+                                <th>Order</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (banners && banners.length > 0) { %>
+                                <% banners.forEach(banner => { %>
+                                    <tr>
+                                        <td>
+                                            <img src="<%= banner.image %>" alt="Banner" style="width: 80px; height: 40px; object-fit: cover; border-radius: 4px; border: 1px solid #ddd;">
+                                        </td>
+                                        <td><b><%= banner.title %></b></td>
+                                        <td><%= banner.order %></td>
+                                        <td>
+                                            <% if(banner.status === 'active') { %>
+                                                <span class="badge-listed">Active</span>
+                                            <% } else { %>
+                                                <span class="badge-unlisted">Inactive</span>
+                                            <% } %>
+                                        </td>
+                                        <td>
+                                            <button class="action-btn btn-edit" 
+                                                onclick="openEditModal('<%= banner._id %>', '<%= banner.title %>', '<%= banner.subtitle %>', '<%= banner.link %>', '<%= banner.order %>')">
+                                                Edit
+                                            </button>
+                                            <button class="action-btn <%= banner.status === 'active' ? 'btn-unlist' : 'btn-list' %>"
+                                                onclick="toggleStatus('<%= banner._id %>', '<%= banner.status %>')">
+                                                <%= banner.status === 'active' ? 'Disable' : 'Enable' %>
+                                            </button>
+                                            <button class="action-btn" style="background-color: #dc3545; color: white;" onclick="deleteBanner('<%= banner._id %>')">
+                                                Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">No slider banners found</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <hr class="my-5">
+
+                <!-- 4. Brand Experience (Video) Settings Card -->
+                <div class="card mt-5 mb-5" style="padding: 20px; border-top: 5px solid #ffc107;">
+                    <h4 class="mb-3">Brand Experience (Video Section)</h4>
+                    <p class="text-muted small">This is the fixed video section below the carousel.</p>
+                    
+                    <form id="videoSectionForm">
+                        <div class="form-group">
+                            <label>Video URL / File Path</label>
+                            <input type="text" name="videoUrl" value="<%= brandSection.videoUrl || '' %>" placeholder="https://res.cloudinary.com/..." class="form-control" required />
+                        </div>
+                        
+                        <div class="form-row mt-3" style="display: flex; gap: 15px;">
+                            <div class="form-group flex-fill">
+                                <label>Headline</label>
+                                <input type="text" name="videoTitle" value="<%= brandSection.title || '' %>" class="form-control" placeholder="e.g. Crafted for Comfort" />
+                            </div>
+                            <div class="form-group flex-fill">
+                                <label>Story Description</label>
+                                <input type="text" name="videoSub" value="<%= brandSection.subtitle || '' %>" class="form-control" placeholder="Brief brand story..." />
+                            </div>
+                        </div>
+
+                        <div class="form-row mt-2" style="display: flex; gap: 15px;">
+                            <div class="form-group flex-fill">
+                                <label>Button Text</label>
+                                <input type="text" name="buttonText" value="<%= brandSection.buttonText || 'Learn More' %>" class="form-control" />
+                            </div>
+                            <div class="form-group flex-fill">
+                                <label>Button Link</label>
+                                <input type="text" name="link" value="<%= brandSection.link || '/about' %>" class="form-control" />
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-search mt-4" style="background-color: #ffc107; color: black; border: none;">
+                            Update Brand Experience
+                        </button>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- 5. Edit Banner Modal -->
+    <div id="editBannerModal" class="modal">
+        <div class="modal-content">
+            <span onclick="closeEditModal()" style="float:right; cursor:pointer; font-size: 20px;">&times;</span>
+            <h3 class="mb-3">Edit Carousel Banner</h3>
+            <form id="editBannerForm" enctype="multipart/form-data">
+                <input type="hidden" id="edit-id" name="bannerId">
+                <div class="form-group">
+                    <label>Change Image (Optional)</label>
+                    <input type="file" name="image" class="form-control" accept="image/*">
+                </div>
+                <div class="form-group mt-2">
+                    <label>Title</label>
+                    <input type="text" id="edit-title" name="title" class="form-control" required>
+                </div>
+                <div class="form-group mt-2">
+                    <label>Subtitle</label>
+                    <input type="text" id="edit-subtitle" name="subtitle" class="form-control">
+                </div>
+                <div class="form-group mt-2">
+                    <label>Redirect Link</label>
+                    <input type="text" id="edit-link" name="link" class="form-control">
+                </div>
+                <div class="form-group mt-2">
+                    <label>Order</label>
+                    <input type="number" id="edit-order" name="order" class="form-control">
+                </div>
+                <button type="submit" class="btn-search mt-3">Update Banner</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/admin/bannerManag.js"></script>
+</body>

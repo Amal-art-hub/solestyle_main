@@ -59,14 +59,14 @@
                         <label>Sort By:</label>
                         <select onchange="location = this.value;">
                             <!-- Helper to build URL with current params + new sort -->
-                          
-                             <% const buildUrl = (s) => {
-    let url = `?category=${categoryId}&search=${search}&sort=${s}`;
-    if(filters.minPrice) url += `&minPrice=${filters.minPrice}`;
-    if(filters.maxPrice) url += `&maxPrice=${filters.maxPrice}`;
-    if(filters.brand) url += `&brand=${filters.brand}`;
-    return url;
-} %>
+
+                            <% const buildUrl=(s)=> {
+                                let url = `?category=${categoryId}&search=${search}&sort=${s}`;
+                                if(filters.minPrice) url += `&minPrice=${filters.minPrice}`;
+                                if(filters.maxPrice) url += `&maxPrice=${filters.maxPrice}`;
+                                if(filters.brand) url += `&brand=${filters.brand}`;
+                                return url;
+                                } %>
 
                                 <option value="<%= buildUrl('newest') %>" <%=sort==='newest' ? 'selected' : '' %>>Newest
                                 </option>
@@ -105,13 +105,14 @@
                         </div> -->
 
                         <div class="product-card">
-    <a href="/product/<%= p._id %>">
-        
-        <!-- NEW: Image Badge -->
-        <div class="image-wrapper" style="position: relative;">
-            <img src="/uploads/variant-images/<%= p.image %>" alt="<%= p.name %>">
-            <% if (p.discount > 0) { %>
-                <span style="
+                            <a href="/product/<%= p._id %>">
+
+                                <!-- NEW: Image Badge -->
+                                <div class="image-wrapper" style="position: relative;">
+                                    <img src="<%= p.image.startsWith('http') ? p.image : '/uploads/variant-images/' + p.image %>"
+                                        alt="<%= p.name %>">
+                                    <% if (p.discount> 0) { %>
+                                        <span style="
                     position: absolute;
                     top: 10px;
                     left: 10px;
@@ -122,40 +123,46 @@
                     font-size: 0.8rem;
                     font-weight: bold;
                 ">
-                    <%= p.discount %>% OFF
-                </span>
-            <% } %>
+                                            <%= p.discount %>% OFF
+                                        </span>
+                                        <% } %>
 
 
-            <% if (p.isExpiringSoon) { %>
-        <span style="position: absolute; top: 40px; left: 10px; background: #d9534f; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;">
-            🔥 OFFER ENDS SOON!
-        </span>
-    <% } %>
-        </div>
-        <div class="info">
-            <h3><%= p.name %></h3>
-            <p class="brand"><%= p.brandId.name %></p>
-            
-            <!-- NEW: Price Logic -->
-            <div class="price-container">
-                <% if (p.discount > 0) { %>
-                    <!-- Discounted State -->
-                    <span class="price" style="color: #d9534f; font-weight: bold;">
-                        ₹<%= p.price.toLocaleString() %>
-                    </span>
-                    <span class="original-price" style="text-decoration: line-through; color: #888; font-size: 0.9em; margin-left: 5px;">
-                        ₹<%= p.originalPrice.toLocaleString() %>
-                    </span>
-                <% } else { %>
-                    <!-- Normal State -->
-                    <span class="price">₹<%= p.price.toLocaleString() %></span>
-                <% } %>
-            </div>
-        </div>
-    </a>
-    <!-- ... Wishlist Button ... -->
-</div>
+                                            <% if (p.isExpiringSoon) { %>
+                                                <span
+                                                    style="position: absolute; top: 40px; left: 10px; background: #d9534f; color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold;">
+                                                    🔥 OFFER ENDS SOON!
+                                                </span>
+                                                <% } %>
+                                </div>
+                                <div class="info">
+                                    <h3>
+                                        <%= p.name %>
+                                    </h3>
+                                    <p class="brand">
+                                        <%= p.brandId.name %>
+                                    </p>
+
+                                    <!-- NEW: Price Logic -->
+                                    <div class="price-container">
+                                        <% if (p.discount> 0) { %>
+                                            <!-- Discounted State -->
+                                            <span class="price" style="color: #d9534f; font-weight: bold;">
+                                                ₹<%= p.price.toLocaleString() %>
+                                            </span>
+                                            <span class="original-price"
+                                                style="text-decoration: line-through; color: #888; font-size: 0.9em; margin-left: 5px;">
+                                                ₹<%= p.originalPrice.toLocaleString() %>
+                                            </span>
+                                            <% } else { %>
+                                                <!-- Normal State -->
+                                                <span class="price">₹<%= p.price.toLocaleString() %></span>
+                                                <% } %>
+                                    </div>
+                                </div>
+                            </a>
+                            <!-- ... Wishlist Button ... -->
+                        </div>
 
                         <% }) %>
                 </div>
@@ -163,7 +170,7 @@
 
 
                 <%- include('../partials/pagination') %>
-                <!-- <div class="pagination">
+                    <!-- <div class="pagination">
                     <% for(let i=1; i<=totalPages; i++) { %>
                   
                         <a href="?category=<%= categoryId %>&page=<%= i %>&search=<%= search %>&sort=<%= sort %>&minPrice=<%= filters.minPrice %>&maxPrice=<%= filters.maxPrice %>&brand=<%= filters.brand %>"
@@ -175,47 +182,47 @@
             </main>
         </div>
         <%- include('../partials/footer') %>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-        <script>
-    async function addToWishlist(productId, variantId) {
-        try {
-            if (!productId || !variantId) {
-                return Swal.fire('Error', 'Product info missing', 'error');
-            }
-            const response = await axios.post('/user/wishlist/add', {
-                productId, variantId
-            });
-            
-            if (response.data.success) {
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'success',
-                    title: 'Added to Wishlist',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-            } else {
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'info',
-                    title: response.data.message, // e.g., "Already in wishlist"
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-            }
-        } catch (error) {
-            if (error.response && error.response.status === 401) {
-                window.location.href = '/login'; // Redirect if not logged in
-            } else {
-                console.error(error);
-                Swal.fire('Error', 'Something went wrong', 'error');
-            }
-        }
-    }
-</script>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+            <script>
+                async function addToWishlist(productId, variantId) {
+                    try {
+                        if (!productId || !variantId) {
+                            return Swal.fire('Error', 'Product info missing', 'error');
+                        }
+                        const response = await axios.post('/user/wishlist/add', {
+                            productId, variantId
+                        });
+
+                        if (response.data.success) {
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: 'success',
+                                title: 'Added to Wishlist',
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        } else {
+                            Swal.fire({
+                                toast: true,
+                                position: 'top-end',
+                                icon: 'info',
+                                title: response.data.message, // e.g., "Already in wishlist"
+                                showConfirmButton: false,
+                                timer: 3000
+                            });
+                        }
+                    } catch (error) {
+                        if (error.response && error.response.status === 401) {
+                            window.location.href = '/login'; // Redirect if not logged in
+                        } else {
+                            console.error(error);
+                            Swal.fire('Error', 'Something went wrong', 'error');
+                        }
+                    }
+                }
+            </script>
 </body>
 
 </html>

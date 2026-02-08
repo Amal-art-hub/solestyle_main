@@ -115,10 +115,12 @@
                             <div class="order-item">
                                 <!-- Logic to show image from snapshot OR live variant data if snapshot missing -->
                                 <% var imgSrc='/uploads/variant-images/default.jpg' ; if(item.image_snapshot) {
-                                    imgSrc='/uploads/variant-images/' + item.image_snapshot; } else if(item.variant_id
-                                    && item.variant_id.images && item.variant_id.images.length> 0) {
+                                    imgSrc=item.image_snapshot.startsWith('http') ? item.image_snapshot
+                                    : '/uploads/variant-images/' + item.image_snapshot; } else if(item.variant_id &&
+                                    item.variant_id.images && item.variant_id.images.length> 0) {
                                     // Fallback to current variant image
-                                    imgSrc = '/uploads/variant-images/' + item.variant_id.images[0];
+                                    const fbImg = item.variant_id.images[0];
+                                    imgSrc = fbImg.startsWith('http') ? fbImg : '/uploads/variant-images/' + fbImg;
                                     }
                                     %>
                                     <img src="<%= imgSrc %>" alt="Product">
@@ -137,41 +139,26 @@
 
                                         <!-- Item Status Badge -->
                                         <!-- Item Status Badge -->
- 
 
-                                     <p class="mb-1">Status:
-    <% 
-        var rawStatus = item.status; 
-        var finalStatus = 'pending';
-        
-        if (rawStatus && rawStatus.toString().trim() !== '') {
-            finalStatus = rawStatus.toString().trim(); 
-        } 
-        
-        var bColor = '#f0f0f0'; // Gray
-        var tColor = '#333333'; // Black
-        
-        if (finalStatus === 'canceled') { 
-            bColor = '#ffebee'; 
-            tColor = '#c0392b'; 
-        } else if (finalStatus === 'delivered') { 
-            bColor = '#e8f8f5'; 
-            tColor = '#27ae60'; 
-        } else if (finalStatus === 'returned') { 
-            bColor = '#fff3e0'; 
-            tColor = '#f39c12'; 
-        } 
-        
-        var displayText = finalStatus.charAt(0).toUpperCase() + finalStatus.slice(1); 
-    %>
 
-    <span class="status-badge"
-        style="background-color: <%= bColor %>; color: <%= tColor %> !important; border: 1px solid <%= bColor %>; padding: 5px 10px; border-radius: 4px; font-weight: bold;">
-        <%= displayText %>
-    </span>
-</p>
+                                        <p class="mb-1">Status:
+                                            <% var rawStatus=item.status; var finalStatus='pending' ; if (rawStatus &&
+                                                rawStatus.toString().trim() !=='' ) {
+                                                finalStatus=rawStatus.toString().trim(); } var bColor='#f0f0f0' ; //
+                                                Gray var tColor='#333333' ; // Black if (finalStatus==='canceled' ) {
+                                                bColor='#ffebee' ; tColor='#c0392b' ; } else if
+                                                (finalStatus==='delivered' ) { bColor='#e8f8f5' ; tColor='#27ae60' ; }
+                                                else if (finalStatus==='returned' ) { bColor='#fff3e0' ;
+                                                tColor='#f39c12' ; } var displayText=finalStatus.charAt(0).toUpperCase()
+                                                + finalStatus.slice(1); %>
 
-                               
+                                                <span class="status-badge"
+                                                    style="background-color: <%= bColor %>; color: <%= tColor %> !important; border: 1px solid <%= bColor %>; padding: 5px 10px; border-radius: 4px; font-weight: bold;">
+                                                    <%= displayText %>
+                                                </span>
+                                        </p>
+
+
                                         <!-- [1] Cancel Item Button (For Pending/Processing) -->
                                         <% if (['pending', 'processing' ].includes(order.status) &&
                                             ['pending', 'processing' ].includes(item.status)) { %>
@@ -242,9 +229,8 @@
                         <div class="card actions-card">
                             <h3>Order Actions</h3>
                             <div class="action-buttons">
-                                <% 
-                                    // Check if all items are in terminal states
-                                    var allItemsCanceled = order.items.every(item => item.status === 'canceled');
+                                <% // Check if all items are in terminal states var
+                                    allItemsCanceled=order.items.every(item=> item.status === 'canceled');
                                     var allItemsReturned = order.items.every(item => item.status === 'returned');
                                     var allItemsFinal = allItemsCanceled || allItemsReturned;
                                     %>
@@ -255,7 +241,7 @@
                                             style="background-color: #27ae60; color: white;">
 
                                             <i class="fas fa-redo"></i>Retry Payment
-                                            </button>
+                                        </button>
                                         <% } %>
 
                                             <% if (['pending', 'processing' ].includes(order.status) &&

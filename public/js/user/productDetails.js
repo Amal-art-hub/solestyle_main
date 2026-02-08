@@ -79,12 +79,13 @@ function changeImage(element, imageName) {
     }
 
     const mainImg = document.getElementById('mainImage');
-    mainImg.src = `/uploads/variant-images/${imageName}`;
+    const fullPath = imageName.startsWith('http') ? imageName : `/uploads/variant-images/${imageName}`;
+    mainImg.src = fullPath;
 
     // Update Zoom Lens Background too
     const lens = document.querySelector('.zoom-lens');
     if (lens) {
-        lens.style.backgroundImage = `url('/uploads/variant-images/${imageName}')`;
+        lens.style.backgroundImage = `url('${fullPath}')`;
     }
 }
 
@@ -174,11 +175,13 @@ function filterByColor(btnElement, selectedColor) {
                 const thumbDiv = document.createElement('div');
                 thumbDiv.className = `thumbnail-wrapper ${index === 2 ? 'active' : ''}`; // Default to 3rd img
                 thumbDiv.setAttribute('data-image', img);
-                thumbDiv.innerHTML = `<img src="/uploads/variant-images/${img}" alt="Thumbnail">`;
+                const fullPath = img.startsWith('http') ? img : `/uploads/variant-images/${img}`;
+                thumbDiv.innerHTML = `<img src="${fullPath}" alt="Thumbnail">`;
                 thumbDiv.addEventListener('click', function() { changeImage(this, img); });
                 thumbnailContainer.appendChild(thumbDiv);
             });
-            changeImage(null, images[2] || images[0]);
+            const defaultImg = images[2] || images[0];
+            changeImage(null, defaultImg);
         }
     }
 }

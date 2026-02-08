@@ -1,58 +1,68 @@
 const multer = require("multer");
 const path = require("path");
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 
-// Product images storage (keep existing)
+// 1. Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// 2. KEEP EXISTING: Local Storage for Products
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/uploads/product-images");
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + "-" + file.originalname);
-  },
+  destination: (req, file, cb) => cb(null, "public/uploads/product-images"),
+  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname)
 });
 
-// Variant images storage (NEW)
+// 3. KEEP EXISTING: Local Storage for Variants
 const variantStorage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/uploads/variant-images");
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + "-" + file.originalname);
-  },
+  destination: (req, file, cb) => cb(null, "public/uploads/variant-images"),
+  filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname)
 });
 
-/* --- UPDATED STRICT VALIDATION --- */
-const fileFilter = (req, file, cb) => {
-  // 1. Define the allowed extensions (regex)
-  const allowedExtensions = /jpeg|jpg|png|webp|gif/;
-  
-  // 2. Check the file extension
-  const extname = allowedExtensions.test(path.extname(file.originalname).toLowerCase());
-  
-  // 3. Check the MIME type
-  const mimetype = allowedExtensions.test(file.mimetype);
-
-  if (extname && mimetype) {
-    // If both are true, it's a valid image
-    cb(null, true);
-  } else {
-    // This is where PDFs or renamed files will be caught
-    cb(new Error("Error: Only images (JPG, PNG, WEBP) are allowed!"), false);
+// 4. NEW: Cloudinary Storage ONLY for Banners & Story Videos
+const bannerStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'solestyle/banners',
+    allowed_formats: ['jpg', 'png', 'webp', 'mp4'],
+    resource_type: 'auto'
   }
+});
+
+
+
+// Add the cloud storage for variants
+const variantCloudStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'solestyle/variants',
+    allowed_formats: ['jpg', 'png', 'webp'],
+  }
+});
+
+// Create the uploader
+const variantCloudUpload = multer({ 
+    storage: variantCloudStorage,
+    limits: { fileSize: 5 * 1024 * 1024 } 
+});
+
+
+
+// 5. Existing File Filter
+const fileFilter = (req, file, cb) => {
+  const allowedExtensions = /jpeg|jpg|png|webp|gif|mp4/;
+  const extname = allowedExtensions.test(path.extname(file.originalname).toLowerCase());
+  const mimetype = allowedExtensions.test(file.mimetype);
+  if (extname && mimetype) { cb(null, true); }
+  else { cb(new Error("Only images and videos are allowed!"), false); }
 };
 
-const upload = multer({ 
-    storage: storage,
-    fileFilter: fileFilter,
-    limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
-});
+// 6. Export all three - used for different tasks
+const upload = multer({ storage: storage, fileFilter: fileFilter });
+const variantUpload = multer({ storage: variantStorage, fileFilter: fileFilter });
+const bannerUpload = multer({ storage: bannerStorage });
 
-const variantUpload = multer({ 
-    storage: variantStorage,
-    fileFilter: fileFilter,
-    limits: { fileSize: 5 * 1024 * 1024 }
-});
-
-module.exports = { upload, variantUpload };
+module.exports = { upload, variantUpload, bannerUpload,variantCloudUpload  };
