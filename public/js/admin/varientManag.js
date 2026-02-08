@@ -62,11 +62,7 @@ async function openEditModal(button) {
     }
   } catch (error) {
     console.error('Error loading images:', error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Load Error',
-      text: 'Error loading variant images'
-    });
+    alert('Error loading variant images');
   }
 
   document.getElementById('editModal').style.display = 'block';
@@ -87,8 +83,12 @@ function displayCurrentImages(images) {
     const imageDiv = document.createElement('div');
     imageDiv.style.position = 'relative';
     imageDiv.style.opacity = isDeleted ? '0.3' : '1';
+
+    // Cloudinary Support: Handle both local paths and high-res Cloudinary URLs
+    const displaySrc = img.startsWith('http') ? img : '/uploads/variant-images/' + img;
+
     imageDiv.innerHTML = `
-      <img src="/uploads/variant-images/${img}" 
+      <img src="${displaySrc}" 
            alt="Variant image ${index + 1}" 
            style="width:100%; height:120px; object-fit:cover; border-radius:4px; border: 2px solid ${isDeleted ? '#ff4444' : '#ddd'};">
       <button type="button" 
@@ -115,11 +115,7 @@ function toggleImageDelete(imageName) {
     const remainingImages = currentVariantImages.length - imagesToDelete.length;
 
     if (remainingImages <= 1) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Delete Rule',
-        text: 'Cannot delete this image. You must keep at least 1 image.'
-      });
+      alert('Cannot delete this image. You must keep at least 3 images.');
       return;
     }
 
@@ -231,17 +227,7 @@ async function toggleVariant(button) {
 
 // Delete Variant
 async function deleteVariant(variantId) {
-  const confirmation = await Swal.fire({
-    title: 'Are you sure?',
-    text: "You won't be able to revert this!",
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, delete it!'
-  });
-
-  if (!confirmation.isConfirmed) {
+  if (!confirm('Are you sure you want to delete this variant?')) {
     return;
   }
 
@@ -256,28 +242,14 @@ async function deleteVariant(variantId) {
     const result = await response.json();
 
     if (result.success) {
-      await Swal.fire({
-        icon: 'success',
-        title: 'Deleted!',
-        text: result.message,
-        timer: 1500,
-        showConfirmButton: false
-      });
+      alert(result.message);
       location.reload();
     } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: result.message || 'Error deleting variant'
-      });
+      alert(result.message || 'Error deleting variant');
     }
   } catch (error) {
     console.error('Error:', error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Delete Error',
-      text: 'Something went wrong while deleting the variant.'
-    });
+    alert('Error deleting variant');
   }
 }
 
@@ -294,21 +266,13 @@ document.addEventListener('DOMContentLoaded', function () {
       console.log('Files selected:', files.length);
 
       if (files.length < 3) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Selection Error',
-          text: 'Please select at least 3 images'
-        });
+        alert('Please select at least 3 images');
         e.target.value = '';
         return;
       }
 
       if (files.length > 10) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Too Many Images',
-          text: 'Maximum 10 images allowed'
-        });
+        alert('Maximum 10 images allowed');
         e.target.value = '';
         return;
       }
@@ -488,27 +452,39 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         if (response.ok) {
+          const resData = await response.json();
           await Swal.fire({
             icon: 'success',
             title: 'Success!',
-            text: 'Variant added successfully!',
+            text: resData.message || 'Variant added successfully!',
             timer: 1500,
             showConfirmButton: false
           });
-          location.reload();
+          window.location.href = resData.redirectUrl || location.href;
         } else {
-          const resData = await response.json();
+          const contentType = response.headers.get("content-type");
+          let errorMsg = 'Error adding variant';
+
+          if (contentType && contentType.indexOf("application/json") !== -1) {
+            const resData = await response.json();
+            errorMsg = resData.message || errorMsg;
+          } else {
+            const text = await response.text();
+            console.error("Server returned non-JSON error:", text);
+            errorMsg = "Server error (see console)";
+          }
+
           Swal.fire({
             icon: 'error',
             title: 'Failed',
-            text: resData.message || 'Error adding variant'
+            text: errorMsg
           });
           submitBtn.textContent = originalBtnText;
           submitBtn.disabled = false;
         }
       } catch (err) {
-        console.error(err);
-        Swal.fire({ icon: 'error', title: 'Error', text: 'Something went wrong.' });
+        console.error("CRITICAL FRONTEND ERROR:", err);
+        Swal.fire({ icon: 'error', title: 'Network Error', text: 'Check console for details.' });
         submitBtn.textContent = originalBtnText;
         submitBtn.disabled = false;
       }
@@ -528,20 +504,12 @@ document.addEventListener('DOMContentLoaded', function () {
       const totalImages = remainingImages + newImagesCount;
 
       if (totalImages < 1) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Image Required',
-          text: `Total images must be at least 1. Current total: ${totalImages}`
-        });
+        alert(`Total images must be at least 3. Currently: ${remainingImages} existing - ${imagesToDelete.length} to delete + ${newImagesCount} new = ${totalImages} total`);
         return;
       }
 
       if (totalImages > 10) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Limit Exceeded',
-          text: `Total images cannot exceed 10. Currently: ${totalImages}`
-        });
+        alert(`Total images cannot exceed 10. Currently: ${totalImages} total`);
         return;
       }
 
@@ -569,28 +537,22 @@ document.addEventListener('DOMContentLoaded', function () {
         });
 
         if (response.ok) {
+          const resData = await response.json();
           await Swal.fire({
             icon: 'success',
             title: 'Updated!',
-            text: 'Variant updated successfully!',
+            text: resData.message || 'Variant updated successfully!',
             timer: 1500,
             showConfirmButton: false
           });
-          location.reload();
+          window.location.href = resData.redirectUrl || location.href;
         } else {
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: 'Error updating variant'
-          });
+          const resData = await response.json().catch(() => ({}));
+          alert(resData.message || 'Error updating variant');
         }
       } catch (error) {
         console.error('Error:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Error updating variant'
-        });
+        alert('Error updating variant');
       }
     });
   }
@@ -629,11 +591,7 @@ function processNextImage() {
         // Check if Cropper is available
         if (typeof Cropper === 'undefined') {
           console.error('Cropper library is not loaded!');
-          Swal.fire({
-            icon: 'error',
-            title: 'Library Error',
-            text: 'Image cropping library not loaded. Please refresh the page.'
-          });
+          alert('Error: Image cropping library not loaded. Please refresh the page.');
           return;
         }
 
@@ -692,11 +650,7 @@ function processNextEditImage() {
         // Check if Cropper is available
         if (typeof Cropper === 'undefined') {
           console.error('Cropper library not loaded!');
-          Swal.fire({
-            icon: 'error',
-            title: 'Library Error',
-            text: 'Image cropping library not loaded. Please refresh the page.'
-          });
+          alert('Error: Image cropping library not loaded. Please refresh the page.');
           return;
         }
 

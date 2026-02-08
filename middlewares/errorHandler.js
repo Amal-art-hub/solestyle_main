@@ -6,18 +6,26 @@ const errorHandler = (err, req, res, next) => {
 
     const message = err.message || "Internal Server Error";
 
-  
-    if (req.accepts('html')) {
- 
-        res.status(statusCode).send(`<h1>Error ${statusCode}</h1><p>${message}</p>`);
-        return;
+
+    // If it's an AJAX request or expects JSON, return JSON
+    if (req.xhr || req.headers.accept.indexOf('json') > -1 || !req.accepts('html')) {
+        return res.status(statusCode).json({
+            success: false,
+            status: statusCode,
+            message: message,
+            stack: process.env.NODE_ENV === 'development' ? err.stack : {}
+        });
     }
+
+    // Otherwise return HTML
+    res.status(statusCode).send(`<h1>Error ${statusCode}</h1><p>${message}</p>`);
+    return;
 
     res.status(statusCode).json({
         success: false,
         status: statusCode,
         message: message,
-    
+
         stack: process.env.NODE_ENV === 'development' ? err.stack : {}
     });
 };

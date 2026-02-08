@@ -46,11 +46,18 @@ const getVariantDetails = async (req, res) => {
 
 const addVariant = async (req, res) => {
     try {
+
+        console.log("Debug 1:Params productId:", req.params.productId);
         const { productId } = req.params;
 
-        console.log("Adding variant for product:", productId);
-        console.log("Request body:", req.body);
-        console.log("Files received:", req.files ? req.files.length : 0);
+
+        console.log("DEBUG 2: Body Data ->", JSON.stringify(req.body));
+
+        console.log("DEBUG 3: Files Count ->", req.files ? req.files.length : 'NO FILES OBJECT');
+
+        // console.log("Adding variant for product:", productId);
+        // console.log("Request body:", req.body);
+        // console.log("Files received:", req.files ? req.files.length : 0);
 
 
         if (!req.files || req.files.length < 3) {
@@ -63,7 +70,11 @@ const addVariant = async (req, res) => {
 
         await createVariant(productId, req.body, req.files);
         console.log("Variant created successfully");
-        res.redirect(`/admin/products/${productId}/variants`);
+        res.status(statusCode.OK).json({
+            success: true,
+            message: "Variant added successfully",
+            redirectUrl: `/admin/products/${productId}/variants`
+        });
     } catch (error) {
         console.error("Error adding variant:", error);
         console.error("Error stack:", error.stack);
@@ -84,7 +95,11 @@ const editVariant = async (req, res) => {
 
         const variant = await updateVariant(id, req.body, req.files);
 
-        res.redirect(`/admin/products/${variant.productId}/variants`);
+        res.status(statusCode.OK).json({
+            success: true,
+            message: "Variant updated successfully",
+            redirectUrl: `/admin/products/${variant.productId}/variants`
+        });
     } catch (error) {
         console.error("Error editing variant:", error);
         console.error("Error stack:", error.stack);

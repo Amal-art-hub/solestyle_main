@@ -13,7 +13,7 @@ const salesController = require("../controllers/admin/salesController");
 const dashBoardcontroller = require("../controllers/admin/dashBoardcontroller");
 const ledgerController = require("../controllers/admin/ledgerController");
 // const bannerController = require("../controllers/admin/bannerController");
-const { upload, variantUpload, bannerUpload,variantCloudUpload  } = require("../middlewares/admin-mid/multer");
+const { upload, variantUpload, bannerUpload, variantCloudUpload } = require("../middlewares/admin-mid/multer");
 const { isAdminLoggedIn } = require("../middlewares/admin-mid/admin-auth");
 
 
@@ -63,8 +63,19 @@ router.post("/products/edit/:id", isAdminLoggedIn, productController.updateProdu
 // Variant management
 router.get("/products/:productId/variants", isAdminLoggedIn, variantController.getVariants);
 router.get("/variants/:id/details", isAdminLoggedIn, variantController.getVariantDetails);
-router.post("/products/:productId/variants", isAdminLoggedIn, variantCloudUpload.array("images", 10), variantController.addVariant);
+
+
+
+router.post("/products/:productId/variants", isAdminLoggedIn,variantCloudUpload.array("images", 10), variantController.addVariant);
+
 router.post("/variants/:id/edit", isAdminLoggedIn, variantCloudUpload.array("newImages", 10), variantController.editVariant);
+
+
+
+
+
+
+
 router.patch("/variants/:id/toggle-listing", isAdminLoggedIn, variantController.toggleVariantStatus);
 router.delete("/variants/:id", isAdminLoggedIn, variantController.removeVariant);
 
