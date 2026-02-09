@@ -389,6 +389,8 @@ const order_number= `ORD-${datePart}-${randomPart}`
             razorpay_order_id: rzpOrder.id
         });
 
+        console.log("finalPayable:",finalPayable);
+
         await newOrder.save();
 
         return rzpOrder; // Return ID to frontend

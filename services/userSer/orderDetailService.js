@@ -40,18 +40,29 @@ const cancelOrderItemService = async (orderId, itemId, reason) => {
         if (item.status === 'canceled') throw new Error("Item already canceled");
         if (order.status === 'delivered') throw new Error("Cannot cancel delivered item");
 
-        item.status = 'canceled';
-        item.cancellation_reason = reason;
 
-        order.final_total = order.final_total - item.total_amount;
-        order.subtotal = order.subtotal - item.total_amount;
+        const totalBeforeCoupen=order.final_total+order.discount_amount;
+         const itemDiscountRatio = item.total_amount / order.subtotal;
+        
+      
+        const actualRefundAmount = item.total_amount - (order.discount_amount * itemDiscountRatio);
+          
+
+       
+
+                order.final_total -= actualRefundAmount;
+        order.subtotal -= item.total_amount;
+        order.discount_amount -= (order.discount_amount * itemDiscountRatio);
+
+         item.status = 'canceled';
+        item.cancellation_reason = reason;
 
         await Variant.findByIdAndUpdate(item.variant_id, { $inc: { stock: item.quantity } });
 
         if (order.payment_method !== "COD") {
             await creditWallet(
                 order.user_id,
-                item.total_amount,
+                 Math.round(actualRefundAmount),
                 `Refund for cancellation of item in Order #${order.order_number}`
             );
         }
@@ -120,10 +131,10 @@ const returnOrderItemService = async (orderId, itemId, reason) => {
         item.status = "Return Request";
         item.return_reason = reason;
 
-        let allItemReturnRequested=order.items.every(item=>item.status==="Return Request");
+        let allItemReturnRequested = order.items.every(item => item.status === "Return Request");
 
-        if(allItemReturnRequested){
-            order.status="Return Request";
+        if (allItemReturnRequested) {
+            order.status = "Return Request";
         }
 
 
