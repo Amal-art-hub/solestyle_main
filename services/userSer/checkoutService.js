@@ -285,7 +285,7 @@ const orderNumber = `ORD-${datePart}-${randomPart}`;
 const validateCoupon = async (userId, code) => {
     const coupon = await Coupon.findOne({ code: code.toUpperCase() });
 
-    let Orders = await Order.find({ user_id: userId, status: "delivered" })
+    // let Orders = await Order.find({ user_id: userId, status: "delivered" })
 
 
     if (!coupon) throw new Error("Invalid Coupon Code");
@@ -294,7 +294,9 @@ const validateCoupon = async (userId, code) => {
     if (new Date() > new Date(coupon.expiry_date)) throw new Error("Coupon Expired");
 
 
-    if (coupon.used_by.includes(userId)) throw new Error("You have already used this coupon");
+    if (coupon.used_by.some(id => id.toString() === userId.toString())) {
+    throw new Error("You have already used this coupon");
+}
 
 
 
