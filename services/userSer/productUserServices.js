@@ -46,7 +46,7 @@ const calculateFinalPrice = async (product, originalPrice) => {
         // Use the highest discount and check if it expires soon
         if (matchFound && offer.discount_percentage > bestDiscount) {
             bestDiscount = offer.discount_percentage;
-            
+
             // Check if THIS offer ends in less than 24 hours
             if (offer.end_date - today <= 24 * 60 * 60 * 1000) {
                 isExpiringSoon = true;
@@ -153,12 +153,12 @@ const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = 
 
         if (filters.brand) {
 
-    const brandIds = Array.isArray(filters.brand) 
-        ? filters.brand.map(id => new mongoose.Types.ObjectId(id)) 
-        : [new mongoose.Types.ObjectId(filters.brand)];           
-   
-    matchStage.brandId = { $in: brandIds }; 
-}
+            const brandIds = Array.isArray(filters.brand)
+                ? filters.brand.map(id => new mongoose.Types.ObjectId(id))
+                : [new mongoose.Types.ObjectId(filters.brand)];
+
+            matchStage.brandId = { $in: brandIds };
+        }
 
         // --- STAGE 2: SORT SETUP ---
         // We define how we WANT to sort, so we can use it later in the pipeline.
@@ -253,7 +253,7 @@ const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = 
         // We still calculate final offers in JS because it's complex logic.
         const processedProducts = await Promise.all(products.map(async (p) => {
             const variant = p.variantDetails;
-            const { finalPrice, bestDiscount,isExpiringSoon } = await calculateFinalPrice(p, variant.price);
+            const { finalPrice, bestDiscount, isExpiringSoon } = await calculateFinalPrice(p, variant.price);
 
             return {
                 ...p,
@@ -263,7 +263,7 @@ const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = 
                 discount: bestDiscount,
                 stock: variant.stock,
                 variantId: variant._id,
-                isExpiringSoon:isExpiringSoon
+                isExpiringSoon: isExpiringSoon
             };
         }));
 
@@ -397,19 +397,21 @@ const getProductDetailService = async (productId) => {
 
     }).limit(4).lean();
 
-    const relatedWithImage = await Promise.all(related.map(async (p) => {
+    const relatedWithImage = (await Promise.all(related.map(async (p) => {
         const v = await Variant.findOne({ productId: p._id }).sort({ price: 1 });
-        const basePrice = v?.price || 0;
+        if (!v) return null; // Skip products with no variants
+
+        const basePrice = v.price || 0;
         const { finalPrice, bestDiscount } = await calculateFinalPrice(p, basePrice);
         return {
             ...p,
-            image: v?.images[2],
+            image: v.images[2] || v.images[0], // Use 3rd image or fallback to 1st
             price: finalPrice,
             originalPrice: basePrice,
             discount: bestDiscount,
-            variantId: v?._id
+            variantId: v._id
         };
-    }));
+    }))).filter(p => p !== null);
 
 
 

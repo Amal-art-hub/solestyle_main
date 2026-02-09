@@ -138,19 +138,18 @@
                                         <!-- <p style="color: red; font-size: 20px; font-weight: bold;">DEBUG: [<%= item.status %>]</p> -->
 
                                         <!-- Item Status Badge -->
-                                        <!-- Item Status Badge -->
 
 
                                         <p class="mb-1">Status:
                                             <% var rawStatus=item.status; var finalStatus='pending' ; if (rawStatus &&
                                                 rawStatus.toString().trim() !=='' ) {
-                                                finalStatus=rawStatus.toString().trim(); } var bColor='#f0f0f0' ; //
-                                                Gray var tColor='#333333' ; // Black if (finalStatus==='canceled' ) {
-                                                bColor='#ffebee' ; tColor='#c0392b' ; } else if
-                                                (finalStatus==='delivered' ) { bColor='#e8f8f5' ; tColor='#27ae60' ; }
-                                                else if (finalStatus==='returned' ) { bColor='#fff3e0' ;
-                                                tColor='#f39c12' ; } var displayText=finalStatus.charAt(0).toUpperCase()
-                                                + finalStatus.slice(1); %>
+                                                finalStatus=rawStatus.toString().trim(); } var bColor='#f0f0f0' ; var
+                                                tColor='#333333' ; if (finalStatus==='canceled' ) { bColor='#ffebee' ;
+                                                tColor='#c0392b' ; } else if (finalStatus==='delivered' ) {
+                                                bColor='#e8f8f5' ; tColor='#27ae60' ; } else if
+                                                (finalStatus==='returned' ) { bColor='#fff3e0' ; tColor='#f39c12' ; }
+                                                var displayText=finalStatus.charAt(0).toUpperCase() +
+                                                finalStatus.slice(1); %>
 
                                                 <span class="status-badge"
                                                     style="background-color: <%= bColor %>; color: <%= tColor %> !important; border: 1px solid <%= bColor %>; padding: 5px 10px; border-radius: 4px; font-weight: bold;">
