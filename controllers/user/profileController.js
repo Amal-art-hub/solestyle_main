@@ -25,9 +25,11 @@ const loadProfile = async (req, res) => {
         const user = await getUserProfile(userId);
         const coupons = await getCoupons(userId);
 
+                const baseUrl = `${req.protocol}://${req.get('host')}`;
+
         const referralOffer = await Offers.findOne({ type: 'referral', status: 'active' });
         const referralDiscount = referralOffer ? referralOffer.discount_percentage : 10;
-        res.status(statusCode.OK).render("profile", { user, coupons, referralDiscount })
+        res.status(statusCode.OK).render("profile", { user, coupons, referralDiscount,baseUrl  })
     } catch (error) {
         console.error("Profile looad Error:", error);
         res.redirect("/");
