@@ -13,6 +13,9 @@ const userRouter = require("./routes/userRouter");
 const adminRouter = require("./routes/adminRouter");
 db();
 
+
+app.set("trust proxy", 1);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
@@ -55,9 +58,9 @@ app.use("/", userRouter);
 app.use("/admin", adminRouter);
 
 
-app.use("/test-error",(req,res,next)=>{
-  const err=new Error("This is a deliberate test error");
-  err.statusCode=418;
+app.use("/test-error", (req, res, next) => {
+  const err = new Error("This is a deliberate test error");
+  err.statusCode = 418;
   next(err);
 })
 
