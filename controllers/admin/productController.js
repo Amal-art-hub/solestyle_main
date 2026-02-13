@@ -48,7 +48,7 @@ const getAddProduct = async (req, res) => {
   try {
     const { categories, brands } = await getCateAndBrands();
 
-    res.status(statusCode.OK).render("addProduct", { categories, brands, activePage: 'products' });
+    res.status(statusCode.OK).render("addProduct", { categories, brands, activePage: "products" });
   } catch (error) {
     console.log(error);
     res.status(statusCode.INTERNAL_SERVER_ERROR).send("Internal error");
@@ -67,7 +67,7 @@ const addProducts = async (req, res) => {
     console.error("Error stack:", error.stack);
     res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "server error", error: error.message });
   }
-}
+};
 
 const getEditProduct = async (req, res) => {
   try {
@@ -87,7 +87,7 @@ const getEditProduct = async (req, res) => {
       product,
       categories,
       brands,
-      activePage: 'products'
+      activePage: "products"
     });
   } catch (error) {
     console.error("Error getting edit product:", error);

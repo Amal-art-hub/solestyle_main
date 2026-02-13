@@ -9,7 +9,7 @@ const validateAddress = (data) => {
     if (!/^\d{6}$/.test(postal_code)) errors.pincode = "Invalid Pincode";
     if (!city || city.trim().length < 2) errors.city = "City is required";
     return { isValid: Object.keys(errors).length === 0, errors };
-}
+};
 
 // 1. Load Page
 const loadAddressPage = async (req, res) => {
@@ -20,7 +20,7 @@ const loadAddressPage = async (req, res) => {
         console.error(error);
         res.status(500).render("page-500");
     }
-}
+};
 
 // 2. Add Address
 const addAddress = async (req, res) => {
@@ -35,7 +35,7 @@ const addAddress = async (req, res) => {
         console.error(error);
         res.json({ success: false, message: "Server Error" });
     }
-}
+};
 
 // 3. Edit Address
 const editAddress = async (req, res) => {
@@ -46,7 +46,7 @@ const editAddress = async (req, res) => {
         console.error(error);
         res.json({ success: false, message: "Server Error" });
     }
-}
+};
 
 // 4. Delete Address
 const deleteAddress = async (req, res) => {
@@ -57,6 +57,6 @@ const deleteAddress = async (req, res) => {
         console.error(error);
         res.json({ success: false, message: "Server Error" });
     }
-}
+};
 
 module.exports = { loadAddressPage, addAddress, editAddress, deleteAddress };

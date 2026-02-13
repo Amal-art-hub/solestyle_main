@@ -1,6 +1,6 @@
-function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-window.onclick = e => { if (e.target.classList.contains('modal-overlay')) e.target.style.display = 'none'; };
+function openModal(id) { document.getElementById(id).style.display = "flex"; }
+function closeModal(id) { document.getElementById(id).style.display = "none"; }
+window.onclick = e => { if (e.target.classList.contains("modal-overlay")) e.target.style.display = "none"; };
 
 function togglePassword(inputId, iconId) {
     const input = document.getElementById(inputId);
@@ -18,23 +18,23 @@ function togglePassword(inputId, iconId) {
 /* --- SweetAlert Logic --- */
 // Check for URL parameters (e.g. ?message=Success)
 const urlParams = new URLSearchParams(window.location.search);
-const msg = urlParams.get('message');
-const error = urlParams.get('error');
+const msg = urlParams.get("message");
+const error = urlParams.get("error");
 if (msg) {
-    Swal.fire({ icon: 'success', title: 'Success', text: msg, timer: 2000, showConfirmButton: false });
-    window.history.replaceState(null, '', window.location.pathname); // Clean URL
+    Swal.fire({ icon: "success", title: "Success", text: msg, timer: 2000, showConfirmButton: false });
+    window.history.replaceState(null, "", window.location.pathname); // Clean URL
 }
 if (error) {
-    Swal.fire({ icon: 'error', title: 'Error', text: error });
-    window.history.replaceState(null, '', window.location.pathname);
+    Swal.fire({ icon: "error", title: "Error", text: error });
+    window.history.replaceState(null, "", window.location.pathname);
 }
 // Client-side Password Validation
 function validatePassword(e) {
-    const newPass = document.getElementById('newPass').value;
-    const confirmPass = document.getElementById('confirmPass').value;
+    const newPass = document.getElementById("newPass").value;
+    const confirmPass = document.getElementById("confirmPass").value;
     if (newPass !== confirmPass) {
         e.preventDefault(); // Stop form
-        Swal.fire({ icon: 'warning', title: 'Mismatch', text: 'New passwords do not match!' });
+        Swal.fire({ icon: "warning", title: "Mismatch", text: "New passwords do not match!" });
         return false;
     }
     return true;
@@ -43,18 +43,18 @@ function validatePassword(e) {
 
 
 function copyReferral(type, text) {
-    if (!text || text === 'N/A') return;
+    if (!text || text === "N/A") return;
     
     navigator.clipboard.writeText(text).then(() => {
         Swal.fire({
             toast: true,
-            position: 'top-end',
-            icon: 'success',
-            title: (type === 'code' ? 'Code' : 'Link') + ' copied!',
+            position: "top-end",
+            icon: "success",
+            title: (type === "code" ? "Code" : "Link") + " copied!",
             showConfirmButton: false,
             timer: 2000
         });
     }).catch(err => {
-        console.error('Failed to copy', err);
+        console.error("Failed to copy", err);
     });
 }

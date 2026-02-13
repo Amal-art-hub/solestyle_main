@@ -6,7 +6,7 @@ const Brand = require("../../models/brand");
 const getAllProducts = async (page = 1, limit = 10, search = "", sort = "newest") => {
     try {
         const skip = (page - 1) * limit;
-        const query = {}
+        const query = {};
 
         if (search) {
             query.name = { $regex: new RegExp(search, "i") };
@@ -44,7 +44,7 @@ const getAllProducts = async (page = 1, limit = 10, search = "", sort = "newest"
 
 
     } catch (error) {
-        throw new Error("Error fetching products:" + error.message);
+        throw new Error("Error fetching products: " + error.message, { cause: error });
     }
 };
 
@@ -64,9 +64,9 @@ const toggleProductListing = async (id) => {
             message: product.isListed ? "Product listed" : "Product unlisted"
         };
     } catch (error) {
-        throw new Error("Error toggling product listing:" + error.message);
+        throw new Error("Error toggling product listing: " + error.message, { cause: error });
     }
-}
+};
 
 
 const getCateAndBrands = async () => {
@@ -77,7 +77,7 @@ const getCateAndBrands = async () => {
     } catch (error) {
         console.log(error);
     }
-}
+};
 
 
 
@@ -96,7 +96,7 @@ const createProduct = async (Data) => {
             throw new Error("This Brand is Unlisted or Invalid. Cannot add product.");
         }
 
-        let exisitingproduct = await Product.findOne({name});
+        let exisitingproduct = await Product.findOne({ name });
         if (exisitingproduct) {
             throw new Error("product with same name already exist");
         }
@@ -110,13 +110,13 @@ const createProduct = async (Data) => {
         await newProduct.save();
         return newProduct;
     } catch (error) {
-        throw new Error("Error creating product:" + error.message);
+        throw new Error("Error creating product: " + error.message, { cause: error });
     }
-}
+};
 
 module.exports = {
     getAllProducts,
     toggleProductListing,
     getCateAndBrands,
     createProduct
-}
+};

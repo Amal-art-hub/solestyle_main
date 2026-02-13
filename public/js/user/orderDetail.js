@@ -1,111 +1,111 @@
 // Auto-refresh order status every 5 seconds
 const startOrderStatusRefresh = () => {
-    const orderId = window.location.pathname.split('/').pop();
+    const orderId = window.location.pathname.split("/").pop();
     setInterval(async () => {
         try {
             const response = await fetch(`/user/orders/${orderId}`, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
+                method: "GET",
+                headers: { "Content-Type": "application/json" }
             });
             if (response.ok) {
                 const html = await response.text();
                 // Parse the new HTML and update order details
                 const parser = new DOMParser();
-                const newDoc = parser.parseFromString(html, 'text/html');
+                const newDoc = parser.parseFromString(html, "text/html");
 
                 // Update tracking section
-                const newTrackingSection = newDoc.querySelector('.tracking-wrapper');
-                const currentTrackingSection = document.querySelector('.tracking-wrapper');
+                const newTrackingSection = newDoc.querySelector(".tracking-wrapper");
+                const currentTrackingSection = document.querySelector(".tracking-wrapper");
                 if (newTrackingSection && currentTrackingSection) {
                     currentTrackingSection.innerHTML = newTrackingSection.innerHTML;
                 }
 
                 // Update items section (left-col with order items)
-                const newItemsSection = newDoc.querySelector('.left-col');
-                const currentItemsSection = document.querySelector('.left-col');
+                const newItemsSection = newDoc.querySelector(".left-col");
+                const currentItemsSection = document.querySelector(".left-col");
                 if (newItemsSection && currentItemsSection) {
                     currentItemsSection.innerHTML = newItemsSection.innerHTML;
                 }
 
                 // Update actions card (right side buttons)
-                const newActionsCard = newDoc.querySelector('.actions-card');
-                const currentActionsCard = document.querySelector('.actions-card');
+                const newActionsCard = newDoc.querySelector(".actions-card");
+                const currentActionsCard = document.querySelector(".actions-card");
                 if (newActionsCard && currentActionsCard) {
                     currentActionsCard.innerHTML = newActionsCard.innerHTML;
                 }
             }
         } catch (error) {
-            console.error('Error refreshing order status:', error);
+            console.error("Error refreshing order status:", error);
         }
     }, 5000);
 };
 
 
-window.addEventListener('load', startOrderStatusRefresh);
+window.addEventListener("load", startOrderStatusRefresh);
 
 
 
 const cancelOrderItem = async (orderId, itemId) => {
     const { value: reason } = await Swal.fire({
-        title: 'Cancel this item?',
+        title: "Cancel this item?",
         text: "Please provide a reason for cancellation:",
-        input: 'select',
+        input: "select",
         inputOptions: {
-            'Changed Mind': 'Changed Mind',
-            'Ordered by Mistake': 'Ordered by Mistake',
-            'Found Cheaper Elsewhere': 'Found Cheaper Elsewhere',
-            'Shipping Too Slow': 'Shipping is too slow',
-            'Other': 'Other'
+            "Changed Mind": "Changed Mind",
+            "Ordered by Mistake": "Ordered by Mistake",
+            "Found Cheaper Elsewhere": "Found Cheaper Elsewhere",
+            "Shipping Too Slow": "Shipping is too slow",
+            "Other": "Other"
         },
-        inputPlaceholder: 'Select a reason',
+        inputPlaceholder: "Select a reason",
         showCancelButton: true,
-        confirmButtonColor: '#d33',
-        confirmButtonText: 'Yes, Cancel Item',
+        confirmButtonColor: "#d33",
+        confirmButtonText: "Yes, Cancel Item",
         inputValidator: (value) => {
             if (!value) {
-                return 'You need to select a reason!'
+                return "You need to select a reason!";
             }
         }
     });
     if (reason !== undefined) {
         try {
             const response = await fetch(`/user/orders/cancel-item/${orderId}/${itemId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ reason: reason || "Changed mind" })
             });
             const result = await response.json();
             if (result.success) {
-                Swal.fire('Canceled!', 'Item has been canceled.', 'success')
+                Swal.fire("Canceled!", "Item has been canceled.", "success")
                     .then(() => location.reload());
             } else {
-                Swal.fire('Error', result.message || 'Could not cancel item', 'error');
+                Swal.fire("Error", result.message || "Could not cancel item", "error");
             }
         } catch (error) {
             console.error(error);
-            Swal.fire('Error', 'Something went wrong', 'error');
+            Swal.fire("Error", "Something went wrong", "error");
         }
     }
 };
 
 async function returnOrderItem(orderId, itemId) {
     const { value: reason } = await Swal.fire({
-        title: 'Return Item?',
+        title: "Return Item?",
         text: "Please provide a reason for return:",
-        input: 'select',
+        input: "select",
         inputOptions: {
-            'Changed Mind': 'Changed Mind',
-            'Ordered by Mistake': 'Ordered by Mistake',
-            'Found Cheaper Elsewhere': 'Found Cheaper Elsewhere',
-            'Shipping Too Slow': 'Shipping is too slow',
-            'Other': 'Other'
+            "Changed Mind": "Changed Mind",
+            "Ordered by Mistake": "Ordered by Mistake",
+            "Found Cheaper Elsewhere": "Found Cheaper Elsewhere",
+            "Shipping Too Slow": "Shipping is too slow",
+            "Other": "Other"
         },
-        inputPlaceholder: 'Select the reason',
+        inputPlaceholder: "Select the reason",
         showCancelButton: true,
-        confirmButtonText: 'Submit Return Request',
+        confirmButtonText: "Submit Return Request",
         inputValidator: (value) => {
             if (!value) {
-                return 'You need to select a reason!'
+                return "You need to select a reason!";
             }
         }
     });
@@ -113,46 +113,46 @@ async function returnOrderItem(orderId, itemId) {
     if (reason) {
         try {
             const response = await fetch(`/user/orders/return-item/${orderId}/${itemId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ reason: reason })
             });
 
             const data = await response.json();
 
             if (data.success) {
-                Swal.fire('Submitted!', 'Return request submitted.', 'success')
+                Swal.fire("Submitted!", "Return request submitted.", "success")
                     .then(() => location.reload());
             } else {
-                Swal.fire('Error', data.message || 'Could not return item', 'error');
+                Swal.fire("Error", data.message || "Could not return item", "error");
             }
         } catch (error) {
             console.error(error);
-            Swal.fire('Error', 'Something went wrong!', 'error');
+            Swal.fire("Error", "Something went wrong!", "error");
         }
     }
 }
 
 const cancelOrder = async (orderId) => {
     const { value: reason } = await Swal.fire({
-        title: 'Cancel Entire Order?',
+        title: "Cancel Entire Order?",
         text: "Are you sure? This will cancel all items in this order.",
-        icon: 'warning',
-        input: 'select',
+        icon: "warning",
+        input: "select",
         inputOptions: {
-            'Changed Mind': 'Changed Mind',
-            'Ordered by Mistake': 'Ordered by Mistake',
-            'Found Cheaper Elsewhere': 'Found Cheaper Elsewhere',
-            'Shipping Too Slow': 'Shipping is too slow',
-            'Other': 'Other'
+            "Changed Mind": "Changed Mind",
+            "Ordered by Mistake": "Ordered by Mistake",
+            "Found Cheaper Elsewhere": "Found Cheaper Elsewhere",
+            "Shipping Too Slow": "Shipping is too slow",
+            "Other": "Other"
         },
-        inputPlaceholder: 'Select a reason',
+        inputPlaceholder: "Select a reason",
         showCancelButton: true,
-        confirmButtonColor: '#d33',
-        confirmButtonText: 'Yes, Cancel Order!',
+        confirmButtonColor: "#d33",
+        confirmButtonText: "Yes, Cancel Order!",
         inputValidator: (value) => {
             if (!value) {
-                return 'You need to select a reason!'
+                return "You need to select a reason!";
             }
         }
     });
@@ -160,46 +160,46 @@ const cancelOrder = async (orderId) => {
     if (reason !== undefined) {
         try {
             const response = await fetch(`/user/orders/cancel/${orderId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ reason: reason || "User cancelled full order" })
             });
 
             const result = await response.json();
 
             if (result.success) {
-                Swal.fire('Canceled!', 'Order has been canceled.', 'success')
+                Swal.fire("Canceled!", "Order has been canceled.", "success")
                     .then(() => location.reload());
             } else {
-                Swal.fire('Error', result.message || 'Could not cancel order', 'error');
+                Swal.fire("Error", result.message || "Could not cancel order", "error");
             }
         } catch (error) {
             console.error(error);
-            Swal.fire('Error', 'Something went wrong', 'error');
+            Swal.fire("Error", "Something went wrong", "error");
         }
     }
 };
 
 const returnOrder = async (orderId) => {
     const { value: reason } = await Swal.fire({
-        title: 'Return Entire Order?',
+        title: "Return Entire Order?",
         text: "Are you sure? This will return all items in this order.",
-        icon: 'warning',
-        input: 'select',
+        icon: "warning",
+        input: "select",
         inputOptions: {
-            'Changed Mind': 'Changed Mind',
-            'Ordered by Mistake': 'Ordered by Mistake',
-            'Found Cheaper Elsewhere': 'Found Cheaper Elsewhere',
-            'Shipping Too Slow': 'Shipping is too slow',
-            'Other': 'Other'
+            "Changed Mind": "Changed Mind",
+            "Ordered by Mistake": "Ordered by Mistake",
+            "Found Cheaper Elsewhere": "Found Cheaper Elsewhere",
+            "Shipping Too Slow": "Shipping is too slow",
+            "Other": "Other"
         },
-        inputPlaceholder: 'Select a return',
+        inputPlaceholder: "Select a return",
         showCancelButton: true,
-        confirmButtonColor: '#f39c12',
-        confirmButtonText: 'Yes, Return Order',
+        confirmButtonColor: "#f39c12",
+        confirmButtonText: "Yes, Return Order",
         inputValidator: (value) => {
             if (!value) {
-                return 'You need to select a reason!'
+                return "You need to select a reason!";
             }
         }
     });
@@ -207,22 +207,22 @@ const returnOrder = async (orderId) => {
     if (reason) {
         try {
             const response = await fetch(`/user/orders/return/${orderId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ reason: reason })
             });
 
             const result = await response.json();
 
             if (result.success) {
-                Swal.fire('Returned!', 'Order return request submitted.', 'success')
+                Swal.fire("Returned!", "Order return request submitted.", "success")
                     .then(() => location.reload());
             } else {
-                Swal.fire('Error', result.message || 'Could not return order', 'error');
+                Swal.fire("Error", result.message || "Could not return order", "error");
             }
         } catch (error) {
             console.error(error);
-            Swal.fire('Error', 'Something went wrong', 'error');
+            Swal.fire("Error", "Something went wrong", "error");
         }
     }
 };
@@ -256,10 +256,10 @@ async function retryPayment(orderId) {
                         window.location.href = `/order-success/${verifyRes.data.orderId}`;
                     }
                     else {
-                        Swal.fire('Error', verifyRes.data.message, 'error');
+                        Swal.fire("Error", verifyRes.data.message, "error");
                     }
                 } catch (error) {
-                    Swal.fire('Error', error.response?.data?.message || 'Payment verification failed', 'error');
+                    Swal.fire("Error", error.response?.data?.message || "Payment verification failed", "error");
                 }
             },
             theme: { color: "#3399cc" }
@@ -270,7 +270,7 @@ async function retryPayment(orderId) {
 
 
     } catch (error) {
-        console.error(err);
-        Swal.fire('Error', err.message || 'Failed to initiate retry', 'error');
+        console.error(error);
+        Swal.fire("Error", error.message || "Failed to initiate retry", "error");
     }
 }

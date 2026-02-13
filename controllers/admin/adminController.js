@@ -1,5 +1,5 @@
-const path = require('path');
-const Admin = require(path.join(__dirname, '../../models/admin'));
+const path = require("path");
+const Admin = require(path.join(__dirname, "../../models/admin"));
 const bcrypt = require("bcrypt");
 const { loginAdmin } = require("../../services/adminSer/adminServices"); // if you have service
 const statusCode = require("../../utils/statusCodes.js");
@@ -85,15 +85,15 @@ const logout = (req, res) => {
     req.session.destroy(err => {
       if (err) {
         console.log("Error destroying session", err);
-        return res.redirect("/pageerror")
+        return res.redirect("/pageerror");
       }
-      res.redirect("adminlogin")
-    })
+      res.redirect("adminlogin");
+    });
   } catch (error) {
     console.log(("unexpected error during logout", error));
-    res.redirect("page-404")
+    res.redirect("page-404");
   }
-}
+};
 
 
 

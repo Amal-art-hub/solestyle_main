@@ -43,7 +43,7 @@ const getMensProducts = async (req, res) => {
         console.error(error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).send("Server Error");
     }
-}
+};
 
 
 const getProductDetails = async (req, res) => {
@@ -68,7 +68,7 @@ const getProductDetails = async (req, res) => {
         console.error(error);
         res.status(statusCode.BAD_REQUEST).send("Server error");
     }
-}
+};
 
 
 
@@ -108,7 +108,7 @@ const getWomenProducts = async (req, res) => {
         console.error(error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).send("Server Error");
     }
-}
+};
 
 
 
@@ -148,7 +148,7 @@ const getKidsProducts = async (req, res) => {
         console.error(error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).send("Server Error");
     }
-}
+};
 
 
 
@@ -165,4 +165,4 @@ module.exports = {
     getKidsProducts,
 
 
-}
+};

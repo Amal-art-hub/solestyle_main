@@ -20,12 +20,12 @@ const { isAdminLoggedIn } = require("../middlewares/admin-mid/admin-auth");
 
 router.get("/login", adminController.loadLogin);
 router.post("/login", adminController.login);
-router.get("/logout", adminController.logout)
+router.get("/logout", adminController.logout);
 
 
 
 router.get("/dashboard", isAdminLoggedIn, dashBoardcontroller.loadDashboard);
-router.get("/api/dashboard/chart", isAdminLoggedIn, dashBoardcontroller.getChartDataAPI)
+router.get("/api/dashboard/chart", isAdminLoggedIn, dashBoardcontroller.getChartDataAPI);
 
 
 
@@ -85,7 +85,7 @@ router.delete("/variants/:id", isAdminLoggedIn, variantController.removeVariant)
 
 router.get("/orders", isAdminLoggedIn, orderController.getOrderList);
 router.patch("/orders/update-status", isAdminLoggedIn, orderController.changeStatus);
-router.get('/orders/details/:id', isAdminLoggedIn, orderController.getOrderDetails);
+router.get("/orders/details/:id", isAdminLoggedIn, orderController.getOrderDetails);
 //admin approve ,reject feature
 router.post("/orders/approve-return", isAdminLoggedIn, orderController.approveReturn);
 router.post("/orders/reject-return", isAdminLoggedIn, orderController.rejectReturn);

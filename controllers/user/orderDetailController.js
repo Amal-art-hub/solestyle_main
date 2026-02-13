@@ -8,10 +8,10 @@ const {
 
 
 const statusCode = require("../../utils/statusCodes");
-const puppeteer = require('puppeteer');
-const ejs = require('ejs');
-const fs = require('fs');
-const path = require('path');
+const puppeteer = require("puppeteer");
+const ejs = require("ejs");
+const fs = require("fs");
+const path = require("path");
 
 
 const getOrderDetails = async (req, res) => {
@@ -102,26 +102,26 @@ const downloadInvoice = async (req, res) => {
         const { orderId } = req.params;
         const order = await getOrderDetailsService(orderId, req.session.user);
         // 1. Render the EJS template to HTML string
-        const templatePath = path.join(__dirname, '../../views/user/invoiceTemplate.ejs');
+        const templatePath = path.join(__dirname, "../../views/user/invoiceTemplate.ejs");
         const html = await ejs.renderFile(templatePath, { order });
         // 2. Launch Puppeteer
            const browser = await puppeteer.launch({
-        headless: 'new',
+        headless: "new",
         args: [
-            '--no-sandbox', 
-            '--disable-setuid-sandbox',
-            '--disable-zygote',
-            '--disable-gpu'
+            "--no-sandbox", 
+            "--disable-setuid-sandbox",
+            "--disable-zygote",
+            "--disable-gpu"
         ]
     });
         const page = await browser.newPage();
 
-        await page.setContent(html, { waitUntil: 'networkidle0' });
-        const pdfBuffer = await page.pdf({ format: 'A4', printBackground: true });
+        await page.setContent(html, { waitUntil: "networkidle0" });
+        const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
         await browser.close();
 
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', `attachment; filename=invoice-${order.order_id}.pdf`);
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", `attachment; filename=invoice-${order.order_id}.pdf`);
         res.status(statusCode.OK).send(pdfBuffer);
     } catch (error) {
         console.error("Invoice Error:", error);

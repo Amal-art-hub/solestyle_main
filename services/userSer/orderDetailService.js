@@ -7,12 +7,12 @@ const getOrderDetailsService = async (orderId, userId) => {
 
         const order = await Order.findOne({ _id: orderId, user_id: userId })
             .populate({
-                path: 'items.product_id',
-                select: 'name'
+                path: "items.product_id",
+                select: "name"
             })
             .populate({
-                path: 'items.variant_id',
-                select: 'images'
+                path: "items.variant_id",
+                select: "images"
             });
 
         if (!order) {
@@ -31,126 +31,114 @@ const getOrderDetailsService = async (orderId, userId) => {
 };
 
 const cancelOrderItemService = async (orderId, itemId, reason) => {
-    try {
-        const order = await Order.findById(orderId);
-        if (!order) throw new Error("Order not found");
+    const order = await Order.findById(orderId);
+    if (!order) throw new Error("Order not found");
 
-        const item = order.items.id(itemId);
-        if (!item) throw new Error("Item not found");
-        if (item.status === 'canceled') throw new Error("Item already canceled");
-        if (order.status === 'delivered') throw new Error("Cannot cancel delivered item");
-
-
-        const totalBeforeCoupen=order.final_total+order.discount_amount;
-         const itemDiscountRatio = item.total_amount / order.subtotal;
-        
-      
-        const actualRefundAmount = item.total_amount - (order.discount_amount * itemDiscountRatio);
-          
-
-       
-
-                order.final_total -= actualRefundAmount;
-        order.subtotal -= item.total_amount;
-        order.discount_amount -= (order.discount_amount * itemDiscountRatio);
-
-         item.status = 'canceled';
-        item.cancellation_reason = reason;
-
-        await Variant.findByIdAndUpdate(item.variant_id, { $inc: { stock: item.quantity } });
-
-        if (order.payment_method !== "COD") {
-            await creditWallet(
-                order.user_id,
-                 Math.round(actualRefundAmount),
-                `Refund for cancellation of item in Order #${order.order_number}`
-            );
-        }
+    const item = order.items.id(itemId);
+    if (!item) throw new Error("Item not found");
+    if (item.status === "canceled") throw new Error("Item already canceled");
+    if (order.status === "delivered") throw new Error("Cannot cancel delivered item");
 
 
-        const allItemsCanceled = order.items.every(itm => itm.status === 'canceled');
-        if (allItemsCanceled) {
-            order.status = 'canceled';
-            order.cancellation_reason = reason;
-        }
+    const totalBeforeCoupen = order.final_total + order.discount_amount;
+    const itemDiscountRatio = item.total_amount / order.subtotal;
 
-        await order.save();
-        return { success: true, message: "Item canceled successfully" };
-    } catch (error) {
-        throw error;
+
+    const actualRefundAmount = item.total_amount - (order.discount_amount * itemDiscountRatio);
+
+
+
+
+    order.final_total -= actualRefundAmount;
+    order.subtotal -= item.total_amount;
+    order.discount_amount -= (order.discount_amount * itemDiscountRatio);
+
+    item.status = "canceled";
+    item.cancellation_reason = reason;
+
+    await Variant.findByIdAndUpdate(item.variant_id, { $inc: { stock: item.quantity } });
+
+    if (order.payment_method !== "COD") {
+        await creditWallet(
+            order.user_id,
+            Math.round(actualRefundAmount),
+            `Refund for cancellation of item in Order #${order.order_number}`
+        );
     }
+
+
+    const allItemsCanceled = order.items.every(itm => itm.status === "canceled");
+    if (allItemsCanceled) {
+        order.status = "canceled";
+        order.cancellation_reason = reason;
+    }
+
+    await order.save();
+    return { success: true, message: "Item canceled successfully" };
 };
 
 
 
 const cancelOrderService = async (orderId, reason) => {
-    try {
-        const order = await Order.findById(orderId);
-        if (!order) throw new Error("Order not found");
+    const order = await Order.findById(orderId);
+    if (!order) throw new Error("Order not found");
 
-        if (order.status === 'canceled') throw new Error("Order already canceled");
-        if (['shipped', 'delivered'].includes(order.status)) throw new Error("Cannot cancel shipped or delivered order");
+    if (order.status === "canceled") throw new Error("Order already canceled");
+    if (["shipped", "delivered"].includes(order.status)) throw new Error("Cannot cancel shipped or delivered order");
 
-        for (const item of order.items) {
+    for (const item of order.items) {
 
-            if (item.status !== 'canceled') {
-                item.status = 'canceled';
-                item.cancellation_reason = reason || "Order Canceled";
-                await Variant.findByIdAndUpdate(item.variant_id, { $inc: { stock: item.quantity } });
-            }
+        if (item.status !== "canceled") {
+            item.status = "canceled";
+            item.cancellation_reason = reason || "Order Canceled";
+            await Variant.findByIdAndUpdate(item.variant_id, { $inc: { stock: item.quantity } });
         }
-
-        order.status = 'canceled';
-        order.cancellation_reason = reason;
-
-
-        if (order.payment_method !== "COD") {
-            await creditWallet(
-                order.user_id,
-                order.final_total,
-                `Refund for cancellation of Order #${order.order_number}`
-            );
-        }
-        await order.save();
-
-        return { success: true, message: "Order canceled successfully" };
-    } catch (error) {
-        throw error;
     }
+
+    order.status = "canceled";
+    order.cancellation_reason = reason;
+
+
+    if (order.payment_method !== "COD") {
+        await creditWallet(
+            order.user_id,
+            order.final_total,
+            `Refund for cancellation of Order #${order.order_number}`
+        );
+    }
+    await order.save();
+
+    return { success: true, message: "Order canceled successfully" };
 };
 
 
 const returnOrderItemService = async (orderId, itemId, reason) => {
-    try {
-        const order = await Order.findById(orderId);
-        if (!order) throw new Error("Order not found");
+    const order = await Order.findById(orderId);
+    if (!order) throw new Error("Order not found");
 
-        const item = order.items.id(itemId);
-        if (item.status === "returned") throw new Error("Item already returned");
+    const item = order.items.id(itemId);
+    if (item.status === "returned") throw new Error("Item already returned");
 
-        item.status = "Return Request";
-        item.return_reason = reason;
+    item.status = "Return Request";
+    item.return_reason = reason;
 
-        let allItemReturnRequested = order.items.every(item => item.status === "Return Request");
+    let allItemReturnRequested = order.items.every(item => item.status === "Return Request");
 
-        if (allItemReturnRequested) {
-            order.status = "Return Request";
-        }
-
-
-
-
-
-
-
-        // await Variant.findByIdAndUpdate(item.variant_id, { $inc: { stock: item.quantity } });
-
-        await order.save();
-        return { success: true, message: "Item returned succesfully" };
-    } catch (error) {
-        throw error;
+    if (allItemReturnRequested) {
+        order.status = "Return Request";
     }
-}
+
+
+
+
+
+
+
+    // await Variant.findByIdAndUpdate(item.variant_id, { $inc: { stock: item.quantity } });
+
+    await order.save();
+    return { success: true, message: "Item returned succesfully" };
+};
 
 
 
@@ -160,14 +148,14 @@ const returnOrderService = async (orderId, reason) => {
         if (!order) throw new Error("Order not found");
 
 
-        if (order.status === 'returned') throw new Error("Order already returned");
-        if (order.status !== 'delivered') throw new Error("Order must be delivered to return it");
+        if (order.status === "returned") throw new Error("Order already returned");
+        if (order.status !== "delivered") throw new Error("Order must be delivered to return it");
 
 
         for (const item of order.items) {
 
-            if (item.status === 'delivered') {
-                item.status = 'Return Request';
+            if (item.status === "delivered") {
+                item.status = "Return Request";
                 item.return_reason = reason;
 
 
@@ -175,7 +163,7 @@ const returnOrderService = async (orderId, reason) => {
             }
         }
 
-        order.status = 'Return Request';
+        order.status = "Return Request";
         order.return_reason = reason;
 
         await order.save();

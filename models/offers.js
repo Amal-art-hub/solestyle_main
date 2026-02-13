@@ -21,10 +21,10 @@ const offerSchema = new mongoose.Schema({
 
 
 // Remove 'next' from the arguments
-offerSchema.pre('save', async function() {
+offerSchema.pre("save", async function() {
     if (this.start_date >= this.end_date) {
         // Just throw the error directly!
-        throw new Error('End date must be after start date');
+        throw new Error("End date must be after start date");
     }
     // No need to call next() anymore.
 });

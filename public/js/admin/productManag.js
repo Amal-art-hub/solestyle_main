@@ -1,24 +1,24 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener("DOMContentLoaded", function () {
   // Get all List/Unlist buttons
-  const toggleButtons = document.querySelectorAll('.btn-list, .btn-unlist');
+  const toggleButtons = document.querySelectorAll(".btn-list, .btn-unlist");
 
   toggleButtons.forEach(button => {
-    button.addEventListener('click', async function () {
-      const productId = this.getAttribute('data-id');
-      const isListed = this.getAttribute('data-listed') === 'true';
+    button.addEventListener("click", async function () {
+      const productId = this.getAttribute("data-id");
+      const isListed = this.getAttribute("data-listed") === "true";
 
       // Confirm action with user
-      const action = isListed ? 'unlist' : 'list';
+      const action = isListed ? "unlist" : "list";
       const confirmMessage = `Are you sure you want to ${action} this product?`;
 
       const result = await Swal.fire({
-        title: 'Are you sure?',
+        title: "Are you sure?",
         text: confirmMessage,
-        icon: 'warning',
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, do it!'
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, do it!"
       });
 
       if (!result.isConfirmed) {
@@ -27,9 +27,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
       try {
         const response = await fetch(`/admin/products/toggle-listing?id=${productId}`, {
-          method: 'PATCH',
+          method: "PATCH",
           headers: {
-            'Content-Type': 'application/json'
+            "Content-Type": "application/json"
           }
         });
 
@@ -37,21 +37,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (result.success) {
           await Swal.fire({
-            title: 'Success!',
+            title: "Success!",
             text: result.message,
-            icon: 'success',
-            confirmButtonText: 'OK'
+            icon: "success",
+            confirmButtonText: "OK"
           });
           location.reload();
         } else {
-          Swal.fire('Error', result.message || 'Failed', 'error');
+          Swal.fire("Error", result.message || "Failed", "error");
         }
       } catch (error) {
-        console.error('Error toggling product listing:', error);
+        console.error("Error toggling product listing:", error);
         Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'An error occurred. Please try again.'
+          icon: "error",
+          title: "Error",
+          text: "An error occurred. Please try again."
         });
       }
     });

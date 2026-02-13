@@ -11,15 +11,15 @@ const getLedgerData = async ({ period, startDate, endDate, page = 1, limit = 10 
         // const totalPages = Math.ceil(totalCount / limit);
         const now = new Date();
         // Date Filtering Logic
-        if (period === 'daily') {
+        if (period === "daily") {
             matchStage.createdAt = { $gte: new Date(now.setHours(0, 0, 0, 0)) };
-        } else if (period === 'weekly') {
+        } else if (period === "weekly") {
             matchStage.createdAt = { $gte: new Date(now.setDate(now.getDate() - 7)) };
-        } else if (period === 'monthly') {
+        } else if (period === "monthly") {
             matchStage.createdAt = { $gte: new Date(now.getFullYear(), now.getMonth(), 1) };
-        } else if (period === 'yearly') {
+        } else if (period === "yearly") {
             matchStage.createdAt = { $gte: new Date(now.getFullYear(), 0, 1) };
-        } else if (period === 'custom' && startDate && endDate) {
+        } else if (period === "custom" && startDate && endDate) {
             matchStage.createdAt = {
                 $gte: new Date(startDate),
                 $lte: new Date(new Date(endDate).setHours(23, 59, 59, 999))
@@ -62,9 +62,9 @@ const getLedgerData = async ({ period, startDate, endDate, page = 1, limit = 10 
     return {
         date: order.createdAt,
         description: isCredit ? `Sale: ${order.order_number}` : `Refund: ${order.order_number}`,
-        userName: order.user_id ? order.user_id.name : 'Unknown User',
-        userEmail: order.user_id ? order.user_id.email : 'N/A',
-        type: isCredit ? 'credit' : 'debit',
+        userName: order.user_id ? order.user_id.name : "Unknown User",
+        userEmail: order.user_id ? order.user_id.email : "N/A",
+        type: isCredit ? "credit" : "debit",
         mrp: order.subtotal,
         offer: order.offer_discount,
         coupon: order.discount_amount,
@@ -84,7 +84,7 @@ const getLedgerData = async ({ period, startDate, endDate, page = 1, limit = 10 
         console.error("Ledger Service Error:", error);
         throw error;
     }
-}
+};
 
 
 module.exports = { getLedgerData };

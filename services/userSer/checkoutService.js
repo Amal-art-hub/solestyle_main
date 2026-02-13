@@ -96,187 +96,182 @@ const getCheckoutData = async (userId) => {
 };
 
 const placeOrderService = async (userId, addressId, paymentMethod, couponData, paymentDetails) => {
-    try {
-        // ============================================================
-        // CASE 1: ONLINE PAYMENT (Update the Existing Pending Order)
-        // ============================================================
-        if (paymentMethod === 'Online') {
-            const { razorpay_order_id, razorpay_payment_id } = paymentDetails;
+    // ============================================================
+    // CASE 1: ONLINE PAYMENT (Update the Existing Pending Order)
+    // ============================================================
+    if (paymentMethod === "Online") {
+        const { razorpay_order_id, razorpay_payment_id } = paymentDetails;
 
-            // 1. Find the "Payment Pending" order we created earlier
-            const pendingOrder = await Order.findOne({
-                razorpay_order_id: razorpay_order_id
-            }).populate('items.variant_id');
+        // 1. Find the "Payment Pending" order we created earlier
+        const pendingOrder = await Order.findOne({
+            razorpay_order_id: razorpay_order_id
+        }).populate("items.variant_id");
 
-            if (!pendingOrder) throw new Error("Order not found or expired");
+        if (!pendingOrder) throw new Error("Order not found or expired");
 
-            // 2. Update Status to PLACED
-            pendingOrder.status = "pending"; // Or "processing" - this means "Success"
-            pendingOrder.items.forEach(item => { item.status = 'pending'; });
+        // 2. Update Status to PLACED
+        pendingOrder.status = "pending"; // Or "processing" - this means "Success"
+        pendingOrder.items.forEach(item => { item.status = "pending"; });
 
-            // 3. Create Payment Record
-            const paymentDoc = new Payment({
-                user_id: userId,
-                order_id: pendingOrder._id,
-                payment_method: "Razorpay",
-                amount: pendingOrder.final_total,
-                status: "completed",
-                transaction_id: razorpay_payment_id
-            });
-            await paymentDoc.save();
-
-            pendingOrder.payment_id = paymentDoc._id;
-            await pendingOrder.save();
-
-            // 4. Update Coupon Usage
-            if (pendingOrder.coupon_id) {
-                await Coupon.findByIdAndUpdate(pendingOrder.coupon_id, {
-                    $addToSet: { used_by: userId }
-                });
-            }
-
-            // 5. Reduce Stock (Since we didn't do it in the first step)
-            for (const item of pendingOrder.items) {
-                // Check if variant exists to avoid crash
-                if (item.variant_id) {
-                    await Variant.findByIdAndUpdate(item.variant_id._id, {
-                        $inc: { stock: -item.quantity }
-                    });
-                }
-            }
-
-            // 6. Clear Cart
-            await Cart.findOneAndDelete({ user_id: userId });
-
-            return pendingOrder;
-        }
-
-        // ============================================================
-        // CASE 2: COD & WALLET (Create New Order - Old Logic)
-        // ============================================================
-
-        const cart = await Cart.findOne({ user_id: userId })
-            .populate("items.variant_id")
-            .populate("items.product_id");
-
-        if (!cart || cart.items.length === 0) throw new Error("Cart is empty");
-
-
-        const validItems = cart.items.filter(item => {
-            return item.variant_id && item.variant_id.stock >= item.quantity && item.product_id && !item.product_id.isDeleted && item.product_id.isListed;
-        });
-
-        if (validItems.length === 0) {
-            throw new Error("No available items to purchase");
-        }
-
-
-        const address = await Address.findById(addressId);
-        if (!address) throw new Error("Address not found");
-
-        let totalOfferPrice = 0;
-        let totalMrpPrice = 0;
-        const orderItems = [];
-
-        for (const item of validItems) {
-            const variant = item.variant_id;
-
-
-            // if (variant.stock < item.quantity) {
-            //     throw new Error(`Stock insufficient for ${item.name_snapshot}`);
-            // }
-
-            const originalMRP = variant.price;
-            const { finalPrice } = await calculateFinalPrice(item.product_id, originalMRP);
-            const itemOfferTotal = item.quantity * finalPrice;
-            totalOfferPrice += itemOfferTotal;
-            totalMrpPrice += item.quantity * originalMRP;
-
-
-            orderItems.push({
-                product_id: item.product_id,
-                variant_id: item.variant_id._id,
-                quantity: item.quantity,
-                unit_price: finalPrice,
-                original_price: originalMRP,
-                total_amount: itemOfferTotal,
-                name_snapshot: item.name_snapshot,
-                variant_snapshot: `Size:${variant.size}, Color:${variant.color}`,
-                status: 'pending'
-            });
-        }
-
-        let totalOfferSavings = totalMrpPrice - totalOfferPrice;
-
-        let couponDiscount = couponData ? couponData.discount : 0;
-        let finalPayable = totalOfferPrice - couponDiscount;
-        if (finalPayable < 0) finalPayable = 0;
-
-        if (paymentMethod === 'COD' && finalPayable > 1000) {
-            throw new Error('COD not available for orders above ₹1000')
-        }
-
-        // const orderNumber = "ORD-" + Date.now() + Math.floor(Math.random() * 1000);
-
-
-        // Generates something like ORD-20240131-A7XC2
-const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-const randomPart = Math.random().toString(36).substring(2, 7).toUpperCase();
-const orderNumber = `ORD-${datePart}-${randomPart}`;
-
-        let orderStatus = "pending";
-        if (paymentMethod === 'Wallet') {
-            await debitWallet(userId, finalPayable, "Order Payment - " + orderNumber);
-            orderStatus = "processing";
-        }
-
-        const newOrder = new Order({
+        // 3. Create Payment Record
+        const paymentDoc = new Payment({
             user_id: userId,
-            status: orderStatus,
-            subtotal: totalMrpPrice,
-            offer_discount: totalOfferSavings,
-            discount_amount: couponDiscount,
-            final_total: finalPayable,
-            coupon_id: couponData ? couponData._id : null,
-            order_number: orderNumber,
-            address_id: addressId,
-            shipping_address_snapshot: {
-                name: address.name,
-                address_line1: address.address_line1,
-                address_line2: address.address_line2,
-                city: address.city,
-                state: address.state,
-                postal_code: address.postal_code,
-                phone: address.phone,
-                alt_phone: address.alt_phone
-            },
-            payment_method: paymentMethod,
-            items: orderItems,
-            payment_id: null
+            order_id: pendingOrder._id,
+            payment_method: "Razorpay",
+            amount: pendingOrder.final_total,
+            status: "completed",
+            transaction_id: razorpay_payment_id
         });
+        await paymentDoc.save();
 
-        await newOrder.save();
+        pendingOrder.payment_id = paymentDoc._id;
+        await pendingOrder.save();
 
-        if (couponData && couponData._id) {
-            await Coupon.findByIdAndUpdate(couponData._id, {
+        // 4. Update Coupon Usage
+        if (pendingOrder.coupon_id) {
+            await Coupon.findByIdAndUpdate(pendingOrder.coupon_id, {
                 $addToSet: { used_by: userId }
             });
         }
 
-        for (const item of validItems) {
-            await Variant.findByIdAndUpdate(item.variant_id._id, {
-                $inc: { stock: -item.quantity }
-            });
+        // 5. Reduce Stock (Since we didn't do it in the first step)
+        for (const item of pendingOrder.items) {
+            // Check if variant exists to avoid crash
+            if (item.variant_id) {
+                await Variant.findByIdAndUpdate(item.variant_id._id, {
+                    $inc: { stock: -item.quantity }
+                });
+            }
         }
 
+        // 6. Clear Cart
         await Cart.findOneAndDelete({ user_id: userId });
 
-        return newOrder;
-
-    } catch (error) {
-        throw error;
+        return pendingOrder;
     }
-}
+
+    // ============================================================
+    // CASE 2: COD & WALLET (Create New Order - Old Logic)
+    // ============================================================
+
+    const cart = await Cart.findOne({ user_id: userId })
+        .populate("items.variant_id")
+        .populate("items.product_id");
+
+    if (!cart || cart.items.length === 0) throw new Error("Cart is empty");
+
+
+    const validItems = cart.items.filter(item => {
+        return item.variant_id && item.variant_id.stock >= item.quantity && item.product_id && !item.product_id.isDeleted && item.product_id.isListed;
+    });
+
+    if (validItems.length === 0) {
+        throw new Error("No available items to purchase");
+    }
+
+
+    const address = await Address.findById(addressId);
+    if (!address) throw new Error("Address not found");
+
+    let totalOfferPrice = 0;
+    let totalMrpPrice = 0;
+    const orderItems = [];
+
+    for (const item of validItems) {
+        const variant = item.variant_id;
+
+
+        // if (variant.stock < item.quantity) {
+        //     throw new Error(`Stock insufficient for ${item.name_snapshot}`);
+        // }
+
+        const originalMRP = variant.price;
+        const { finalPrice } = await calculateFinalPrice(item.product_id, originalMRP);
+        const itemOfferTotal = item.quantity * finalPrice;
+        totalOfferPrice += itemOfferTotal;
+        totalMrpPrice += item.quantity * originalMRP;
+
+
+        orderItems.push({
+            product_id: item.product_id,
+            variant_id: item.variant_id._id,
+            quantity: item.quantity,
+            unit_price: finalPrice,
+            original_price: originalMRP,
+            total_amount: itemOfferTotal,
+            name_snapshot: item.name_snapshot,
+            variant_snapshot: `Size:${variant.size}, Color:${variant.color}`,
+            status: "pending"
+        });
+    }
+
+    let totalOfferSavings = totalMrpPrice - totalOfferPrice;
+
+    let couponDiscount = couponData ? couponData.discount : 0;
+    let finalPayable = totalOfferPrice - couponDiscount;
+    if (finalPayable < 0) finalPayable = 0;
+
+    if (paymentMethod === "COD" && finalPayable > 1000) {
+        throw new Error("COD not available for orders above ₹1000");
+    }
+
+    // const orderNumber = "ORD-" + Date.now() + Math.floor(Math.random() * 1000);
+
+
+    // Generates something like ORD-20240131-A7XC2
+    const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+    const randomPart = Math.random().toString(36).substring(2, 7).toUpperCase();
+    const orderNumber = `ORD-${datePart}-${randomPart}`;
+
+    let orderStatus = "pending";
+    if (paymentMethod === "Wallet") {
+        await debitWallet(userId, finalPayable, "Order Payment - " + orderNumber);
+        orderStatus = "processing";
+    }
+
+    const newOrder = new Order({
+        user_id: userId,
+        status: orderStatus,
+        subtotal: totalMrpPrice,
+        offer_discount: totalOfferSavings,
+        discount_amount: couponDiscount,
+        final_total: finalPayable,
+        coupon_id: couponData ? couponData._id : null,
+        order_number: orderNumber,
+        address_id: addressId,
+        shipping_address_snapshot: {
+            name: address.name,
+            address_line1: address.address_line1,
+            address_line2: address.address_line2,
+            city: address.city,
+            state: address.state,
+            postal_code: address.postal_code,
+            phone: address.phone,
+            alt_phone: address.alt_phone
+        },
+        payment_method: paymentMethod,
+        items: orderItems,
+        payment_id: null
+    });
+
+    await newOrder.save();
+
+    if (couponData && couponData._id) {
+        await Coupon.findByIdAndUpdate(couponData._id, {
+            $addToSet: { used_by: userId }
+        });
+    }
+
+    for (const item of validItems) {
+        await Variant.findByIdAndUpdate(item.variant_id._id, {
+            $inc: { stock: -item.quantity }
+        });
+    }
+
+    await Cart.findOneAndDelete({ user_id: userId });
+
+    return newOrder;
+};
 
 
 
@@ -295,8 +290,8 @@ const validateCoupon = async (userId, code) => {
 
 
     if (coupon.used_by.some(id => id.toString() === userId.toString())) {
-    throw new Error("You have already used this coupon");
-}
+        throw new Error("You have already used this coupon");
+    }
 
 
 
@@ -306,132 +301,121 @@ const validateCoupon = async (userId, code) => {
 
 
 const createRazorpayOrderService = async (userId, addressId, couponData) => {
-    try {
-
-        const cart = await Cart.findOne({ user_id: userId }).populate("items.variant_id").populate("items.product_id");
-        if (!cart || cart.items.length === 0) throw new Error("Cart is empty");
+    const cart = await Cart.findOne({ user_id: userId }).populate("items.variant_id").populate("items.product_id");
+    if (!cart || cart.items.length === 0) throw new Error("Cart is empty");
 
 
-        const validItems = cart.items.filter(item => {
-            return item.variant_id &&
-                item.variant_id.stock >= item.quantity &&
-                item.product_id &&
-                !item.product_id.isDeleted &&
-                item.product_id.isListed;
+    const validItems = cart.items.filter(item => {
+        return item.variant_id &&
+            item.variant_id.stock >= item.quantity &&
+            item.product_id &&
+            !item.product_id.isDeleted &&
+            item.product_id.isListed;
+    });
+    if (validItems.length === 0) throw new Error("No available items in cart");
+
+
+
+    const address = await Address.findById(addressId);
+    if (!address) throw new Error("Address not found");
+
+    let totalOfferPrice = 0;
+    let totalMrpPrice = 0;
+    const orderItems = [];
+
+
+
+    for (const item of validItems) {
+        const originalMRP = item.variant_id.price;
+        const { finalPrice } = await calculateFinalPrice(item.product_id, originalMRP);
+        totalOfferPrice += item.quantity * finalPrice;
+        totalMrpPrice += item.quantity * originalMRP;
+
+        orderItems.push({
+            product_id: item.product_id,
+            variant_id: item.variant_id._id,
+            quantity: item.quantity,
+            unit_price: finalPrice,
+            original_price: originalMRP,
+
+            total_amount: item.quantity * finalPrice,
+            name_snapshot: item.name_snapshot,
+            status: "Payment Pending"
         });
-        if (validItems.length === 0) throw new Error("No available items in cart");
-
-
-
-        const address = await Address.findById(addressId);
-        if (!address) throw new Error("Address not found");
-
-        let totalOfferPrice = 0;
-        let totalMrpPrice = 0;
-        const orderItems = [];
-
-
-
-        for (const item of validItems) {
-            const originalMRP = item.variant_id.price;
-            const { finalPrice } = await calculateFinalPrice(item.product_id, originalMRP);
-            totalOfferPrice += item.quantity * finalPrice;
-            totalMrpPrice += item.quantity * originalMRP;
-
-            orderItems.push({
-                product_id: item.product_id,
-                variant_id: item.variant_id._id,
-                quantity: item.quantity,
-                unit_price: finalPrice,
-                original_price: originalMRP,
-
-                total_amount: item.quantity * finalPrice,
-                name_snapshot: item.name_snapshot,
-                status: 'Payment Pending'
-            });
-        }
-
-        let totalOfferSaving = totalMrpPrice - totalOfferPrice;
-
-        let couponDiscount = couponData ? couponData.discount : 0;
-        let finalPayable = totalOfferPrice - couponDiscount;
-
-        // 3. Create RAZORPAY ID
-        const instance = new Razorpay({
-            key_id: process.env.RAZORPAY_KEY_ID,
-            key_secret: process.env.RAZORPAY_KEY_SECRET,
-        });
-
-        const options = {
-            amount: Math.round(finalPayable * 100),
-            currency: "INR",
-            receipt: "order_rcptid_" + Date.now()
-        };
-        const rzpOrder = await instance.orders.create(options);
-
-        const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-const randomPart = Math.random().toString(36).substring(2, 7).toUpperCase();
-// Update inside the new Order({...}) object:
-const order_number= `ORD-${datePart}-${randomPart}`
-
-
-        const newOrder = new Order({
-            user_id: userId,
-            status: "Payment Pending",
-            subtotal: totalMrpPrice,
-            offer_discount: totalOfferSaving,
-            discount_amount: couponDiscount,
-            final_total: finalPayable,
-            order_number: order_number,
-            address_id: addressId,
-            shipping_address_snapshot: { ...address.toObject() },
-            payment_method: "Online",
-            items: orderItems,
-
-            razorpay_order_id: rzpOrder.id
-        });
-
-        console.log("finalPayable:",finalPayable);
-
-        await newOrder.save();
-
-        return rzpOrder; // Return ID to frontend
-    } catch (error) {
-        throw error;
     }
+
+    let totalOfferSaving = totalMrpPrice - totalOfferPrice;
+
+    let couponDiscount = couponData ? couponData.discount : 0;
+    let finalPayable = totalOfferPrice - couponDiscount;
+
+    // 3. Create RAZORPAY ID
+    const instance = new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_KEY_SECRET,
+    });
+
+    const options = {
+        amount: Math.round(finalPayable * 100),
+        currency: "INR",
+        receipt: "order_rcptid_" + Date.now()
+    };
+    const rzpOrder = await instance.orders.create(options);
+
+    const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+    const randomPart = Math.random().toString(36).substring(2, 7).toUpperCase();
+    // Update inside the new Order({...}) object:
+    const order_number = `ORD-${datePart}-${randomPart}`;
+
+
+    const newOrder = new Order({
+        user_id: userId,
+        status: "Payment Pending",
+        subtotal: totalMrpPrice,
+        offer_discount: totalOfferSaving,
+        discount_amount: couponDiscount,
+        final_total: finalPayable,
+        order_number: order_number,
+        address_id: addressId,
+        shipping_address_snapshot: { ...address.toObject() },
+        payment_method: "Online",
+        items: orderItems,
+
+        razorpay_order_id: rzpOrder.id
+    });
+
+    console.log("finalPayable:", finalPayable);
+
+    await newOrder.save();
+
+    return rzpOrder; // Return ID to frontend
 };
 
 
 
 const retryPaymentService = async (orderId) => {
-    try {
-        const order = await Order.findById(orderId);
-        if (!order) throw new Error("Order not found");
+    const order = await Order.findById(orderId);
+    if (!order) throw new Error("Order not found");
 
-        const instance = new Razorpay({
-            key_id: process.env.RAZORPAY_KEY_ID,
-            key_secret: process.env.RAZORPAY_KEY_SECRET
-        });
+    const instance = new Razorpay({
+        key_id: process.env.RAZORPAY_KEY_ID,
+        key_secret: process.env.RAZORPAY_KEY_SECRET
+    });
 
-        const options = {
-            amount: Math.round(order.final_total * 100),
-            currency: "INR", receipt: "retry_rcptid_" + Date.now()
-        };
+    const options = {
+        amount: Math.round(order.final_total * 100),
+        currency: "INR", receipt: "retry_rcptid_" + Date.now()
+    };
 
-        const rzpOrder = await instance.orders.create(options);
+    const rzpOrder = await instance.orders.create(options);
 
-        order.razorpay_order_id = rzpOrder.id;
-        order.status = "Payment Pending";
+    order.razorpay_order_id = rzpOrder.id;
+    order.status = "Payment Pending";
 
-        await order.save();
+    await order.save();
 
-        return { ...rzpOrder, address_id: order.address_id };
-    } catch (error) {
-
-        throw error;
-
-    }
-}
+    return { ...rzpOrder, address_id: order.address_id };
+};
 
 
 
@@ -441,4 +425,4 @@ module.exports = {
     validateCoupon,
     createRazorpayOrderService,
     retryPaymentService
-}
+};

@@ -13,7 +13,7 @@ const validateCouponData = (data) => {
     const minCart = parseFloat(data.mincart_value) || 0;
     if (minCart < 0) throw new Error("Minimum cart value cannot be negative");
 
-    if (data.discount_type === 'Percentage') {
+    if (data.discount_type === "Percentage") {
         if (data.discount_value > 90) throw new Error("Percentage discount cannot exceed 90%");
     } else {
         if (data.discount_value > 10000) throw new Error("Fixed discount seems too high");

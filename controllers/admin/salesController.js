@@ -10,13 +10,13 @@ const loadReport = async (req, res) => {
     try {
 
 
-        const { period = 'daily', startDate, endDate, page = 1 } = req.query;
+        const { period = "daily", startDate, endDate, page = 1 } = req.query;
 
         const sDate = new Date(startDate);
         const eDate = new Date(endDate);
         const today = new Date();
         // 2. The "Proper" Validation Block
-        if (period === 'custom') {
+        if (period === "custom") {
             // Check if dates are valid (not 'ABC' or empty)
             if (isNaN(sDate.getTime()) || isNaN(eDate.getTime())) {
                 return res.status(statusCode.BAD_REQUEST).render("salesReport", {
@@ -55,7 +55,7 @@ const loadReport = async (req, res) => {
             },
             filters: { period, startDate, endDate }, totalPages: data.totalPages,
             currentPage: data.currentPage,
-            activePage: 'salesReport'
+            activePage: "salesReport"
         });
     } catch (error) { console.error(error); res.status(statusCode.INTERNAL_SERVER_ERROR).send("Error"); }
 };
@@ -69,8 +69,8 @@ const downloadExcel = async (req, res) => {
         const buffer = await generateExcel(data);
 
 
-        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.setHeader('Content-Disposition', 'attachment; filename=sales-report.xlsx');
+        res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        res.setHeader("Content-Disposition", "attachment; filename=sales-report.xlsx");
         res.status(statusCode.OK).send(buffer);
     } catch (error) { console.error(error); res.status(statusCode.INTERNAL_SERVER_ERROR).send("Excel Error"); }
 };
@@ -80,12 +80,12 @@ const downloadPDF = async (req, res) => {
         const { period, startDate, endDate } = req.query;
 
         const data = await getSalesReport({ period, startDate, endDate, isDownload: true });
-        const buffer = await generatePDF(data, period || 'Custom');
+        const buffer = await generatePDF(data, period || "Custom");
 
 
 
-        res.setHeader('Content-Type', 'application/pdf');
-        res.setHeader('Content-Disposition', 'attachment; filename=sales-report.pdf');
+        res.setHeader("Content-Type", "application/pdf");
+        res.setHeader("Content-Disposition", "attachment; filename=sales-report.pdf");
         res.status(statusCode.OK).send(buffer);
     } catch (error) { console.error(error); res.status(statusCode.INTERNAL_SERVER_ERROR).send("PDF Error"); }
 };

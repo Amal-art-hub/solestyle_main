@@ -1,10 +1,10 @@
 
 const User = require("../../models/user");
-const Product = require('../../models/product');
-const Variant = require('../../models/varient');
-const Brand = require('../../models/brand');
-const Category = require('../../models/category');
-const Feedback = require('../../models/feedback');
+const Product = require("../../models/product");
+const Variant = require("../../models/varient");
+const Brand = require("../../models/brand");
+const Category = require("../../models/category");
+const Feedback = require("../../models/feedback");
 const Offers = require("../../models/offers");
 const mongoose = require("mongoose");
 
@@ -21,7 +21,7 @@ const getFilterOptions = async () => {
 const calculateFinalPrice = async (product, originalPrice) => {
     const today = new Date();
     const activeOffers = await Offers.find({
-        status: 'active',
+        status: "active",
         start_date: { $lte: today },
         end_date: { $gte: today }
     });
@@ -33,13 +33,13 @@ const calculateFinalPrice = async (product, originalPrice) => {
         let matchFound = false;
 
         // Check Product Match
-        if (offer.type === 'product' && offer.product_ids.some(id => id.toString() === product._id.toString())) {
+        if (offer.type === "product" && offer.product_ids.some(id => id.toString() === product._id.toString())) {
             matchFound = true;
         }
 
         // Check Category Match
         const catId = product.categoryId._id ? product.categoryId._id.toString() : product.categoryId.toString();
-        if (offer.type === 'category' && offer.category_ids.map(id => id.toString()).includes(catId)) {
+        if (offer.type === "category" && offer.category_ids.map(id => id.toString()).includes(catId)) {
             matchFound = true;
         }
 
@@ -129,156 +129,151 @@ const calculateFinalPrice = async (product, originalPrice) => {
 
 
 
-const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = '', sort = 'newest', filters = {}) => {
-    try {
-        const skip = (page - 1) * limit;
+const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = "", sort = "newest", filters = {}) => {
+    const skip = (page - 1) * limit;
 
-        // --- STAGE 1: MATCH (Filter Products) ---
-        // Just like .find(), we start by narrowing down the products.
-        let matchStage = {
-            isListed: true,
-            categoryId: new mongoose.Types.ObjectId(categoryId)
-        };
+    // --- STAGE 1: MATCH (Filter Products) ---
+    // Just like .find(), we start by narrowing down the products.
+    let matchStage = {
+        isListed: true,
+        categoryId: new mongoose.Types.ObjectId(categoryId)
+    };
 
-        if (search) {
-            matchStage.$or = [
-                { name: { $regex: search, $options: "i" } },
-                { description: { $regex: search, $options: "i" } }
-            ];
-        }
+    if (search) {
+        matchStage.$or = [
+            { name: { $regex: search, $options: "i" } },
+            { description: { $regex: search, $options: "i" } }
+        ];
+    }
 
-        // if (filters.brand) {
-        //     matchStage.brandId = new mongoose.Types.ObjectId(filters.brand);
-        // }
+    // if (filters.brand) {
+    //     matchStage.brandId = new mongoose.Types.ObjectId(filters.brand);
+    // }
 
-        if (filters.brand) {
+    if (filters.brand) {
 
-            const brandIds = Array.isArray(filters.brand)
-                ? filters.brand.map(id => new mongoose.Types.ObjectId(id))
-                : [new mongoose.Types.ObjectId(filters.brand)];
+        const brandIds = Array.isArray(filters.brand)
+            ? filters.brand.map(id => new mongoose.Types.ObjectId(id))
+            : [new mongoose.Types.ObjectId(filters.brand)];
 
-            matchStage.brandId = { $in: brandIds };
-        }
+        matchStage.brandId = { $in: brandIds };
+    }
 
-        // --- STAGE 2: SORT SETUP ---
-        // We define how we WANT to sort, so we can use it later in the pipeline.
-        let sortStage = {};
-        if (sort === 'price-low') {
-            sortStage['variantDetails.price'] = 1; // Sort by the JOINED price
-        } else if (sort === 'price-high') {
-            sortStage['variantDetails.price'] = -1;
-        } else if (sort === "a-z") {
-            sortStage['name'] = 1;
-        } else if (sort === "z-a") {
-            sortStage['name'] = -1;
-        } else {
-            sortStage['createdAt'] = -1;
-        }
+    // --- STAGE 2: SORT SETUP ---
+    // We define how we WANT to sort, so we can use it later in the pipeline.
+    let sortStage = {};
+    if (sort === "price-low") {
+        sortStage["variantDetails.price"] = 1; // Sort by the JOINED price
+    } else if (sort === "price-high") {
+        sortStage["variantDetails.price"] = -1;
+    } else if (sort === "a-z") {
+        sortStage["name"] = 1;
+    } else if (sort === "z-a") {
+        sortStage["name"] = -1;
+    } else {
+        sortStage["createdAt"] = -1;
+    }
 
-        // --- STAGE 3: THE PIPELINE (The "Assembly Line") ---
-        const pipeline = [
-            // 1. Filter Products first (Efficiency!)
-            { $match: matchStage },
+    // --- STAGE 3: THE PIPELINE (The "Assembly Line") ---
+    const pipeline = [
+        // 1. Filter Products first (Efficiency!)
+        { $match: matchStage },
 
-            // 2. LOOKUP ( The Magic Part ✨ )
-            // Go to the 'variants' collection and find the CHEAPEST variant for this product.
-            {
-                $lookup: {
-                    from: "variants",
-                    let: { pid: "$_id" },
-                    pipeline: [
-                        {
-                            $match: {
-                                $expr: {
-                                    $and: [
-                                        { $eq: ["$productId", "$$pid"] }, // Match Product ID
-                                        { $eq: ["$isListed", true] }      // Must be listed
-                                    ]
-                                }
+        // 2. LOOKUP ( The Magic Part ✨ )
+        // Go to the 'variants' collection and find the CHEAPEST variant for this product.
+        {
+            $lookup: {
+                from: "variants",
+                let: { pid: "$_id" },
+                pipeline: [
+                    {
+                        $match: {
+                            $expr: {
+                                $and: [
+                                    { $eq: ["$productId", "$$pid"] }, // Match Product ID
+                                    { $eq: ["$isListed", true] }      // Must be listed
+                                ]
                             }
-                        },
-                        { $sort: { price: 1 } }, // Sort variants by price...
-                        { $limit: 1 }            // ...and keep only the cheapest one.
-                    ],
-                    as: "variantDetails"
-                }
-            },
+                        }
+                    },
+                    { $sort: { price: 1 } }, // Sort variants by price...
+                    { $limit: 1 }            // ...and keep only the cheapest one.
+                ],
+                as: "variantDetails"
+            }
+        },
 
-            // 3. UNWIND (Flatten the array)
-            // If a product has NO listed variants, it gets removed here. Good!
-            { $unwind: "$variantDetails" },
+        // 3. UNWIND (Flatten the array)
+        // If a product has NO listed variants, it gets removed here. Good!
+        { $unwind: "$variantDetails" },
 
-            // 4. PRICE FILTER
-            // Now that we have the price attached to the product, we can filter!
-            ...(filters.minPrice || filters.maxPrice ? [{
-                $match: {
-                    "variantDetails.price": {
-                        ...(filters.minPrice ? { $gte: parseFloat(filters.minPrice) } : {}),
-                        ...(filters.maxPrice ? { $lte: parseFloat(filters.maxPrice) } : {})
-                    }
-                }
-            }] : []),
-
-            // 5. SORT (Finally!)
-            // Now we sort the FULLY filtered list.
-            { $sort: sortStage },
-
-            // 6. PAGINATION (Facet)
-            // We need to Count specific filtered items AND get the Data for this page.
-            {
-                $facet: {
-                    metadata: [{ $count: "total" }],
-                    data: [
-                        { $skip: skip },
-                        { $limit: limit },
-                        // Populating Brand & Category again (since lookup strips them)
-                        { $lookup: { from: "brands", localField: "brandId", foreignField: "_id", as: "brandId" } },
-                        { $unwind: "$brandId" },
-                        { $lookup: { from: "categories", localField: "categoryId", foreignField: "_id", as: "categoryId" } },
-                        { $unwind: "$categoryId" }
-                    ]
+        // 4. PRICE FILTER
+        // Now that we have the price attached to the product, we can filter!
+        ...(filters.minPrice || filters.maxPrice ? [{
+            $match: {
+                "variantDetails.price": {
+                    ...(filters.minPrice ? { $gte: parseFloat(filters.minPrice) } : {}),
+                    ...(filters.maxPrice ? { $lte: parseFloat(filters.maxPrice) } : {})
                 }
             }
-        ];
+        }] : []),
 
-        // Execute the Pipeline
-        const result = await Product.aggregate(pipeline);
+        // 5. SORT (Finally!)
+        // Now we sort the FULLY filtered list.
+        { $sort: sortStage },
 
-        // Extract Data
-        const metadata = result[0].metadata;
-        const totalProducts = metadata.length > 0 ? metadata[0].total : 0;
-        const products = result[0].data;
+        // 6. PAGINATION (Facet)
+        // We need to Count specific filtered items AND get the Data for this page.
+        {
+            $facet: {
+                metadata: [{ $count: "total" }],
+                data: [
+                    { $skip: skip },
+                    { $limit: limit },
+                    // Populating Brand & Category again (since lookup strips them)
+                    { $lookup: { from: "brands", localField: "brandId", foreignField: "_id", as: "brandId" } },
+                    { $unwind: "$brandId" },
+                    { $lookup: { from: "categories", localField: "categoryId", foreignField: "_id", as: "categoryId" } },
+                    { $unwind: "$categoryId" }
+                ]
+            }
+        }
+    ];
 
-        // --- STAGE 4: FORMATTING (Calculations) ---
-        // We still calculate final offers in JS because it's complex logic.
-        const processedProducts = await Promise.all(products.map(async (p) => {
-            const variant = p.variantDetails;
-            const { finalPrice, bestDiscount, isExpiringSoon } = await calculateFinalPrice(p, variant.price);
+    // Execute the Pipeline
+    const result = await Product.aggregate(pipeline);
 
-            return {
-                ...p,
-                image: (variant.images && variant.images.length >= 3) ? variant.images[2] : (variant.images[0] || "default.jpg"), // Matches your logic (3rd image)
-                price: finalPrice,
-                originalPrice: variant.price,
-                discount: bestDiscount,
-                stock: variant.stock,
-                variantId: variant._id,
-                isExpiringSoon: isExpiringSoon
-            };
-        }));
+    // Extract Data
+    const metadata = result[0].metadata;
+    const totalProducts = metadata.length > 0 ? metadata[0].total : 0;
+    const products = result[0].data;
+
+    // --- STAGE 4: FORMATTING (Calculations) ---
+    // We still calculate final offers in JS because it's complex logic.
+    const processedProducts = await Promise.all(products.map(async (p) => {
+        const variant = p.variantDetails;
+        const { finalPrice, bestDiscount, isExpiringSoon } = await calculateFinalPrice(p, variant.price);
 
         return {
-            products: processedProducts,
-            currentPage: page,
-            totalPages: Math.ceil(totalProducts / limit),
-            totalProducts,
-            filterOptions: await getFilterOptions()
+            ...p,
+            image: (variant.images && variant.images.length >= 3) ? variant.images[2] : (variant.images[0] || "default.jpg"), // Matches your logic (3rd image)
+            price: finalPrice,
+            originalPrice: variant.price,
+            discount: bestDiscount,
+            stock: variant.stock,
+            variantId: variant._id,
+            isExpiringSoon: isExpiringSoon
         };
+    }));
 
-    } catch (error) {
-        throw error;
-    }
-}
+    return {
+        products: processedProducts,
+        currentPage: page,
+        totalPages: Math.ceil(totalProducts / limit),
+        totalProducts,
+        filterOptions: await getFilterOptions()
+    };
+};
 
 
 
@@ -416,7 +411,7 @@ const getProductDetailService = async (productId) => {
 
 
     const reviews = await Feedback.find({ product_id: product._id })
-        .populate('user_id', 'name')
+        .populate("user_id", "name")
         .sort({ createdAt: -1 })
         .lean();
 
@@ -429,48 +424,43 @@ const getProductDetailService = async (productId) => {
     return { product, variants, relatedProducts: relatedWithImage, reviews, avgRating };
 
 
-}
+};
 
 
 const getTrendingProducts = async () => {
-    try {
+    const fetchByCategory = async (categoryName) => {
 
-        const fetchByCategory = async (categoryName) => {
+        const category = await Category.findOne({ name: categoryName, isListed: true });
+        if (!category) return [];
+        const products = await Product.find({ categoryId: category._id, isListed: true })
+            .sort({ createdAt: -1 })
+            .limit(3)
+            .lean();
 
-            const category = await Category.findOne({ name: categoryName, isListed: true });
-            if (!category) return [];
-            const products = await Product.find({ categoryId: category._id, isListed: true })
-                .sort({ createdAt: -1 })
-                .limit(3)
-                .lean();
+        const processed = await Promise.all(products.map(async (p) => {
+            const variant = await Variant.findOne({ productId: p._id, isListed: true }).sort({ price: 1 });
+            if (variant) {
+                return {
+                    ...p,
+                    image: variant.images[2],
+                    price: variant.price,
+                    offerPrice: variant.offerPrice
+                };
+            }
+            return null;
+        }));
 
-            const processed = await Promise.all(products.map(async (p) => {
-                const variant = await Variant.findOne({ productId: p._id, isListed: true }).sort({ price: 1 });
-                if (variant) {
-                    return {
-                        ...p,
-                        image: variant.images[2],
-                        price: variant.price,
-                        offerPrice: variant.offerPrice
-                    };
-                }
-                return null;
-            }));
+        return processed.filter(p => p !== null);
+    };
 
-            return processed.filter(p => p !== null);
-        };
+    const [men, women, kids] = await Promise.all([
+        fetchByCategory("Men"),
+        fetchByCategory("Women"),
+        fetchByCategory("Kids")
+    ]);
 
-        const [men, women, kids] = await Promise.all([
-            fetchByCategory('Men'),
-            fetchByCategory('Women'),
-            fetchByCategory('Kids')
-        ]);
-
-        return { men, women, kids };
-    } catch (error) {
-        throw error;
-    }
-}
+    return { men, women, kids };
+};
 
 
 
@@ -481,4 +471,4 @@ module.exports = {
     getProductDetailService,
     getTrendingProducts,
     calculateFinalPrice
-}
+};

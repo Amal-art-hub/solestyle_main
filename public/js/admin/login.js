@@ -1,25 +1,25 @@
 console.log("Admin login.js loaded!");
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener("DOMContentLoaded", () => {
     // ---------------- Password Toggle ----------------
-    const passwordInput = document.getElementById('password');
-    const toggleIcon = document.querySelector('.password-toggle');
+    const passwordInput = document.getElementById("password");
+    const toggleIcon = document.querySelector(".password-toggle");
 
     if (toggleIcon && passwordInput) {
-        toggleIcon.addEventListener('click', () => {
-            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            passwordInput.setAttribute('type', type);
+        toggleIcon.addEventListener("click", () => {
+            const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
+            passwordInput.setAttribute("type", type);
 
-            toggleIcon.classList.toggle('fa-eye');
-            toggleIcon.classList.toggle('fa-eye-slash');
+            toggleIcon.classList.toggle("fa-eye");
+            toggleIcon.classList.toggle("fa-eye-slash");
         });
     }
 
     // ---------------- Admin Login Using Axios ----------------
-    const form = document.getElementById('adminLoginForm');
+    const form = document.getElementById("adminLoginForm");
 
     if (form) {
-        form.addEventListener('submit', async (e) => {
+        form.addEventListener("submit", async (e) => {
             e.preventDefault();  // stop default form submit
 
             const email = document.getElementById("email-username").value.trim();

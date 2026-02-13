@@ -1,7 +1,7 @@
 const multer = require("multer");
 const path = require("path");
-const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 // 1. Configure Cloudinary
 cloudinary.config({
@@ -26,9 +26,9 @@ const variantStorage = multer.diskStorage({
 const bannerStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'solestyle/banners',
-    allowed_formats: ['jpg', 'png', 'webp', 'mp4'],
-    resource_type: 'auto'
+    folder: "solestyle/banners",
+    allowed_formats: ["jpg", "png", "webp", "mp4"],
+    resource_type: "auto"
   }
 });
 
@@ -38,8 +38,8 @@ const bannerStorage = new CloudinaryStorage({
 const variantCloudStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'solestyle/variants',
-    allowed_formats: ['jpg', 'png', 'webp'],
+    folder: "solestyle/variants",
+    allowed_formats: ["jpg", "png", "webp"],
   }
 });
 

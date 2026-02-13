@@ -7,7 +7,7 @@ const Category = require("../../models/category");
 
 
 
-const validateOfferData = (data) => {
+const validateOfferData = (data,isUpdate = false) => {
 
     if (!data.name || data.name.trim() === "") {
         throw new Error("Offer Name is required");
@@ -40,11 +40,11 @@ const validateOfferData = (data) => {
         throw new Error("End Date cannot be before Start Date");
     }
 
-    if (data.type === 'product') {
+    if (data.type === "product") {
         if (!data.product_ids || data.product_ids.length === 0) {
             throw new Error("Please select at least one Product for a Product Offer");
         }
-    } else if (data.type === 'category') {
+    } else if (data.type === "category") {
         if (!data.category_ids || data.category_ids.length === 0) {
             throw new Error("Please select at least one Category for a Category Offer");
         }
@@ -67,13 +67,13 @@ const listOffers = async (page = 1, limit = 10, search = "") => {
         offers,
         totalPages: Math.ceil(count / limit),
         currentPage: page
-    }
-}
+    };
+};
 
 const getAddOfferService = async () => {
     try {
-        const products = await Product.find({ isListed: true }, 'name _id');
-        const categories = await Category.find({ isListed: true }, 'name _id');
+        const products = await Product.find({ isListed: true }, "name _id");
+        const categories = await Category.find({ isListed: true }, "name _id");
         return {
             products,
             categories
@@ -83,7 +83,7 @@ const getAddOfferService = async () => {
         console.error(error);
         throw error;
     }
-}
+};
 
 
 const createOfferService = async (data) => {
@@ -102,7 +102,7 @@ const createOfferService = async (data) => {
         const isCategory = data.type === "category";
         const targetIds = isCategory ? data.category_ids : data.product_ids;
         const idField = isCategory ? "category_ids" : "product_ids";
-        const populateField = isCategory ? 'category_ids' : 'product_ids';
+        const populateField = isCategory ? "category_ids" : "product_ids";
 
 
 
@@ -121,14 +121,14 @@ const createOfferService = async (data) => {
                     if (targetIds.includes(item._id.toString())) {
                         conflictingNames.push(item.name);
                     }
-                })
+                });
             });
             const uniqueConflicts = [...new Set(conflictingNames)];
 
 
             if (!data.override) {
-                const error = new Error(`Overlap detected for: ${uniqueConflicts.join(', ')}`);
-                error.type = 'CONFLICT';
+                const error = new Error(`Overlap detected for: ${uniqueConflicts.join(", ")}`);
+                error.type = "CONFLICT";
                 error.conflicts = uniqueConflicts;
                 throw error;
             }
@@ -140,7 +140,7 @@ const createOfferService = async (data) => {
                 );
 
                 if (oldOffer[idField].length === 0) {
-                    oldOffer.status = 'inactive';
+                    oldOffer.status = "inactive";
                 }
 
                 await oldOffer.save();
@@ -178,14 +178,14 @@ const getOfferById = async (id) => {
 
 const updateOfferService = async (id, data) => {
 
-    validateOfferData(data);
+    validateOfferData(data,true);
 
 
     if (data.type === "category" || data.type === "product") {
         const isCategory = data.type === "category";
         const targetIds = isCategory ? data.category_ids : data.product_ids;
         const idField = isCategory ? "category_ids" : "product_ids";
-        const populateField = isCategory ? 'category_ids' : 'product_ids';
+        const populateField = isCategory ? "category_ids" : "product_ids";
 
 
 
@@ -204,14 +204,14 @@ const updateOfferService = async (id, data) => {
                     if (targetIds.includes(item._id.toString())) {
                         conflictingNames.push(item.name);
                     }
-                })
+                });
             });
             const uniqueConflicts = [...new Set(conflictingNames)];
 
 
             if (!data.override) {
-                const error = new Error(`Overlap detected for: ${uniqueConflicts.join(', ')}`);
-                error.type = 'CONFLICT';
+                const error = new Error(`Overlap detected for: ${uniqueConflicts.join(", ")}`);
+                error.type = "CONFLICT";
                 error.conflicts = uniqueConflicts;
                 throw error;
             }
@@ -223,12 +223,12 @@ const updateOfferService = async (id, data) => {
                 );
 
                 if (oldOffer[idField].length === 0) {
-                    oldOffer.status = 'inactive';
+                    oldOffer.status = "inactive";
                 }
 
                 await oldOffer.save();
 
-                console.log("succes in update the earlier one")
+                console.log("succes in update the earlier one");
             }
 
 
@@ -245,11 +245,11 @@ const updateOfferService = async (id, data) => {
             return offer;
         };
    
-}
+};
 
 const deleteOfferService = async (id) => {
     return await Offers.findByIdAndDelete(id);
-}
+};
 
 
 module.exports = {
@@ -259,4 +259,4 @@ module.exports = {
     getOfferById,
     updateOfferService,
     deleteOfferService
-}
+};

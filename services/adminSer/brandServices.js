@@ -24,7 +24,7 @@ const getAllBrands = async (page = 1, limit = 4, search = "") => {
             totalBrands
         };
     } catch (error) {
-        throw new Error("Error fetching brands: " + error.message);
+        throw new Error("Error fetching brands: " + error.message, { cause: error });
     }
 };
 
@@ -48,7 +48,7 @@ const editBrand = async (id, name, description) => {
         return { success: true, message: "Brand updated successfully" };
 
     } catch (error) {
-        throw new Error("Error updating brand: " + error.message);
+        throw new Error("Error updating brand: " + error.message, { cause: error });
     }
 };
 
@@ -68,7 +68,7 @@ const createBrand = async (name) => {
         return { success: true, message: "Brand added successfully" };
 
     } catch (error) {
-        throw new Error("Error creating brand: " + error.message);
+        throw new Error("Error creating brand: " + error.message, { cause: error });
     }
 };
 
@@ -96,7 +96,7 @@ const toggleBrandStatus = async (id) => {
         return { success: true, status: !brand.isListed }; // returns isBlocked status essentially
 
     } catch (error) {
-        throw new Error("Error toggling brand status: " + error.message);
+        throw new Error("Error toggling brand status: " + error.message, { cause: error });
     }
 };
 

@@ -1,7 +1,7 @@
 // 1. Update Quantity
 async function updateQty(itemId, action) {
     try {
-        const response = await axios.patch('/cart/update', {
+        const response = await axios.patch("/cart/update", {
             itemId: itemId,
             action: action
         });
@@ -14,17 +14,17 @@ async function updateQty(itemId, action) {
             }
 
             // B. Update the Final Totals in the summary box
-            const totalElement = document.getElementById('cart-total');
-            const subtotalElement = document.getElementById('cart-subtotal');
+            const totalElement = document.getElementById("cart-total");
+            const subtotalElement = document.getElementById("cart-subtotal");
             
-            if (totalElement) totalElement.innerText = '₹' + response.data.cartTotal;
-            if (subtotalElement) subtotalElement.innerText = '₹' + response.data.cartTotal;
+            if (totalElement) totalElement.innerText = "₹" + response.data.cartTotal;
+            if (subtotalElement) subtotalElement.innerText = "₹" + response.data.cartTotal;
 
             // C. Update the "Your Savings" section dynamically
             const savingsValue = response.data.totalSavings;
-            const savingsRow = document.getElementById('savings-row');
-            const savingsHr = document.getElementById('savings-hr');
-            const savingsDisplay = document.getElementById('total-savings');
+            const savingsRow = document.getElementById("savings-row");
+            const savingsHr = document.getElementById("savings-hr");
+            const savingsDisplay = document.getElementById("total-savings");
 
             if (savingsDisplay) {
                 savingsDisplay.innerText = savingsValue;
@@ -33,11 +33,11 @@ async function updateQty(itemId, action) {
             // Toggle visibility of the savings row based on value
             if (savingsRow && savingsHr) {
                 if (savingsValue > 0) {
-                    savingsRow.style.display = 'flex';
-                    savingsHr.style.display = 'block';
+                    savingsRow.style.display = "flex";
+                    savingsHr.style.display = "block";
                 } else {
-                    savingsRow.style.display = 'none';
-                    savingsHr.style.display = 'none';
+                    savingsRow.style.display = "none";
+                    savingsHr.style.display = "none";
                 }
             }
         }
@@ -48,10 +48,10 @@ async function updateQty(itemId, action) {
             : "Cannot update quantity";
             
         Swal.fire({
-            icon: 'warning',
-            title: 'Limit Reached',
+            icon: "warning",
+            title: "Limit Reached",
             text: msg,
-            position: 'center',
+            position: "center",
             showConfirmButton: false,
             timer: 3000
         });
@@ -61,13 +61,13 @@ async function updateQty(itemId, action) {
 // 2. Remove Item from Cart
 async function removeItem(itemId) {
     const result = await Swal.fire({
-        title: 'Remove Item?',
+        title: "Remove Item?",
         text: "Are you sure you want to remove this item?",
-        icon: 'warning',
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, remove it!'
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, remove it!"
     });
 
     if (result.isConfirmed) {
@@ -76,14 +76,14 @@ async function removeItem(itemId) {
             
             if (response.data.success) {
                 Swal.fire({
-                    icon: 'success',
-                    title: 'Removed!',
+                    icon: "success",
+                    title: "Removed!",
                     showConfirmButton: false,
                     timer: 1000
                 }).then(() => window.location.reload());
             }
         } catch (error) {
-            Swal.fire('Error', 'Failed to remove item', 'error');
+            Swal.fire("Error", "Failed to remove item", "error");
         }
     }
 }
@@ -91,13 +91,13 @@ async function removeItem(itemId) {
 
 function proceedToCheckout() {
    
-    const loader = document.getElementById('global-page-loader');
+    const loader = document.getElementById("global-page-loader");
     if (loader) {
-        loader.classList.remove('fade-out');
+        loader.classList.remove("fade-out");
     }
     
     
-    window.location.href = '/checkout';
+    window.location.href = "/checkout";
 }
 
 

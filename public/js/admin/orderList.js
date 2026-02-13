@@ -2,20 +2,20 @@
 async function updateStatus(orderId, newStatus) {
     try {
         const result = await Swal.fire({
-            title: 'Are you sure?',
+            title: "Are you sure?",
             text: `Do you want to change order status to "${newStatus}"?`,
-            icon: 'question',
+            icon: "question",
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, change it!'
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, change it!"
         });
 
         if (result.isConfirmed) {
-            const response = await fetch('/admin/orders/update-status', {
-                method: 'PATCH',
+            const response = await fetch("/admin/orders/update-status", {
+                method: "PATCH",
                 headers: {
-                    'Content-Type': 'application/json'
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({ orderId, status: newStatus })
             });
@@ -23,10 +23,10 @@ async function updateStatus(orderId, newStatus) {
             const data = await response.json();
 
             if (data.success) {
-                await Swal.fire('Updated!', 'Order status has been updated.', 'success');
+                await Swal.fire("Updated!", "Order status has been updated.", "success");
                 
                 const selectElement = document.querySelector(`select[data-order-id="${orderId}"]`);
-                selectElement.className = `status-badge status-${newStatus.replace(/\s+/g, '-')}`;
+                selectElement.className = `status-badge status-${newStatus.replace(/\s+/g, "-")}`;
             } else {
                 throw new Error(data.message);
             }
@@ -34,8 +34,8 @@ async function updateStatus(orderId, newStatus) {
             location.reload(); 
         }
     } catch (error) {
-        console.error('Error:', error);
-        Swal.fire('Error!', 'Failed to update status: ' + error.message, 'error');
+        console.error("Error:", error);
+        Swal.fire("Error!", "Failed to update status: " + error.message, "error");
     }
 }
 
@@ -43,13 +43,13 @@ async function updateStatus(orderId, newStatus) {
 const modal = document.getElementById("orderModal");
 const span = document.getElementsByClassName("close-modal")[0];
 
-span.onclick = function() { modal.style.display = "none"; }
-window.onclick = function(event) { if (event.target == modal) modal.style.display = "none"; }
+span.onclick = function() { modal.style.display = "none"; };
+window.onclick = function(event) { if (event.target == modal) modal.style.display = "none"; };
 
 async function viewOrderDetails(orderId) {
     const modalBody = document.getElementById("modalBody");
     modal.style.display = "block";
-    modalBody.innerHTML = '<div class="loading-spinner">Loading...</div>';
+    modalBody.innerHTML = "<div class=\"loading-spinner\">Loading...</div>";
 
     try {
         const response = await fetch(`/admin/orders/details/${orderId}`);
@@ -59,7 +59,7 @@ async function viewOrderDetails(orderId) {
             const order = data.order;
             
                        let itemsHtml = order.items.map(item => {
-                let actionButtons = '';
+                let actionButtons = "";
                 
                 // Logic to display the reason if it exists
                 // let reasonHtml = '';
@@ -70,10 +70,10 @@ async function viewOrderDetails(orderId) {
                 // }
 
                                 // Logic to display the reason with "Read More" for long text
-                                let reasonHtml = '';
+                                let reasonHtml = "";
                 if(item.return_reason) {
-                    const fullText = item.return_reason.replace(/"/g, '&quot;'); 
-                    const shortText = fullText.length > 50 ? fullText.substring(0, 50) + '...' : fullText;
+                    const fullText = item.return_reason.replace(/"/g, "&quot;"); 
+                    const shortText = fullText.length > 50 ? fullText.substring(0, 50) + "..." : fullText;
                     
                     /* FIXED LOGIC HERE: Using a dedicated function call instead of inline Swal */
                     const displayText = fullText.length > 50 
@@ -86,7 +86,7 @@ async function viewOrderDetails(orderId) {
                 }
 
                 // Logic to show Approve/Reject buttons
-                if (item.status === 'Return Request') {
+                if (item.status === "Return Request") {
                     actionButtons = `
                         <div style="margin-top: 5px;">
                             <span style="background: #ffc107; color: black; padding: 2px 6px; border-radius: 4px; font-size: 12px;">Return Request</span>
@@ -100,7 +100,7 @@ async function viewOrderDetails(orderId) {
 
                 return `
                 <li class="item" style="margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-                   <img src="/uploads/variant-images/${item.variant_id?.images?.[2] || 'default.jpg'}" alt="Item" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
+                   <img src="/uploads/variant-images/${item.variant_id?.images?.[2] || "default.jpg"}" alt="Item" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
                     <div>
                         <strong>${item.name_snapshot || item.product_id?.productName}</strong><br>
                         Qty: ${item.quantity} | Price: ₹${item.unit_price}
@@ -109,7 +109,7 @@ async function viewOrderDetails(orderId) {
                     </div>
                 </li>
             `;
-            }).join('');
+            }).join("");
             const content = `
                 <div class="detail-group">
                     <div class="detail-title">Order Info</div>
@@ -138,56 +138,56 @@ async function viewOrderDetails(orderId) {
             
             modalBody.innerHTML = content;
         } else {
-            modalBody.innerHTML = '<p class="error">Failed to load details</p>';
+            modalBody.innerHTML = "<p class=\"error\">Failed to load details</p>";
         }
     } catch (error) {
-        modalBody.innerHTML = '<p class="error">Error loading details</p>';
+        modalBody.innerHTML = "<p class=\"error\">Error loading details</p>";
     }
 }
 
 
 async function handleReturn(orderId, itemId, action) {
-    const url = action === 'approve' ?
-        '/admin/orders/approve-return' :
-        '/admin/orders/reject-return';
+    const url = action === "approve" ?
+        "/admin/orders/approve-return" :
+        "/admin/orders/reject-return";
 
     try {
         const result = await Swal.fire({
             title: `Are you sure you want to ${action}?`,
-            text: action === 'approve' ? "Funds will be refunded to the user's wallet." : "Return request will be rejected.",
-            icon: 'warning',
+            text: action === "approve" ? "Funds will be refunded to the user's wallet." : "Return request will be rejected.",
+            icon: "warning",
             showCancelButton: true,
-            confirmButtonText: 'Yes, proceed!',
-             confirmButtonColor: action === 'approve' ? '#28a745' : '#dc3545'
+            confirmButtonText: "Yes, proceed!",
+             confirmButtonColor: action === "approve" ? "#28a745" : "#dc3545"
         });
 
         if (result.isConfirmed) {
             const response = await fetch(url, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ orderId, itemId })
             });
 
             const data = await response.json();
 
             if (data.success) {
-                await Swal.fire('Success', data.message, 'success');
+                await Swal.fire("Success", data.message, "success");
                 viewOrderDetails(orderId); // Refresh modal to show updated status
             } else {
                 throw new Error(data.message);
             }
         }
     } catch (error) {
-        Swal.fire('Error', error.message || 'Something went wrong', 'error');
+        Swal.fire("Error", error.message || "Something went wrong", "error");
     }
 }
 
 /* Add this at the very bottom of orderList.js */
 function showReason(text) {
     Swal.fire({
-        title: 'Return Reason',
+        title: "Return Reason",
         text: text,
-        icon: 'info',
-        confirmButtonText: 'Close'
+        icon: "info",
+        confirmButtonText: "Close"
     });
 }

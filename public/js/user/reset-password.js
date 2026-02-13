@@ -30,8 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (newPass.value !== confirmPass.value) {
             Swal.fire({
-                icon: 'warning',
-                title: 'Mismatch',
+                icon: "warning",
+                title: "Mismatch",
                 text: "Passwords do not match!"
             });
             return;
@@ -59,8 +59,8 @@ document.addEventListener("DOMContentLoaded", () => {
         } catch (error) {
             console.error(error);
             Swal.fire({
-                icon: 'error',
-                title: 'Error',
+                icon: "error",
+                title: "Error",
                 text: error.response?.data?.message || "Failed to reset password"
             });
         }

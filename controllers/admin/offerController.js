@@ -42,7 +42,7 @@ const getAddOffer = async (req, res) => {
         console.error(error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).send("Error");
     }
-}
+};
 
 const addOffer = async (req, res) => {
     try {
@@ -52,7 +52,7 @@ const addOffer = async (req, res) => {
         console.error("Error adding offer:", error);
 
 
-        if (error.type === 'CONFLICT') {
+        if (error.type === "CONFLICT") {
             return res.status(statusCode.CONFLICT).json({
                 success: false,
                 message: error.message,
@@ -77,9 +77,10 @@ const getEditOffer = async (req, res) => {
         });
 
     } catch (error) {
-
+        console.error("Error fetching offer for edit:", error);
+        res.status(statusCode.INTERNAL_SERVER_ERROR).send("Error");
     }
-}
+};
 
 const updateOffer = async (req, res) => {
     try {
@@ -89,7 +90,7 @@ const updateOffer = async (req, res) => {
     } catch (error) {
         console.error("Error updating offer:", error);
 
-        if (error.type === 'CONFLICT') {
+        if (error.type === "CONFLICT") {
             return res.status(statusCode.CONFLICT).json({
                 success: false,
                 message: error.message,
@@ -99,7 +100,7 @@ const updateOffer = async (req, res) => {
 
         res.status(statusCode.BAD_REQUEST).json({ success: false, message: error.message || "Internal Server Error" });
     }
-}
+};
 
 const deleteOffer = async (req, res) => {
     try {
@@ -118,4 +119,4 @@ module.exports = {
     getEditOffer,
     updateOffer,
     deleteOffer
-}
+};

@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
   },
   referredBy: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
     default: null
   },
   // address_ids: [{ type: mongoose.Schema.Types.ObjectId, ref: "Address" }],
@@ -27,14 +27,10 @@ const userSchema = new mongoose.Schema({
 // Pre-save hook to hash password
 userSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
-  try {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(this.password, salt);
-    this.password = hashedPassword;
-    this.updatedAt = Date.now();
-  } catch (err) {
-    throw err;
-  }
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(this.password, salt);
+  this.password = hashedPassword;
+  this.updatedAt = Date.now();
 });
 
 // Compare password method

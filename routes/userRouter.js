@@ -40,7 +40,7 @@ router.get("/auth/google/callback", passport.authenticate("google", { failureRed
         }
         res.redirect("/");
     });
-})
+});
 
 router.get("/login", userController.loadLogin);
 router.post("/login", userController.login);
@@ -118,7 +118,7 @@ router.get("/checkout", isAuth, checkUserStatus, checkoutController.loadCheckout
 
 router.post("/checkout/place-order", isAuth, checkUserStatus, checkoutController.placeOrder);
 
-router.get('/order-success/:id', isAuth, checkUserStatus, checkoutController.orderSuccess);
+router.get("/order-success/:id", isAuth, checkUserStatus, checkoutController.orderSuccess);
 //------------------------------------------------------------------------------------coupen apply
 router.post("/checkout/apply-coupon", isAuth, checkUserStatus, checkoutController.applyCoupen);
 router.post("/checkout/remove-coupon", isAuth, checkUserStatus, checkoutController.removeCoupon);
@@ -126,9 +126,9 @@ router.post("/checkout/remove-coupon", isAuth, checkUserStatus, checkoutControll
 router.post("/checkout/razorpay-order", isAuth, checkUserStatus, checkoutController.createRazorpayOrder);
 router.get("/checkout/payment-failure", isAuth, checkUserStatus, checkoutController.paymentFailed);
 
-router.post('/checkout/webhook', checkoutController.verifyRazorpayWebhook);
+router.post("/checkout/webhook", checkoutController.verifyRazorpayWebhook);
 
-router.post("/retry-payment", isAuth, checkUserStatus, checkoutController.retryPayment)
+router.post("/retry-payment", isAuth, checkUserStatus, checkoutController.retryPayment);
 
 
 //==========================================================================================orders

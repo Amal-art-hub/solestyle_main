@@ -20,7 +20,7 @@ const getVariantsByProduct = async (productId, page = 1, limit = 10) => {
             .limit(limit);
 
         const totalVariants = await Variant.countDocuments({ productId });
-        const totalPages = Math.ceil(totalVariants / limit)
+        const totalPages = Math.ceil(totalVariants / limit);
 
         return {
             product,
@@ -30,7 +30,7 @@ const getVariantsByProduct = async (productId, page = 1, limit = 10) => {
             totalVariants
         };
     } catch (error) {
-        throw new Error("Error fetching variants: " + error.message);
+        throw new Error("Error fetching variants: " + error.message, { cause: error });
     }
 };
 
@@ -54,7 +54,7 @@ const createVariant = async (productId, data, files) => {
         await newVariant.save();
         return newVariant;
     } catch (error) {
-        throw new Error("Error creating variant: " + error.message);
+        throw new Error("Error creating variant: " + error.message, { cause: error });
     }
 };
 
@@ -78,9 +78,9 @@ const updateVariant = async (id, data, files) => {
                 const deletedImages = JSON.parse(data.deletedImages);
 
                 currentImages = currentImages.filter(img => !deletedImages.includes(img));
-                console.log('After deletion:', currentImages.length, 'images remaining');
+                console.log("After deletion:", currentImages.length, "images remaining");
             } catch (e) {
-                console.error('Error parsing deletedImages:', e);
+                console.error("Error parsing deletedImages:", e);
             }
         }
 
@@ -88,7 +88,7 @@ const updateVariant = async (id, data, files) => {
         if (files && files.length > 0) {
             const newImages = files.map(file => file.path);
             currentImages = [...currentImages, ...newImages];
-            console.log('After adding new images:', currentImages.length, 'total images');
+            console.log("After adding new images:", currentImages.length, "total images");
         }
 
 
@@ -100,7 +100,7 @@ const updateVariant = async (id, data, files) => {
         await variant.save();
         return variant;
     } catch (error) {
-        throw new Error("Error updating variant: " + error.message);
+        throw new Error("Error updating variant: " + error.message, { cause: error });
     }
 };
 
@@ -120,7 +120,7 @@ const toggleVariantListing = async (id) => {
             message: variant.isListed ? "Variant listed" : "Variant unlisted"
         };
     } catch (error) {
-        throw new Error("Error toggling variant: " + error.message);
+        throw new Error("Error toggling variant: " + error.message, { cause: error });
     }
 };
 
@@ -129,7 +129,7 @@ const deleteVariant = async (id) => {
         await Variant.findByIdAndDelete(id);
         return { success: true };
     } catch (error) {
-        throw new Error("Error deleting variant: " + error.message);
+        throw new Error("Error deleting variant: " + error.message, { cause: error });
     }
 };
 

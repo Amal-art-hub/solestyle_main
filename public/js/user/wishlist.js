@@ -3,13 +3,13 @@
 async function removeFromWishlist(id) {
     try {
         const result = await Swal.fire({
-            title: 'Remove Item?',
+            title: "Remove Item?",
             text: "Are you sure you want to remove this from your wishlist?",
-            icon: 'warning',
+            icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: '#333',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, Remove it'
+            confirmButtonColor: "#333",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, Remove it"
         });
 
         if (result.isConfirmed) {
@@ -21,9 +21,9 @@ async function removeFromWishlist(id) {
             if (response.data.success) {
                 // Success - Animation
                 await Swal.fire({
-                    icon: 'success',
-                    title: 'Removed!',
-                    text: 'Item has been removed.',
+                    icon: "success",
+                    title: "Removed!",
+                    text: "Item has been removed.",
                     timer: 1500,
                     showConfirmButton: false
                 });
@@ -31,9 +31,9 @@ async function removeFromWishlist(id) {
                 // Fade out the card and reload
                 const card = document.getElementById(`wishlist-item-${id}`);
                 if (card) {
-                    card.style.transition = 'all 0.5s ease';
-                    card.style.opacity = '0';
-                    card.style.transform = 'scale(0.9)';
+                    card.style.transition = "all 0.5s ease";
+                    card.style.opacity = "0";
+                    card.style.transform = "scale(0.9)";
                     setTimeout(() => location.reload(), 500);
                 } else {
                     location.reload();
@@ -45,9 +45,9 @@ async function removeFromWishlist(id) {
     } catch (error) {
         console.error(error);
         Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: error.response?.data?.message || 'Something went wrong!'
+            icon: "error",
+            title: "Oops...",
+            text: error.response?.data?.message || "Something went wrong!"
         });
     }
 }

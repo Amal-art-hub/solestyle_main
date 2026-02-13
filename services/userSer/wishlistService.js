@@ -3,8 +3,8 @@ const Wishlist = require("../../models/wishlist");
 const getWishlistService = async (userId) => {
     // We populate the 'products' array
     return await Wishlist.findOne({ user_id: userId })
-        .populate('products.products_id')
-        .populate('products.variant_id');
+        .populate("products.products_id")
+        .populate("products.variant_id");
 };
 
 const addToWishlistService = async (userId, productId, variantId) => {

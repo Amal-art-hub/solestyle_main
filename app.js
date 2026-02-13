@@ -3,13 +3,13 @@
 const express = require("express");
 const app = express();
 const env = require("dotenv").config();
-const session = require("express-session")
-const MongoStore = require('connect-mongo').default;
+const session = require("express-session");
+const MongoStore = require("connect-mongo").default;
 const passport = require("passport");    
 require("./config/passport");
 const errorHandler = require("./middlewares/errorHandler");
 
-const path = require("path")
+const path = require("path");
 const db = require("./config/db");
 const userRouter = require("./routes/userRouter");
 const adminRouter = require("./routes/adminRouter");
@@ -35,16 +35,16 @@ app.use(session({
     httpOnly: true,
     maxAge: 72 * 60 * 60 * 1000
   }
-}))
+}));
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use((req, res, next) => {
-  res.set("cache-control", "no-store")
+  res.set("cache-control", "no-store");
   next();
-})
+});
 
 
 
@@ -65,14 +65,14 @@ app.use("/test-error", (req, res, next) => {
   const err = new Error("This is a deliberate test error");
   err.statusCode = 418;
   next(err);
-})
+});
 
 
 app.use(errorHandler);
 
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => { console.log(`Server Running on${PORT}  http://localhost:${PORT}`) })
+app.listen(PORT, () => { console.log(`Server Running on${PORT}  http://localhost:${PORT}`); });
 
 
 module.exports = app;

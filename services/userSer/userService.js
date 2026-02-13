@@ -70,8 +70,8 @@ async function createUser({ firstName, lastName, email, phone, password, referra
 
       const today = new Date();
       const activeReferralOffer = await Offers.findOne({
-        type: 'referral',
-        status: 'active',
+        type: "referral",
+        status: "active",
         start_date: { $lte: today },
         end_date: { $gte: today }
       });
@@ -144,7 +144,7 @@ async function verifyOtpService(session, otp) {
       redirectUrl: "/login"
     };
   } catch (error) {
-    console.error('Error in verifyOtpService:', error);
+    console.error("Error in verifyOtpService:", error);
     return {
       success: false,
       status: statusCode.INTERNAL_SERVER_ERROR,
@@ -167,15 +167,15 @@ async function resendOtpService(session) {
   const otp = generateOtp();
 
   // Log for debugging
-  console.log('========== RESEND OTP SERVICE ==========');
-  console.log('Resending OTP to:', email);
-  console.log('New OTP:', otp);
+  console.log("========== RESEND OTP SERVICE ==========");
+  console.log("Resending OTP to:", email);
+  console.log("New OTP:", otp);
 
   // Send the new OTP via email
   const emailSent = await sendVerificationEmail(email, otp);
 
   if (!emailSent) {
-    console.error('Failed to send OTP email to:', email);
+    console.error("Failed to send OTP email to:", email);
     return {
       success: false,
       status: statusCode.INTERNAL_SERVER_ERROR,
@@ -186,8 +186,8 @@ async function resendOtpService(session) {
   // Update the OTP in the session
   session.userOtp = otp;
 
-  console.log('OTP resent successfully to:', email);
-  console.log('======================================');
+  console.log("OTP resent successfully to:", email);
+  console.log("======================================");
 
   return {
     success: true,
@@ -234,10 +234,10 @@ async function loginUser(email, password) {
     };
 
   } catch (error) {
-    console.error('Login service error:', error);
+    console.error("Login service error:", error);
     return {
       success: false,
-      message: error.message || 'An error occurred during login.'
+      message: error.message || "An error occurred during login."
     };
   }
 }
@@ -270,7 +270,7 @@ const resentfortgotService = async (session) => {
         success: false,
         status: statusCode.INTERNAL_SERVER_ERROR,
         message: "failed to send email.please try again"
-      }
+      };
     }
 
 
@@ -289,7 +289,7 @@ const resentfortgotService = async (session) => {
       message: "Server error"
     };
   }
-}
+};
 
 
 const verifyResetOtpService = async (session, otp) => {
@@ -311,23 +311,23 @@ const verifyResetOtpService = async (session, otp) => {
         success: false,
         status: statusCode.BAD_REQUEST,
         message: "Invalid OTP.Please try again"
-      }
+      };
     }
 
     session.otpVerified = true;
     return {
       success: true,
       message: "otp verified successfully"
-    }
+    };
   } catch (error) {
     console.error("Error in verifyResetOtpService:", error);
     return {
       success: false,
       status: statusCode.INTERNAL_SERVER_ERROR,
       message: "Server error"
-    }
+    };
   }
-}
+};
 
 
 const checkPassword = async (session, newPassword) => {
@@ -340,7 +340,7 @@ const checkPassword = async (session, newPassword) => {
         success: false,
         status: statusCode.FORBIDDEN,
         message: "Unauthorized.Please verify OTP first"
-      }
+      };
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -363,7 +363,7 @@ const checkPassword = async (session, newPassword) => {
       message: "Server error",
     };
   }
-}
+};
 
 
 

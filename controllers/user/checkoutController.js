@@ -11,7 +11,7 @@ const {
 
 } = require("../../services/userSer/walletService");
 const statusCode = require("../../utils/statusCodes");
-const crypto = require('crypto');
+const crypto = require("crypto");
 const Order = require("../../models/orders");
 const Payment = require("../../models/payment");
 const Cart = require("../../models/cart");
@@ -92,7 +92,7 @@ const applyCoupen = async (req, res) => {
     try {
         const { code } = req.body;
         const userId = req.session.user._id;
-        console.log("error is :", code)
+        console.log("error is :", code);
 
 
         const { subtotal } = await getCheckoutData(userId);
@@ -108,7 +108,7 @@ const applyCoupen = async (req, res) => {
 
 
         let discount = 0;
-        if (coupon.discount_type === 'Percentage') {
+        if (coupon.discount_type === "Percentage") {
             discount = (subtotal * coupon.discount_value) / 100;
             // if (discount > coupon.max_discount_amount) discount = coupon.max_discount_amount;
         } else {
@@ -186,14 +186,14 @@ const verifyRazorpayWebhook = async (req, res) => {
         const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
 
 
-        const shasum = crypto.createHmac('sha256', secret);
+        const shasum = crypto.createHmac("sha256", secret);
         shasum.update(JSON.stringify(req.body));
-        const digest = shasum.digest('hex');
-        if (digest === req.headers['x-razorpay-signature']) {
+        const digest = shasum.digest("hex");
+        if (digest === req.headers["x-razorpay-signature"]) {
             console.log("Webhook Verified! Payment Captured.");
 
             const event = req.body;
-            if (event.event === 'payment.captured') {
+            if (event.event === "payment.captured") {
 
                 const paymentDetails = event.payload.payment.entity;
                 const razorpayOrderId = paymentDetails.order_id;
@@ -235,10 +235,10 @@ const verifyRazorpayWebhook = async (req, res) => {
         }
 
 
-        res.status(statusCode.OK).json({ status: 'ok' });
+        res.status(statusCode.OK).json({ status: "ok" });
     } catch (error) {
         console.error("Webhook Error:", error);
-        res.status(200).json({ status: 'error' });
+        res.status(200).json({ status: "error" });
     }
 };
 
@@ -258,7 +258,7 @@ const retryPayment = async (req, res) => {
         });
 
     }
-}
+};
 
 
 
@@ -273,4 +273,4 @@ module.exports = {
     verifyRazorpayWebhook,
     retryPayment,
 
-}
+};

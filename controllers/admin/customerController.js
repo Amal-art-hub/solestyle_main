@@ -21,7 +21,7 @@ const getCustomers = async (req, res) => {
             search: search,
             activePage: "users"
 
-        })
+        });
     } catch (error) {
         console.log(error.message);
         res.status(statusCode.INTERNAL_SERVER_ERROR).send("Internal Server Error");
@@ -38,7 +38,7 @@ const blockCustomer = async (req, res) => {
         console.log(error.message);
         res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Error blocking customer" });
     }
-}
+};
 
 const unblockCoustomer = async (req, res) => {
     try {
@@ -50,10 +50,10 @@ const unblockCoustomer = async (req, res) => {
         console.log(error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Error unblocking customer" });
     }
-}
+};
 
 module.exports = {
     getCustomers,
     blockCustomer,
     unblockCoustomer
-}
+};

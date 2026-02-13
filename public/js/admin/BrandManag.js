@@ -2,7 +2,7 @@ async function toggleStatus(id) {
     try {
 
         const response = await fetch(`/admin/blockBrand?id=${id}`, {
-            method: 'PATCH'
+            method: "PATCH"
         });
 
         const data = await response.json();
@@ -11,30 +11,30 @@ async function toggleStatus(id) {
             location.reload();
         } else {
             Swal.fire({
-                icon: 'error',
-                title: 'Update Failed',
+                icon: "error",
+                title: "Update Failed",
                 text: data.message || "Failed to change status"
             });
         }
     } catch (error) {
         console.error("Error:", error);
         Swal.fire({
-            icon: 'error',
-            title: 'Error',
+            icon: "error",
+            title: "Error",
             text: "An error occurred while blocking/unblocking the brand."
         });
     }
 }
 
-document.getElementById('addBrandForm')?.addEventListener('submit', async function (e) {
+document.getElementById("addBrandForm")?.addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const formData = new FormData(this);
     const data = Object.fromEntries(formData.entries());
     try {
-        const response = await fetch('/admin/addBrand', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+        const response = await fetch("/admin/addBrand", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data)
         });
 
@@ -42,8 +42,8 @@ document.getElementById('addBrandForm')?.addEventListener('submit', async functi
 
         if (result.success) {
             await Swal.fire({
-                icon: 'success',
-                title: 'Brand Added',
+                icon: "success",
+                title: "Brand Added",
                 text: result.message,
                 timer: 1500,
                 showConfirmButton: false
@@ -51,15 +51,15 @@ document.getElementById('addBrandForm')?.addEventListener('submit', async functi
             location.reload();
         } else {
             Swal.fire({
-                icon: 'error',
-                title: 'Error',
+                icon: "error",
+                title: "Error",
                 text: result.message || "Failed to add brand"
             });
         }
     } catch (error) {
         Swal.fire({
-            icon: 'error',
-            title: 'Request Failed',
+            icon: "error",
+            title: "Request Failed",
             text: "Error adding brand. Please try again."
         });
     }
@@ -68,38 +68,38 @@ document.getElementById('addBrandForm')?.addEventListener('submit', async functi
 // Current router doesn't have editBrand, so ignoring or disabling.
 // Edit Modal Functions
 function openEditModal(id, name, description) {
-    const modal = document.getElementById('editBrandModal');
+    const modal = document.getElementById("editBrandModal");
     // Populate form
-    document.getElementById('edit-id').value = id;
-    document.getElementById('edit-name').value = name;
-    document.getElementById('edit-description').value = description || ""; // Handle null/undefined
+    document.getElementById("edit-id").value = id;
+    document.getElementById("edit-name").value = name;
+    document.getElementById("edit-description").value = description || ""; // Handle null/undefined
 
     modal.style.display = "block";
 }
 
 function closeEditModal() {
-    document.getElementById('editBrandModal').style.display = "none";
+    document.getElementById("editBrandModal").style.display = "none";
 }
 
 // Close modal if clicking outside
 window.onclick = function (event) {
-    const modal = document.getElementById('editBrandModal');
+    const modal = document.getElementById("editBrandModal");
     if (event.target == modal) {
         modal.style.display = "none";
     }
-}
+};
 
 // Edit Form Submission
-document.getElementById('editBrandForm')?.addEventListener('submit', async function (e) {
+document.getElementById("editBrandForm")?.addEventListener("submit", async function (e) {
     e.preventDefault();
-    const id = document.getElementById('edit-id').value;
-    const name = document.getElementById('edit-name').value;
-    const description = document.getElementById('edit-description').value;
+    const id = document.getElementById("edit-id").value;
+    const name = document.getElementById("edit-name").value;
+    const description = document.getElementById("edit-description").value;
 
     try {
-        const response = await fetch('/admin/editBrand', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+        const response = await fetch("/admin/editBrand", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ id, name, description })
         });
 
@@ -107,8 +107,8 @@ document.getElementById('editBrandForm')?.addEventListener('submit', async funct
 
         if (result.success) {
             await Swal.fire({
-                icon: 'success',
-                title: 'Brand Updated',
+                icon: "success",
+                title: "Brand Updated",
                 text: result.message,
                 timer: 1500,
                 showConfirmButton: false
@@ -116,15 +116,15 @@ document.getElementById('editBrandForm')?.addEventListener('submit', async funct
             location.reload();
         } else {
             Swal.fire({
-                icon: 'error',
-                title: 'Update Failed',
+                icon: "error",
+                title: "Update Failed",
                 text: result.message || "Failed to update brand"
             });
         }
     } catch (error) {
         Swal.fire({
-            icon: 'error',
-            title: 'Error',
+            icon: "error",
+            title: "Error",
             text: "Error updating brand."
         });
     }

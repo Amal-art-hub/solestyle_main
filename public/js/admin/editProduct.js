@@ -1,45 +1,45 @@
 let cropper;
-const imageInput = document.getElementById('imageInput');
-const cropperContainer = document.getElementById('cropperContainer');
-const cropperImage = document.getElementById('cropperImage');
-const cropBtn = document.getElementById('cropBtn');
-const previewContainer = document.getElementById('previewContainer');
-const form = document.getElementById('editProductForm');
-const imageCounter = document.getElementById('imageCounter');
+const imageInput = document.getElementById("imageInput");
+const cropperContainer = document.getElementById("cropperContainer");
+const cropperImage = document.getElementById("cropperImage");
+const cropBtn = document.getElementById("cropBtn");
+const previewContainer = document.getElementById("previewContainer");
+const form = document.getElementById("editProductForm");
+const imageCounter = document.getElementById("imageCounter");
 let croppedFiles = [];
 let removedImages = [];
 let filesToProcess = [];
 let currentFileIndex = 0;
 // Remove existing image
 window.removeImage = function (button, imageName) {
-  const existingImages = document.querySelectorAll('.image-item').length;
+  const existingImages = document.querySelectorAll(".image-item").length;
 
   if (existingImages - removedImages.length <= 3) {
     Swal.fire({
-      icon: 'warning',
-      title: 'Image Requirement',
-      text: 'Must keep at least 3 images'
+      icon: "warning",
+      title: "Image Requirement",
+      text: "Must keep at least 3 images"
     });
     return;
   }
 
   Swal.fire({
-    title: 'Remove this image?',
+    title: "Remove this image?",
     text: "You won't be able to revert this!",
-    icon: 'warning',
+    icon: "warning",
     showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, remove it!'
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, remove it!"
   }).then((result) => {
     if (result.isConfirmed) {
       removedImages.push(imageName);
-      document.getElementById('removedImages').value = JSON.stringify(removedImages);
-      button.closest('.image-item').remove();
+      document.getElementById("removedImages").value = JSON.stringify(removedImages);
+      button.closest(".image-item").remove();
     }
   });
 };
-imageInput.addEventListener('change', (e) => {
+imageInput.addEventListener("change", (e) => {
   const files = Array.from(e.target.files);
 
   if (files.length === 0) return;
@@ -47,7 +47,7 @@ imageInput.addEventListener('change', (e) => {
   filesToProcess = files;
   currentFileIndex = 0;
   croppedFiles = [];
-  previewContainer.innerHTML = '';
+  previewContainer.innerHTML = "";
 
   processNextImage();
 });
@@ -60,7 +60,7 @@ function processNextImage() {
 
     reader.onload = (e) => {
       cropperImage.src = e.target.result;
-      cropperContainer.style.display = 'block';
+      cropperContainer.style.display = "block";
 
       if (cropper) {
         cropper.destroy();
@@ -75,10 +75,10 @@ function processNextImage() {
 
     reader.readAsDataURL(file);
   } else {
-    cropperContainer.style.display = 'none';
+    cropperContainer.style.display = "none";
   }
 }
-cropBtn.addEventListener('click', () => {
+cropBtn.addEventListener("click", () => {
   if (!cropper) return;
 
   cropper.getCroppedCanvas({
@@ -87,25 +87,25 @@ cropBtn.addEventListener('click', () => {
   }).toBlob((blob) => {
     croppedFiles.push(blob);
 
-    const img = document.createElement('img');
+    const img = document.createElement("img");
     img.src = URL.createObjectURL(blob);
     previewContainer.appendChild(img);
 
     currentFileIndex++;
     processNextImage();
-  }, 'image/jpeg', 0.95);
+  }, "image/jpeg", 0.95);
 });
-form.addEventListener('submit', async (e) => {
+form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const existingCount = document.querySelectorAll('.image-item').length - removedImages.length;
+  const existingCount = document.querySelectorAll(".image-item").length - removedImages.length;
   const totalCount = existingCount + croppedFiles.length;
 
   if (totalCount < 3) {
     Swal.fire({
-      icon: 'warning',
-      title: 'Missing Images',
-      text: 'Product must have at least 3 images'
+      icon: "warning",
+      title: "Missing Images",
+      text: "Product must have at least 3 images"
     });
     return;
   }
@@ -114,45 +114,45 @@ form.addEventListener('submit', async (e) => {
 
   // Add new cropped images
   croppedFiles.forEach((blob, index) => {
-    formData.append('images', blob, `product-new-${Date.now()}-${index}.jpg`);
+    formData.append("images", blob, `product-new-${Date.now()}-${index}.jpg`);
   });
 
-  const submitBtn = form.querySelector('.btn-submit');
-  submitBtn.textContent = 'Updating...';
+  const submitBtn = form.querySelector(".btn-submit");
+  submitBtn.textContent = "Updating...";
   submitBtn.disabled = true;
 
   try {
     const response = await fetch(form.action, {
-      method: 'POST',
+      method: "POST",
       body: formData
     });
 
     if (response.ok) {
       await Swal.fire({
-        icon: 'success',
-        title: 'Updated!',
-        text: 'Product updated successfully!',
+        icon: "success",
+        title: "Updated!",
+        text: "Product updated successfully!",
         timer: 1500,
         showConfirmButton: false
       });
-      window.location.href = '/admin/products';
+      window.location.href = "/admin/products";
     } else {
       Swal.fire({
-        icon: 'error',
-        title: 'Update Failed',
-        text: 'Error updating product'
+        icon: "error",
+        title: "Update Failed",
+        text: "Error updating product"
       });
-      submitBtn.textContent = 'Update Product';
+      submitBtn.textContent = "Update Product";
       submitBtn.disabled = false;
     }
   } catch (error) {
-    console.error('Error:', error);
+    console.error("Error:", error);
     Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'An error occurred while updating the product.'
+      icon: "error",
+      title: "Error",
+      text: "An error occurred while updating the product."
     });
-    submitBtn.textContent = 'Update Product';
+    submitBtn.textContent = "Update Product";
     submitBtn.disabled = false;
   }
 });

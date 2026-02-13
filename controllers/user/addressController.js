@@ -10,7 +10,7 @@ const validateAddress = (data) => {
     if (!/^\d{6}$/.test(postal_code)) errors.pincode = "Invalid Pincode";
     if (!city || city.trim().length < 2) errors.city = "City is required";
     return { isValid: Object.keys(errors).length === 0, errors };
-}
+};
 
 // 2. Add New Address
 const addAddress = async (req, res) => {

@@ -33,13 +33,13 @@ const checkUserStatus = async (req, res, next) => {
 
 const isAuth = (req, res, next) => {
 
-  console.log("isaUTH IS WORKING")
+  console.log("isaUTH IS WORKING");
   if (req.session.user) {
     //  console.log("do have session")
     next();
   } else {
-    console.log("dont have session")
-    const isAjax = req.xhr || (req.headers.accept && req.headers.accept.includes('json'));
+    console.log("dont have session");
+    const isAjax = req.xhr || (req.headers.accept && req.headers.accept.includes("json"));
     if (isAjax) {
       // 2. Send 401 (Unauthorized) status - Axios will see this as an ERROR
       return res.status(statusCode.UNAUTHORIZED).json({ success: false, message: "Please login" });
@@ -47,7 +47,7 @@ const isAuth = (req, res, next) => {
     // 3. Normal redirect for regular browser requests (like clicking a link)
     res.redirect("/login");
   }
-}
+};
 
 
 module.exports = { checkUserStatus, isAuth };

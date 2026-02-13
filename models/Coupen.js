@@ -12,9 +12,9 @@ const couponSchema = new mongoose.Schema({
   expiry_date: { type: Date, required: true },
   used_by: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    ref: "User"
   }],
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
 
   status: { type: String, enum: ["active", "inactive"], default: "active" }
 

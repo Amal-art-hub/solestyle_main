@@ -104,10 +104,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function showError(message) {
     Swal.fire({
-        icon: 'error',
-        title: 'Signup Error',
+        icon: "error",
+        title: "Signup Error",
         text: message,
-        confirmButtonColor: '#ff4444'
+        confirmButtonColor: "#ff4444"
     });
 }
 
@@ -198,7 +198,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     submitBtn.disabled = true;
     submitBtn.innerHTML =
-      '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+      "<i class=\"fas fa-spinner fa-spin\"></i> Creating Account...";
 
     const formData = {
       firstName: document.getElementById("firstName").value.trim(),

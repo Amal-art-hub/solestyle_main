@@ -9,58 +9,48 @@ const { generateOtp, sendVerificationEmail } = require("./userService");
 
 //--------------------------------------------------------loading user profile
 const getUserProfile = async (userId) => {
-    try {
-        return await User.findById(userId);
-    } catch (error) {
-        throw error;
-    }
-}
+    return await User.findById(userId).select("-password");
+};
 
 //----------------------------------------------------------updating edited data on  profile
 
 const updateUserProfile = async (userId, data) => {
-    try {
-        return await User.findByIdAndUpdate(userId, data, { new: true });
-    } catch (error) {
-        throw error;
-    }
-}
+    return await User.findByIdAndUpdate(userId, data, { new: true }).select("-password");
+};
 
 
 //-----------------------------------------updating password
 
 const changePassword = async (userId, oldPass, newPass) => {
-    try {
-        const user = await User.findById(userId);
-        if (!await bcrypt.compare(oldPass, user.password)) return {
-            success: false, message: "Incorrect password"
-        };
-        user.password = newPass;
-        await user.save();
-        return { success: true };
-    } catch (error) {
-        throw error;
-    }
-}
+    const user = await User.findById(userId);
+    if (!user) throw new Error("User not found");
+
+    const isMatch = await bcrypt.compare(oldPass, user.password);
+    if (!isMatch) throw new Error("Incorrect current password");
+
+    user.password = await bcrypt.hash(newPass, 10);
+    await user.save();
+    return { message: "Password updated successfully" };
+};
 
 //-------------------------------requesting email otp
 
 const requestEmailChange = async (userId, newEmail) => {
-    try {
-        if (await User.findOne({ email: newEmail })) return {
-            success: false, message: "Email taken"
-        }
-        const otp = generateOtp();
-        console.log("Generated OTP:", otp);
+    const existingUser = await User.findOne({ email: newEmail });
+    if (existingUser) throw new Error("Email already in use");
 
-        await sendVerificationEmail(newEmail, otp);
-        return { success: true, otp };
+    const otp = generateOtp(); // Using existing generateOtp
+    const expiry = Date.now() + 10 * 60 * 1000; // 10 mins
 
+    await User.findByIdAndUpdate(userId, {
+        "emailChangeRequest.newEmail": newEmail,
+        "emailChangeRequest.otp": otp,
+        "emailChangeRequest.otpExpiry": expiry
+    });
 
-    } catch (error) {
-        throw error;
-    }
-}
+    await sendVerificationEmail(newEmail, otp); // Using existing sendVerificationEmail
+    return { message: "OTP sent to new email" };
+};
 
 //---------------------------verify otp
 
@@ -78,7 +68,7 @@ const verifyOtp = async (typedOtp, sessionOtp, userId, newEmail) => {
         }
 
         if (String(typedOtp).trim() !== String(sessionOtp).trim()) {
-            return { success: false, message: "Invalid OTP (Mismatch)" }
+            return { success: false, message: "Invalid OTP (Mismatch)" };
         }
 
         const updatedUser = await User.findByIdAndUpdate(userId, { email: newEmail }, { new: true });
@@ -94,81 +84,60 @@ const verifyOtp = async (typedOtp, sessionOtp, userId, newEmail) => {
     }
 
 
-}
+};
 
 const getAddressByUserId = async (userId) => {
     return await Address.find({ user_id: userId });
-}
+};
 
 
-const addAddressService = async (userId, data) => {
-    try {
-        if (data.is_default_shipping === 'true' || data.is_default_shipping === true) {
-            await Address.updateMany({ user_id: userId }, { is_default_shipping: false });
-        }
-
-        if (data.is_default_billing === "true" || data.is_default_billing === true) {
-            await Address.updateMany({ user_id: userId }, { is_default_billing: false });
-        }
-        const newAddress = new Address({ user_id: userId, ...data });
-        return await newAddress.save();
-
-    } catch (error) {
-        throw error;
+const addAddressService = async (userId, addressData) => {
+    if (addressData.is_default_shipping === "true" || addressData.is_default_shipping === true) {
+        await Address.updateMany({ user_id: userId }, { is_default_shipping: false });
     }
-}
 
-
-const editAddressService = async (addressId, userId, data) => {
-    try {
-
-        if (data.is_default_shipping === 'true' || data.is_default_shipping === true) {
-            await Address.updateMany({ user_id: userId }, { is_default_shipping: false });
-        }
-
-
-        if (data.is_default_billing === 'true' || data.is_default_billing === true) {
-            await Address.updateMany({ user_id: userId }, { is_default_billing: false });
-        }
-
-        const updatedAddress = await Address.findOneAndUpdate(
-            { _id: addressId, user_id: userId },
-            data,
-            { new: true }
-        );
-        return updatedAddress;
-    } catch (error) {
-        throw error;
+    if (addressData.is_default_billing === "true" || addressData.is_default_billing === true) {
+        await Address.updateMany({ user_id: userId }, { is_default_billing: false });
     }
+    const newAddress = new Address({ user_id: userId, ...addressData });
+    return await newAddress.save();
+};
+
+
+const editAddressService = async (addressId, userId, addressData) => {
+
+    if (addressData.is_default_shipping === "true" || addressData.is_default_shipping === true) {
+        await Address.updateMany({ user_id: userId }, { is_default_shipping: false });
+    }
+
+
+    if (addressData.is_default_billing === "true" || addressData.is_default_billing === true) {
+        await Address.updateMany({ user_id: userId }, { is_default_billing: false });
+    }
+
+    return await Address.findOneAndUpdate(
+        { _id: addressId, user_id: userId },
+        addressData,
+        { new: true }
+    );
 };
 
 
 const deleteAddressServic = async (addressId, userId) => {
-    try {
-        return await Address.findOneAndDelete({ _id: addressId, user_id: userId });
-    } catch (error) {
-        throw error;
-    }
+    return await Address.findOneAndDelete({ _id: addressId, user_id: userId });
 };
 
 
 const getCoupons = async (userId) => {
-    try {
-        const currentDate = new Date();
+    const wallet = await User.findById(userId).select("wallet"); // Assuming wallet is part of User model
+    const walletBalance = wallet && wallet.wallet ? wallet.wallet.balance : 0;
 
-        return await Coupon.find({
-            $or: [
-                { userId: userId },
-                { userId: null }
-            ],
-            status: 'active',
-            expiry_date: { $gte: currentDate }, used_by: { $ne: userId }
-        }).sort({ createdAt: -1 });
-
-    } catch (error) {
-        throw error;
-    }
-}
+    return await Coupon.find({
+        isDeleted: false,
+        expiry_date: { $gt: new Date() },
+        min_purchase_amount: { $lte: walletBalance } // Example logic
+    });
+};
 
 
 module.exports = {
@@ -182,4 +151,4 @@ module.exports = {
     editAddressService,
     deleteAddressServic,
     getCoupons
-}
+};

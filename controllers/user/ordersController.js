@@ -31,13 +31,13 @@ const listOrder = async (req, res) => {
     console.error(error);
     res.status(statusCode.INTERNAL_SERVER_ERROR).render("page-404");
   }
-}
+};
 
 
 const cancelOrderItem = async (req, res) => {
 
-}
+};
 
 module.exports = {
   listOrder
-}
+};

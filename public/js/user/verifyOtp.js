@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Show loading state
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verifying...';
+        btn.innerHTML = "<i class=\"fas fa-spinner fa-spin\"></i> Verifying...";
 
         try {
             const response = await axios.post("/verify-otp", {
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     text: response.data.message || "Invalid OTP"
                 });
                 btn.disabled = false;
-                btn.innerHTML = 'Verify OTP';
+                btn.innerHTML = "Verify OTP";
             }
         } catch (error) {
             console.error("Verification error:", error);
@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 text: "Please try again"
             });
             btn.disabled = false;
-            btn.innerHTML = 'Verify OTP';
+            btn.innerHTML = "Verify OTP";
         }
     });
 
@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function updateTimer() {
         const minutes = Math.floor(timeLeft / 60);
         const seconds = timeLeft % 60;
-        timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        timerElement.textContent = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
 
         if (timeLeft > 0) {
             timeLeft--;
@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
             resendLink.style.pointerEvents = "none";
             resendLink.style.color = "#6c757d";
             
-            const response = await axios.post('/resend-otp');
+            const response = await axios.post("/resend-otp");
             
             if (response.data.success) {
                 // Reset and restart timer
@@ -91,21 +91,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 updateTimer();
                 
                 Swal.fire({
-                    icon: 'success',
-                    title: 'OTP Resent!',
-                    text: 'A new OTP has been sent to your registered email/phone.',
+                    icon: "success",
+                    title: "OTP Resent!",
+                    text: "A new OTP has been sent to your registered email/phone.",
                     timer: 2000,
                     showConfirmButton: false
                 });
             } else {
-                throw new Error(response.data.message || 'Failed to resend OTP');
+                throw new Error(response.data.message || "Failed to resend OTP");
             }
         } catch (error) {
-            console.error('Resend OTP error:', error);
+            console.error("Resend OTP error:", error);
             Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: error.response?.data?.message || 'Failed to resend OTP. Please try again.'
+                icon: "error",
+                title: "Error",
+                text: error.response?.data?.message || "Failed to resend OTP. Please try again."
             });
             
             // Re-enable resend link on error
@@ -117,9 +117,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Add click event listener for resend link
     if (resendLink) {
-        resendLink.addEventListener('click', (e) => {
+        resendLink.addEventListener("click", (e) => {
             e.preventDefault();
-            if (!resendLink.classList.contains('disabled')) {
+            if (!resendLink.classList.contains("disabled")) {
                 handleResendOTP();
             }
         });

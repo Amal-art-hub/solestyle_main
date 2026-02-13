@@ -30,11 +30,11 @@ const getVariants = async (req, res) => {
 const getVariantDetails = async (req, res) => {
     try {
         const { id } = req.params;
-        const Variant = require('../../models/varient');
+        const Variant = require("../../models/varient");
         const variant = await Variant.findById(id);
 
         if (!variant) {
-            return res.status(statusCode.NOT_FOUND).json({ success: false, message: 'Variant not found' });
+            return res.status(statusCode.NOT_FOUND).json({ success: false, message: "Variant not found" });
         }
 
         res.status(statusCode.OK).json({ success: true, variant });
@@ -53,7 +53,7 @@ const addVariant = async (req, res) => {
 
         console.log("DEBUG 2: Body Data ->", JSON.stringify(req.body));
 
-        console.log("DEBUG 3: Files Count ->", req.files ? req.files.length : 'NO FILES OBJECT');
+        console.log("DEBUG 3: Files Count ->", req.files ? req.files.length : "NO FILES OBJECT");
 
         // console.log("Adding variant for product:", productId);
         // console.log("Request body:", req.body);
@@ -86,12 +86,12 @@ const editVariant = async (req, res) => {
     try {
         const { id } = req.params;
 
-        console.log('=== EDIT VARIANT REQUEST ===');
-        console.log('Variant ID:', id);
-        console.log('Request body:', req.body);
-        console.log('Files received:', req.files ? req.files.length : 0);
-        console.log('deletedImages field:', req.body.deletedImages);
-        console.log('============================');
+        console.log("=== EDIT VARIANT REQUEST ===");
+        console.log("Variant ID:", id);
+        console.log("Request body:", req.body);
+        console.log("Files received:", req.files ? req.files.length : 0);
+        console.log("deletedImages field:", req.body.deletedImages);
+        console.log("============================");
 
         const variant = await updateVariant(id, req.body, req.files);
 

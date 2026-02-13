@@ -1,18 +1,18 @@
 
 const mongoose = require("mongoose");
-const Wallet=require("../../models/wallet");
+const Wallet = require("../../models/wallet");
 
-const getWallet=async(userId)=>{
+const getWallet = async (userId) => {
     try {
-        let wallet=await Wallet.findOne({user_id:userId});
-        if(!wallet){
-            wallet=new Wallet({user_id:userId});
+        let wallet = await Wallet.findOne({ user_id: userId });
+        if (!wallet) {
+            wallet = new Wallet({ user_id: userId });
             await wallet.save();
         }
         return wallet;
 
     } catch (error) {
-        throw new Error("Error fetching wallet");
+        throw new Error("Error fetching wallet", { cause: error });
 
     }
 };
@@ -21,7 +21,7 @@ const getWallet=async(userId)=>{
 const creditWallet = async (userId, amount, description) => {
     try {
         let wallet = await getWallet(userId);
-        
+
         wallet.balance += amount;
         wallet.history.push({
             transaction_id: new mongoose.Types.ObjectId(),
@@ -33,30 +33,27 @@ const creditWallet = async (userId, amount, description) => {
         await wallet.save();
         return wallet;
     } catch (error) {
-        console.error("Wallet credit error details:",error);
-        throw error;
+        console.error("Wallet credit error details:", error);
+        throw new Error("Error crediting wallet", { cause: error });
     }
 };
 
 const debitWallet = async (userId, amount, description) => {
-    try {
-        let wallet = await getWallet(userId);
-        if (wallet.balance < amount) {
-            throw new Error("Insufficient balance");
-        }
-        wallet.balance -= amount;
-        wallet.history.push({
-            transaction_id: new mongoose.Types.ObjectId(),
-            amount: amount,
-            type: "debit",
-            description: description,
-            date: new Date()
-        });
-        await wallet.save();
-        return wallet;
-    } catch (error) {
-        throw error;
+    let wallet = await Wallet.findOne({ user_id: userId });
+
+    if (!wallet) {
+        wallet = new Wallet({ user_id: userId, balance: 0, transactions: [] });
     }
+
+    wallet.balance += amount;
+    wallet.transactions.push({
+        amount,
+        type: "credit",
+        description,
+        date: new Date()
+    });
+
+    return await wallet.save();
 };
 module.exports = {
     getWallet,

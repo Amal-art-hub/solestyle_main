@@ -18,7 +18,7 @@ const orderSchema = new mongoose.Schema({
 
    razorpay_order_id: { type: String }, 
   payment_id: { type: mongoose.Schema.Types.ObjectId, ref: "Payment" },
-    payment_method: { type: String, enum: ['COD', 'Online', 'Wallet'] },
+    payment_method: { type: String, enum: ["COD", "Online", "Wallet"] },
 
   order_date: { type: Date, default: Date.now },
 

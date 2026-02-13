@@ -8,12 +8,12 @@ const errorHandler = (err, req, res, next) => {
 
 
     // If it's an AJAX request or expects JSON, return JSON
-    if (req.xhr || req.headers.accept.indexOf('json') > -1 || !req.accepts('html')) {
+    if (req.xhr || req.headers.accept.indexOf("json") > -1 || !req.accepts("html")) {
         return res.status(statusCode).json({
             success: false,
             status: statusCode,
             message: message,
-            stack: process.env.NODE_ENV === 'development' ? err.stack : {}
+            stack: process.env.NODE_ENV === "development" ? err.stack : {}
         });
     }
 
@@ -21,13 +21,6 @@ const errorHandler = (err, req, res, next) => {
     res.status(statusCode).send(`<h1>Error ${statusCode}</h1><p>${message}</p>`);
     return;
 
-    res.status(statusCode).json({
-        success: false,
-        status: statusCode,
-        message: message,
-
-        stack: process.env.NODE_ENV === 'development' ? err.stack : {}
-    });
 };
 
 module.exports = errorHandler;

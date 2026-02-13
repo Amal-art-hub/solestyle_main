@@ -356,11 +356,11 @@ const verifyForgotOtp = async (req, res) => {
 
 const loadrestPass = (req, res) => {
   try {
-    res.render("reset-password")
+    res.render("reset-password");
   } catch (error) {
     console.error("rendering reset password page failed:", error);
   }
-}
+};
 
 
 const resetPassword = async (req, res) => {
@@ -387,10 +387,10 @@ const resetPassword = async (req, res) => {
     res.status(statusCode.INTERNAL_SERVER_ERROR).json({
       success: false,
       message: "server error"
-    })
+    });
   }
 
-}
+};
 
 
 

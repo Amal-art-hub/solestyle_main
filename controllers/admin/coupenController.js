@@ -25,7 +25,7 @@ const getCoupenList = async (req, res) => {
         console.error(error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).send("Error");
     }
-}
+};
 
 
 
@@ -47,7 +47,7 @@ const editCoupen = async (req, res) => {
         res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
 
     }
-}
+};
 
 const deleteCoupen = async (req, res) => {
     try {
@@ -56,7 +56,7 @@ const deleteCoupen = async (req, res) => {
     } catch (error) {
         res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to delete coupen" });
     }
-}
+};
 
 
 module.exports = {
@@ -64,4 +64,4 @@ module.exports = {
     addCoupon,
     editCoupen,
     deleteCoupen
-}
+};

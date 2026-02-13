@@ -17,13 +17,13 @@ let editCurrentFileIndex = 0;
 
 // Open Add Modal
 function openAddModal() {
-  document.getElementById('addModal').style.display = 'block';
+  document.getElementById("addModal").style.display = "block";
 }
 
 // Close Add Modal
 function closeAddModal() {
-  document.getElementById('addModal').style.display = 'none';
-  document.getElementById('addVariantForm').reset();
+  document.getElementById("addModal").style.display = "none";
+  document.getElementById("addVariantForm").reset();
 }
 
 // Open Edit Modal - Fetch variant details and show all images
@@ -39,17 +39,17 @@ async function openEditModal(button) {
   currentVariantImages = [];
 
   // Set form values
-  document.getElementById('editVariantId').value = id;
-  document.getElementById('editSize').value = size;
-  document.getElementById('editColor').value = color;
-  document.getElementById('editPrice').value = price;
-  document.getElementById('editStock').value = stock;
-  document.getElementById('deletedImages').value = '';
+  document.getElementById("editVariantId").value = id;
+  document.getElementById("editSize").value = size;
+  document.getElementById("editColor").value = color;
+  document.getElementById("editPrice").value = price;
+  document.getElementById("editStock").value = stock;
+  document.getElementById("deletedImages").value = "";
 
   // Set form action for POST request (not PUT - HTML forms don't support PUT)
-  const form = document.getElementById('editVariantForm');
+  const form = document.getElementById("editVariantForm");
   form.action = `/admin/variants/${id}/edit`;
-  form.method = 'POST';
+  form.method = "POST";
 
   // Fetch full variant data to get ALL images
   try {
@@ -61,43 +61,43 @@ async function openEditModal(button) {
       displayCurrentImages(data.variant.images);
     }
   } catch (error) {
-    console.error('Error loading images:', error);
-    alert('Error loading variant images');
+    console.error("Error loading images:", error);
+    alert("Error loading variant images");
   }
 
-  document.getElementById('editModal').style.display = 'block';
+  document.getElementById("editModal").style.display = "block";
 }
 
 // Display all current images with delete buttons
 function displayCurrentImages(images) {
-  const currentImagesDiv = document.getElementById('currentImages');
-  const imageCountSpan = document.getElementById('imageCount');
+  const currentImagesDiv = document.getElementById("currentImages");
+  const imageCountSpan = document.getElementById("imageCount");
 
   const remainingCount = images.length - imagesToDelete.length;
   imageCountSpan.textContent = `(${remainingCount} images)`;
 
-  currentImagesDiv.innerHTML = '';
+  currentImagesDiv.innerHTML = "";
 
   images.forEach((img, index) => {
     const isDeleted = imagesToDelete.includes(img);
-    const imageDiv = document.createElement('div');
-    imageDiv.style.position = 'relative';
-    imageDiv.style.opacity = isDeleted ? '0.3' : '1';
+    const imageDiv = document.createElement("div");
+    imageDiv.style.position = "relative";
+    imageDiv.style.opacity = isDeleted ? "0.3" : "1";
 
     // Cloudinary Support: Handle both local paths and high-res Cloudinary URLs
-    const displaySrc = img.startsWith('http') ? img : '/uploads/variant-images/' + img;
+    const displaySrc = img.startsWith("http") ? img : "/uploads/variant-images/" + img;
 
     imageDiv.innerHTML = `
       <img src="${displaySrc}" 
            alt="Variant image ${index + 1}" 
-           style="width:100%; height:120px; object-fit:cover; border-radius:4px; border: 2px solid ${isDeleted ? '#ff4444' : '#ddd'};">
+           style="width:100%; height:120px; object-fit:cover; border-radius:4px; border: 2px solid ${isDeleted ? "#ff4444" : "#ddd"};">
       <button type="button" 
               class="delete-image-btn" 
               onclick="toggleImageDelete('${img}')"
-              style="position:absolute; top:5px; right:5px; background:${isDeleted ? '#28a745' : '#dc3545'}; color:white; border:none; border-radius:50%; width:25px; height:25px; cursor:pointer; font-size:16px; line-height:1;">
-        ${isDeleted ? '↺' : '×'}
+              style="position:absolute; top:5px; right:5px; background:${isDeleted ? "#28a745" : "#dc3545"}; color:white; border:none; border-radius:50%; width:25px; height:25px; cursor:pointer; font-size:16px; line-height:1;">
+        ${isDeleted ? "↺" : "×"}
       </button>
-      ${isDeleted ? '<p style="font-size:10px; margin-top:3px; color:#ff4444; text-align:center;">Marked for deletion</p>' : ''}
+      ${isDeleted ? "<p style=\"font-size:10px; margin-top:3px; color:#ff4444; text-align:center;\">Marked for deletion</p>" : ""}
     `;
     currentImagesDiv.appendChild(imageDiv);
   });
@@ -115,7 +115,7 @@ function toggleImageDelete(imageName) {
     const remainingImages = currentVariantImages.length - imagesToDelete.length;
 
     if (remainingImages <= 1) {
-      alert('Cannot delete this image. You must keep at least 3 images.');
+      alert("Cannot delete this image. You must keep at least 3 images.");
       return;
     }
 
@@ -123,7 +123,7 @@ function toggleImageDelete(imageName) {
   }
 
 
-  document.getElementById('deletedImages').value = JSON.stringify(imagesToDelete);
+  document.getElementById("deletedImages").value = JSON.stringify(imagesToDelete);
 
 
   displayCurrentImages(currentVariantImages);
@@ -133,14 +133,14 @@ function toggleImageDelete(imageName) {
 function closeEditModal() {
   imagesToDelete = [];
   currentVariantImages = [];
-  document.getElementById('editModal').style.display = 'none';
-  document.getElementById('editVariantForm').reset();
+  document.getElementById("editModal").style.display = "none";
+  document.getElementById("editVariantForm").reset();
 }
 
 // Close modal when clicking outside
 window.onclick = function (event) {
-  const addModal = document.getElementById('addModal');
-  const editModal = document.getElementById('editModal');
+  const addModal = document.getElementById("addModal");
+  const editModal = document.getElementById("editModal");
 
   if (event.target == addModal) {
     closeAddModal();
@@ -148,7 +148,7 @@ window.onclick = function (event) {
   if (event.target == editModal) {
     closeEditModal();
   }
-}
+};
 
 // Toggle Variant Listing
 // async function toggleVariant(button) {
@@ -183,13 +183,13 @@ async function toggleVariant(button) {
 
   // 2. The New "Gate" (Confirmation Popup)
   const confirmation = await Swal.fire({
-    title: 'Are you sure?',
+    title: "Are you sure?",
     text: "Do you want to change the status of this variant?",
-    icon: 'question',
+    icon: "question",
     showCancelButton: true,
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33',
-    confirmButtonText: 'Yes, change it!'
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, change it!"
   });
 
   // 3. Stop if they said "Cancel"
@@ -200,9 +200,9 @@ async function toggleVariant(button) {
   // 4. Send Request (Only runs if Confirmed)
   try {
     const response = await fetch(`/admin/variants/${variantId}/toggle-listing`, {
-      method: 'PATCH',
+      method: "PATCH",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json"
       }
     });
 
@@ -211,31 +211,31 @@ async function toggleVariant(button) {
     if (result.success) {
       // Optional: Show Success Popup before reloading
       await Swal.fire(
-        'Success!',
-        'Variant status has been updated.',
-        'success'
+        "Success!",
+        "Variant status has been updated.",
+        "success"
       );
       location.reload();
     } else {
-      Swal.fire('Error', result.message || 'Error toggling variant', 'error');
+      Swal.fire("Error", result.message || "Error toggling variant", "error");
     }
   } catch (error) {
-    console.error('Error:', error);
-    Swal.fire('Error', 'An error occurred. Please try again.', 'error');
+    console.error("Error:", error);
+    Swal.fire("Error", "An error occurred. Please try again.", "error");
   }
 }
 
 // Delete Variant
 async function deleteVariant(variantId) {
-  if (!confirm('Are you sure you want to delete this variant?')) {
+  if (!confirm("Are you sure you want to delete this variant?")) {
     return;
   }
 
   try {
     const response = await fetch(`/admin/variants/${variantId}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json"
       }
     });
 
@@ -245,56 +245,56 @@ async function deleteVariant(variantId) {
       alert(result.message);
       location.reload();
     } else {
-      alert(result.message || 'Error deleting variant');
+      alert(result.message || "Error deleting variant");
     }
   } catch (error) {
-    console.error('Error:', error);
-    alert('Error deleting variant');
+    console.error("Error:", error);
+    alert("Error deleting variant");
   }
 }
 
 // Client-side validation and event listeners
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener("DOMContentLoaded", function () {
   // Image input change handler for cropping
-  const variantImagesInput = document.getElementById('variantImages');
-  console.log('variantImagesInput element:', variantImagesInput);
+  const variantImagesInput = document.getElementById("variantImages");
+  console.log("variantImagesInput element:", variantImagesInput);
 
   if (variantImagesInput) {
-    variantImagesInput.addEventListener('change', (e) => {
-      console.log('File input changed!');
+    variantImagesInput.addEventListener("change", (e) => {
+      console.log("File input changed!");
       const files = Array.from(e.target.files);
-      console.log('Files selected:', files.length);
+      console.log("Files selected:", files.length);
 
       if (files.length < 3) {
-        alert('Please select at least 3 images');
-        e.target.value = '';
+        alert("Please select at least 3 images");
+        e.target.value = "";
         return;
       }
 
       if (files.length > 10) {
-        alert('Maximum 10 images allowed');
-        e.target.value = '';
+        alert("Maximum 10 images allowed");
+        e.target.value = "";
         return;
       }
 
       filesToProcess = files;
       currentFileIndex = 0;
       croppedFiles = [];
-      const previewContainer = document.getElementById('previewContainer');
+      const previewContainer = document.getElementById("previewContainer");
       if (previewContainer) {
-        previewContainer.innerHTML = '';
+        previewContainer.innerHTML = "";
       }
-      console.log('Calling processNextImage()...');
+      console.log("Calling processNextImage()...");
       processNextImage();
     });
   } else {
-    console.error('variantImages input not found!');
+    console.error("variantImages input not found!");
   }
 
   // Crop button click handler
-  const cropBtn = document.getElementById('cropBtn');
+  const cropBtn = document.getElementById("cropBtn");
   if (cropBtn) {
-    cropBtn.addEventListener('click', () => {
+    cropBtn.addEventListener("click", () => {
       if (!cropper) return;
 
       cropper.getCroppedCanvas({
@@ -304,57 +304,57 @@ document.addEventListener('DOMContentLoaded', function () {
         croppedFiles.push(blob);
 
         // Show preview
-        const img = document.createElement('img');
+        const img = document.createElement("img");
         img.src = URL.createObjectURL(blob);
-        img.style.width = '100%';
-        img.style.height = '100px';
-        img.style.objectFit = 'cover';
-        img.style.borderRadius = '4px';
-        const previewContainer = document.getElementById('previewContainer');
+        img.style.width = "100%";
+        img.style.height = "100px";
+        img.style.objectFit = "cover";
+        img.style.borderRadius = "4px";
+        const previewContainer = document.getElementById("previewContainer");
         if (previewContainer) {
           previewContainer.appendChild(img);
         }
 
         currentFileIndex++;
         processNextImage();
-      }, 'image/jpeg', 0.95);
+      }, "image/jpeg", 0.95);
     });
   }
 
   // === EDIT MODAL CROPPING HANDLERS ===
 
   // Edit images input change handler for cropping
-  const editImagesInput = document.getElementById('editImages');
-  console.log('editImagesInput element:', editImagesInput);
+  const editImagesInput = document.getElementById("editImages");
+  console.log("editImagesInput element:", editImagesInput);
 
   if (editImagesInput) {
-    editImagesInput.addEventListener('change', (e) => {
-      console.log('Edit file input changed!');
+    editImagesInput.addEventListener("change", (e) => {
+      console.log("Edit file input changed!");
       const files = Array.from(e.target.files);
-      console.log('New files selected for edit:', files.length);
+      console.log("New files selected for edit:", files.length);
 
       if (files.length > 0) {
         editFilesToProcess = files;
         editCurrentFileIndex = 0;
         editCroppedFiles = [];
 
-        const editPreviewContainer = document.getElementById('editPreviewContainer');
+        const editPreviewContainer = document.getElementById("editPreviewContainer");
         if (editPreviewContainer) {
-          editPreviewContainer.innerHTML = '';
+          editPreviewContainer.innerHTML = "";
         }
 
-        console.log('Calling processNextEditImage()...');
+        console.log("Calling processNextEditImage()...");
         processNextEditImage();
       }
     });
   } else {
-    console.error('editImages input not found!');
+    console.error("editImages input not found!");
   }
 
   // Edit crop button click handler
-  const editCropBtn = document.getElementById('editCropBtn');
+  const editCropBtn = document.getElementById("editCropBtn");
   if (editCropBtn) {
-    editCropBtn.addEventListener('click', () => {
+    editCropBtn.addEventListener("click", () => {
       if (!editCropper) return;
 
       editCropper.getCroppedCanvas({
@@ -364,21 +364,21 @@ document.addEventListener('DOMContentLoaded', function () {
         editCroppedFiles.push(blob);
 
         // Show preview
-        const img = document.createElement('img');
+        const img = document.createElement("img");
         img.src = URL.createObjectURL(blob);
-        img.style.width = '100%';
-        img.style.height = '100px';
-        img.style.objectFit = 'cover';
-        img.style.borderRadius = '4px';
+        img.style.width = "100%";
+        img.style.height = "100px";
+        img.style.objectFit = "cover";
+        img.style.borderRadius = "4px";
 
-        const editPreviewContainer = document.getElementById('editPreviewContainer');
+        const editPreviewContainer = document.getElementById("editPreviewContainer");
         if (editPreviewContainer) {
           editPreviewContainer.appendChild(img);
         }
 
         editCurrentFileIndex++;
         processNextEditImage();
-      }, 'image/jpeg', 0.95);
+      }, "image/jpeg", 0.95);
     });
   }
 
@@ -386,55 +386,55 @@ document.addEventListener('DOMContentLoaded', function () {
   // Add variant form submission with cropped images
   // Add variant form submission with cropped images
   // Add variant form submission
-  const addForm = document.getElementById('addVariantForm');
+  const addForm = document.getElementById("addVariantForm");
   if (addForm) {
-    addForm.addEventListener('submit', async function (e) {
+    addForm.addEventListener("submit", async function (e) {
       e.preventDefault();
 
       // --- 1. SIMPLE VALIDATION (The Fix) ---
-      const sizeVal = document.getElementById('addSize').value.trim();
-      const colorVal = document.getElementById('addColor').value.trim();
-      const priceVal = document.getElementById('addPrice').value.trim();
-      const stockVal = document.getElementById('addStock').value.trim();
+      const sizeVal = document.getElementById("addSize").value.trim();
+      const colorVal = document.getElementById("addColor").value.trim();
+      const priceVal = document.getElementById("addPrice").value.trim();
+      const stockVal = document.getElementById("addStock").value.trim();
 
       if (!sizeVal || !colorVal || !priceVal || !stockVal) {
         Swal.fire({
-          icon: 'warning',
-          title: 'Missing Details',
-          text: 'Please fill in Size, Color, Price, and Stock!'
+          icon: "warning",
+          title: "Missing Details",
+          text: "Please fill in Size, Color, Price, and Stock!"
         });
         return; // Stop here! Don't annoy the server.
       }
       // --------------------------------------
 
       let formData;
-      const submitBtn = e.target.querySelector('button[type="submit"]');
+      const submitBtn = e.target.querySelector("button[type=\"submit\"]");
       const originalBtnText = submitBtn.textContent;
 
       // CASE 1: Using Cropper
       if (croppedFiles.length > 0) {
         if (croppedFiles.length < 3) {
-          Swal.fire({ icon: 'warning', title: 'Images Required', text: 'Please crop at least 3 images' });
+          Swal.fire({ icon: "warning", title: "Images Required", text: "Please crop at least 3 images" });
           return;
         }
 
         formData = new FormData();
         // Add manual fields
-        formData.append('size', sizeVal);
-        formData.append('color', colorVal);
-        formData.append('price', priceVal);
-        formData.append('stock', stockVal);
+        formData.append("size", sizeVal);
+        formData.append("color", colorVal);
+        formData.append("price", priceVal);
+        formData.append("stock", stockVal);
 
         // Add cropped images
         croppedFiles.forEach((blob, index) => {
-          formData.append('images', blob, `variant-${Date.now()}-${index}.jpg`);
+          formData.append("images", blob, `variant-${Date.now()}-${index}.jpg`);
         });
 
       } else {
         // CASE 2: No Cropping (Standard file input)
-        const fileInput = document.getElementById('variantImages');
+        const fileInput = document.getElementById("variantImages");
         if (fileInput && fileInput.files.length < 3) {
-          Swal.fire({ icon: 'warning', title: 'Images Required', text: 'Please select at least 3 images' });
+          Swal.fire({ icon: "warning", title: "Images Required", text: "Please select at least 3 images" });
           return;
         }
         // Create FormData directly
@@ -447,23 +447,23 @@ document.addEventListener('DOMContentLoaded', function () {
         submitBtn.disabled = true;
 
         const response = await fetch(e.target.action, {
-          method: 'POST',
+          method: "POST",
           body: formData
         });
 
         if (response.ok) {
           const resData = await response.json();
           await Swal.fire({
-            icon: 'success',
-            title: 'Success!',
-            text: resData.message || 'Variant added successfully!',
+            icon: "success",
+            title: "Success!",
+            text: resData.message || "Variant added successfully!",
             timer: 1500,
             showConfirmButton: false
           });
           window.location.href = resData.redirectUrl || location.href;
         } else {
           const contentType = response.headers.get("content-type");
-          let errorMsg = 'Error adding variant';
+          let errorMsg = "Error adding variant";
 
           if (contentType && contentType.indexOf("application/json") !== -1) {
             const resData = await response.json();
@@ -475,8 +475,8 @@ document.addEventListener('DOMContentLoaded', function () {
           }
 
           Swal.fire({
-            icon: 'error',
-            title: 'Failed',
+            icon: "error",
+            title: "Failed",
             text: errorMsg
           });
           submitBtn.textContent = originalBtnText;
@@ -484,7 +484,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       } catch (err) {
         console.error("CRITICAL FRONTEND ERROR:", err);
-        Swal.fire({ icon: 'error', title: 'Network Error', text: 'Check console for details.' });
+        Swal.fire({ icon: "error", title: "Network Error", text: "Check console for details." });
         submitBtn.textContent = originalBtnText;
         submitBtn.disabled = false;
       }
@@ -494,9 +494,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
   // Edit variant form validation and submission
-  const editForm = document.getElementById('editVariantForm');
+  const editForm = document.getElementById("editVariantForm");
   if (editForm) {
-    editForm.addEventListener('submit', async function (e) {
+    editForm.addEventListener("submit", async function (e) {
       e.preventDefault(); // Prevent default submission
 
       const newImagesCount = editCroppedFiles.length; // Use cropped files count
@@ -513,46 +513,46 @@ document.addEventListener('DOMContentLoaded', function () {
         return;
       }
 
-      console.log('Submitting edit variant with', totalImages, 'total images');
+      console.log("Submitting edit variant with", totalImages, "total images");
 
       // Create FormData
       const formData = new FormData();
-      formData.append('variantId', document.getElementById('editVariantId').value);
-      formData.append('size', document.getElementById('editSize').value);
-      formData.append('color', document.getElementById('editColor').value);
-      formData.append('price', document.getElementById('editPrice').value);
-      formData.append('stock', document.getElementById('editStock').value);
-      formData.append('deletedImages', document.getElementById('deletedImages').value);
+      formData.append("variantId", document.getElementById("editVariantId").value);
+      formData.append("size", document.getElementById("editSize").value);
+      formData.append("color", document.getElementById("editColor").value);
+      formData.append("price", document.getElementById("editPrice").value);
+      formData.append("stock", document.getElementById("editStock").value);
+      formData.append("deletedImages", document.getElementById("deletedImages").value);
 
       // Add cropped images
       editCroppedFiles.forEach((blob, index) => {
-        formData.append('newImages', blob, `variant-edit-${Date.now()}-${index}.jpg`);
+        formData.append("newImages", blob, `variant-edit-${Date.now()}-${index}.jpg`);
       });
 
       // Submit via fetch
       try {
         const response = await fetch(e.target.action, {
-          method: 'POST',
+          method: "POST",
           body: formData
         });
 
         if (response.ok) {
           const resData = await response.json();
           await Swal.fire({
-            icon: 'success',
-            title: 'Updated!',
-            text: resData.message || 'Variant updated successfully!',
+            icon: "success",
+            title: "Updated!",
+            text: resData.message || "Variant updated successfully!",
             timer: 1500,
             showConfirmButton: false
           });
           window.location.href = resData.redirectUrl || location.href;
         } else {
           const resData = await response.json().catch(() => ({}));
-          alert(resData.message || 'Error updating variant');
+          alert(resData.message || "Error updating variant");
         }
       } catch (error) {
-        console.error('Error:', error);
-        alert('Error updating variant');
+        console.error("Error:", error);
+        alert("Error updating variant");
       }
     });
   }
@@ -560,118 +560,118 @@ document.addEventListener('DOMContentLoaded', function () {
 
 // Process next image for cropping
 function processNextImage() {
-  console.log('processNextImage called, currentFileIndex:', currentFileIndex, 'total files:', filesToProcess.length);
+  console.log("processNextImage called, currentFileIndex:", currentFileIndex, "total files:", filesToProcess.length);
 
   if (currentFileIndex < filesToProcess.length) {
     const file = filesToProcess[currentFileIndex];
     const reader = new FileReader();
 
-    const imageCounter = document.getElementById('imageCounter');
+    const imageCounter = document.getElementById("imageCounter");
     if (imageCounter) {
       imageCounter.textContent = `(${currentFileIndex + 1} of ${filesToProcess.length})`;
     }
 
     reader.onload = (e) => {
-      console.log('Image loaded, setting up cropper...');
-      const cropperImage = document.getElementById('cropperImage');
-      const cropperContainer = document.getElementById('cropperContainer');
+      console.log("Image loaded, setting up cropper...");
+      const cropperImage = document.getElementById("cropperImage");
+      const cropperContainer = document.getElementById("cropperContainer");
 
-      console.log('cropperImage element:', cropperImage);
-      console.log('cropperContainer element:', cropperContainer);
+      console.log("cropperImage element:", cropperImage);
+      console.log("cropperContainer element:", cropperContainer);
 
       if (cropperImage && cropperContainer) {
         cropperImage.src = e.target.result;
-        cropperContainer.style.display = 'block';
-        console.log('Cropper container should now be visible');
+        cropperContainer.style.display = "block";
+        console.log("Cropper container should now be visible");
 
         if (cropper) {
           cropper.destroy();
         }
 
         // Check if Cropper is available
-        if (typeof Cropper === 'undefined') {
-          console.error('Cropper library is not loaded!');
-          alert('Error: Image cropping library not loaded. Please refresh the page.');
+        if (typeof Cropper === "undefined") {
+          console.error("Cropper library is not loaded!");
+          alert("Error: Image cropping library not loaded. Please refresh the page.");
           return;
         }
 
-        console.log('Creating new Cropper instance...');
+        console.log("Creating new Cropper instance...");
         cropper = new Cropper(cropperImage, {
           aspectRatio: 1,  // Square images
           viewMode: 1,
           autoCropArea: 1
         });
-        console.log('Cropper created successfully');
+        console.log("Cropper created successfully");
       } else {
-        console.error('cropperImage or cropperContainer not found!');
+        console.error("cropperImage or cropperContainer not found!");
       }
     };
 
     reader.readAsDataURL(file);
   } else {
-    console.log('All images processed, hiding cropper');
-    const cropperContainer = document.getElementById('cropperContainer');
+    console.log("All images processed, hiding cropper");
+    const cropperContainer = document.getElementById("cropperContainer");
     if (cropperContainer) {
-      cropperContainer.style.display = 'none';
+      cropperContainer.style.display = "none";
     }
   }
 }
 
 // Process next image for cropping in Edit Modal
 function processNextEditImage() {
-  console.log('processNextEditImage called, index:', editCurrentFileIndex, 'total:', editFilesToProcess.length);
+  console.log("processNextEditImage called, index:", editCurrentFileIndex, "total:", editFilesToProcess.length);
 
   if (editCurrentFileIndex < editFilesToProcess.length) {
     const file = editFilesToProcess[editCurrentFileIndex];
     const reader = new FileReader();
 
-    const editImageCounter = document.getElementById('editImageCounter');
+    const editImageCounter = document.getElementById("editImageCounter");
     if (editImageCounter) {
       editImageCounter.textContent = `(${editCurrentFileIndex + 1} of ${editFilesToProcess.length})`;
     }
 
     reader.onload = (e) => {
-      console.log('Edit image loaded, setting up cropper...');
-      const editCropperImage = document.getElementById('editCropperImage');
-      const editCropperContainer = document.getElementById('editCropperContainer');
+      console.log("Edit image loaded, setting up cropper...");
+      const editCropperImage = document.getElementById("editCropperImage");
+      const editCropperContainer = document.getElementById("editCropperContainer");
 
-      console.log('editCropperImage element:', editCropperImage);
-      console.log('editCropperContainer element:', editCropperContainer);
+      console.log("editCropperImage element:", editCropperImage);
+      console.log("editCropperContainer element:", editCropperContainer);
 
       if (editCropperImage && editCropperContainer) {
         editCropperImage.src = e.target.result;
-        editCropperContainer.style.display = 'block';
-        console.log('Edit cropper container visible');
+        editCropperContainer.style.display = "block";
+        console.log("Edit cropper container visible");
 
         if (editCropper) {
           editCropper.destroy();
         }
 
         // Check if Cropper is available
-        if (typeof Cropper === 'undefined') {
-          console.error('Cropper library not loaded!');
-          alert('Error: Image cropping library not loaded. Please refresh the page.');
+        if (typeof Cropper === "undefined") {
+          console.error("Cropper library not loaded!");
+          alert("Error: Image cropping library not loaded. Please refresh the page.");
           return;
         }
 
-        console.log('Creating edit Cropper instance...');
+        console.log("Creating edit Cropper instance...");
         editCropper = new Cropper(editCropperImage, {
           aspectRatio: 1,  // Square images
           viewMode: 1,
           autoCropArea: 1
         });
-        console.log('Edit cropper created successfully');
+        console.log("Edit cropper created successfully");
       } else {
-        console.error('Edit cropper elements not found!');
+        console.error("Edit cropper elements not found!");
       }
     };
 
     reader.readAsDataURL(file);
   } else {
-    console.log('All edit images processed, hiding cropper');
-    const editCropperContainer = document.getElementById('editCropperContainer');
+    console.log("All edit images processed, hiding cropper");
+    const editCropperContainer = document.getElementById("editCropperContainer");
     if (editCropperContainer) {
-      editCropperContainer.style.display = 'none';
+      editCropperContainer.style.display = "none";
     }
   }
 }

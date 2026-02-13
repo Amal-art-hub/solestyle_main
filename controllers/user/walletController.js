@@ -34,9 +34,9 @@ const loadWalletPage = async (req, res) => {
         console.error("Error loading wallet:", error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).render("page-404");
     }
-}
+};
 
 
 module.exports = {
     loadWalletPage
-}
+};

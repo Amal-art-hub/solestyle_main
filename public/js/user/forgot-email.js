@@ -8,9 +8,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (!email) {
             Swal.fire({
-                icon: 'warning',
-                title: 'Missing Email',
-                text: 'Please enter your email address'
+                icon: "warning",
+                title: "Missing Email",
+                text: "Please enter your email address"
             });
             return;
         }
@@ -24,18 +24,18 @@ document.addEventListener("DOMContentLoaded", () => {
             // Check success
             if (response.data.success) {
                 Swal.fire({
-                    icon: 'success',
-                    title: 'OTP Sent!',
-                    text: 'Please check your email for the OTP',
+                    icon: "success",
+                    title: "OTP Sent!",
+                    text: "Please check your email for the OTP",
                     showConfirmButton: true
                 }).then(() => {
                     window.location.href = "/forg-verify-otp";
                 });
             } else {
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: response.data.message || 'Something went wrong'
+                    icon: "error",
+                    title: "Error",
+                    text: response.data.message || "Something went wrong"
                 });
             }
 
@@ -44,8 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const errorMessage = err.response?.data?.message || "Server error. Try again later.";
             
             Swal.fire({
-                icon: 'error',
-                title: 'Request Failed',
+                icon: "error",
+                title: "Request Failed",
                 text: errorMessage
             });
         }

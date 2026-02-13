@@ -22,15 +22,15 @@ const getAllCategories = async (page = 1, limit = 4, search = "") => {
       count,
     };
   } catch (error) {
-    throw new ("Error fetching categories:", error)();
+    throw new Error("Error fetching categories: " + error.message, { cause: error });
   }
 };
 
 const createCategory = async (data) => {
   try {
 
-    if (data.name==="category"){
-      return {success:false,message:"cannote be added"}
+    if (data.name === "category") {
+      return { success: false, message: "cannote be added" };
     }
 
     const existingCategory = await Category.findOne({
@@ -47,43 +47,43 @@ const createCategory = async (data) => {
     await newCategory.save();
     return { success: true, message: "Category created successfully" };
   } catch (error) {
-    throw new Error("Error creating category: " + error.message);
+    throw new Error("Error creating category: " + error.message, { cause: error });
   }
 };
 
 
-const editCategoryService=async(data)=>{
-    try {
-        const {id,name,description}=data;
-        const existingCategory=await Category.findOne({
-            name:{$regex:new RegExp(`^${name}$`,"i")},
-            _id:{$ne:id}
-        });
-        if(existingCategory){
-            return {success:false,message:"Category name already taken"};
-        }
-        await Category.findByIdAndUpdate(id,{
-            name:name,
-            description:description
-        });
-        return {success:true,message:"Category updated successfully"};
-    } catch (error) {
-        throw new Error("Error updating category:",error.message);
+const editCategoryService = async (data) => {
+  try {
+    const { id, name, description } = data;
+    const existingCategory = await Category.findOne({
+      name: { $regex: new RegExp(`^${name}$`, "i") },
+      _id: { $ne: id }
+    });
+    if (existingCategory) {
+      return { success: false, message: "Category name already taken" };
     }
+    await Category.findByIdAndUpdate(id, {
+      name: name,
+      description: description
+    });
+    return { success: true, message: "Category updated successfully" };
+  } catch (error) {
+    throw new Error("Error updating category: " + error.message, { cause: error });
+  }
 };
 
-const toggleCategoryStatus=async(id)=>{
-    try {
-    const category=await Category.findById(id);
-    if(!category)return {success:false,message:"Category not found"};
-    category.isListed=!category.isListed;
+const toggleCategoryStatus = async (id) => {
+  try {
+    const category = await Category.findById(id);
+    if (!category) return { success: false, message: "Category not found" };
+    category.isListed = !category.isListed;
     await category.save();
-    return {success:true,status:category.isListed};
+    return { success: true, status: category.isListed };
 
-    } catch (error) {
-     throw new Error("Error toggling status:"+error.message);        
-    }
-}
+  } catch (error) {
+    throw new Error("Error toggling status: " + error.message, { cause: error });
+  }
+};
 
 
 module.exports = {

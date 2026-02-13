@@ -41,7 +41,7 @@ const variantSchema = new mongoose.Schema({
       validator: function (images) {
         return images.length >= 3 && images.length <= 10;
       },
-      message: 'Variant must have between 3 and 10 images'
+      message: "Variant must have between 3 and 10 images"
     }
   },
 }, { timestamps: true });

@@ -4,7 +4,7 @@ const {
   getOrderById,
   approveReturnService,
   rejectReturnService
-} = require("../../services/adminSer/orderService")
+} = require("../../services/adminSer/orderService");
 const statusCode = require("../../utils/statusCodes.js");
 
 const getOrderList = async (req, res) => {
@@ -78,7 +78,7 @@ const approveReturn = async (req, res) => {
     console.error("Approve Return Error:", error);
     res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
   }
-}
+};
 
 const rejectReturn = async (req, res) => {
   try {
@@ -98,4 +98,4 @@ module.exports = {
   getOrderDetails,
   approveReturn,
   rejectReturn
-}
+};

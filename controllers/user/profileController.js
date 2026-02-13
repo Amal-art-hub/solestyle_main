@@ -25,16 +25,16 @@ const loadProfile = async (req, res) => {
         const user = await getUserProfile(userId);
         const coupons = await getCoupons(userId);
 
-                const baseUrl = `${req.protocol}://${req.get('host')}`;
+                const baseUrl = `${req.protocol}://${req.get("host")}`;
 
-        const referralOffer = await Offers.findOne({ type: 'referral', status: 'active' });
+        const referralOffer = await Offers.findOne({ type: "referral", status: "active" });
         const referralDiscount = referralOffer ? referralOffer.discount_percentage : 10;
-        res.status(statusCode.OK).render("profile", { user, coupons, referralDiscount,baseUrl  })
+        res.status(statusCode.OK).render("profile", { user, coupons, referralDiscount,baseUrl  });
     } catch (error) {
         console.error("Profile looad Error:", error);
         res.redirect("/");
     }
-}
+};
 
 
 //---------------------------------------------------------------------------------updating edit profile
@@ -49,7 +49,7 @@ const updateProfile = async (req, res) => {
         res.redirect("/user/profile?error?Update failed");
 
     }
-}
+};
 
 //------------------------------------updating password
 
@@ -66,18 +66,18 @@ const updatePassword = async (req, res) => {
         res.redirect("/user/profile?error=Server Error");
 
     }
-}
+};
 
 //------------------------------loadchangemail
 
 const loadChangeEmail = async (req, res) => {
     try {
         console.log("debugging:", req.session.user);
-        res.status(statusCode.OK).render("profile-emailchange", { user: req.session.user })
+        res.status(statusCode.OK).render("profile-emailchange", { user: req.session.user });
     } catch (error) {
         console.log("error in loading email", error);
     }
-}
+};
 
 //-------------------------------request for emailchangeotp
 const requestEmailOtp = async (req, res) => {
@@ -116,7 +116,7 @@ const verifyEmailOtp = async (req, res) => {
         console.log(error);
         return res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server Error" });
     }
-}
+};
 
 //--------------------------------------------------------------------
 const validateAddress = (data) => {
@@ -127,7 +127,7 @@ const validateAddress = (data) => {
     if (!/^\d{6}$/.test(postal_code)) errors.pincode = "Invalid Pincode";
     if (!city || city.trim().length < 2) errors.city = "City is required";
     return { isValid: Object.keys(errors).length === 0, errors };
-}
+};
 
 const loadAddressPage = async (req, res) => {
     try {
@@ -135,10 +135,10 @@ const loadAddressPage = async (req, res) => {
         res.status(statusCode.OK).render("addresses", { addresses, user: req.session.user });
     } catch (error) {
         console.error(error);
-        res.status(statusCode.INTERNAL_SERVER_ERROR).render("page-404")
+        res.status(statusCode.INTERNAL_SERVER_ERROR).render("page-404");
 
     }
-}
+};
 
 const addAddress = async (req, res) => {
     try {
@@ -160,7 +160,7 @@ const addAddress = async (req, res) => {
         console.error("Add address error:", error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server Error" });
     }
-}
+};
 
 
 const editAddress = async (req, res) => {
@@ -213,5 +213,5 @@ module.exports = {
     editAddress,
     deleteAddress
 
-}
+};
 
