@@ -12,6 +12,8 @@ const getCustomers = async (req, res) => {
         const limit = 10;
 
         const data = await getCustomerData(search, page, limit);
+
+        
         res.status(statusCode.OK).render("customersManag", {
             data: data.userData,
             totalPages: data.totalPages,

@@ -1,9 +1,11 @@
+
+
 const express = require("express");
 const app = express();
 const env = require("dotenv").config();
 const session = require("express-session")
 const MongoStore = require('connect-mongo').default;
-const passport = require("passport");     // ✔️ import passport library
+const passport = require("passport");    
 require("./config/passport");
 const errorHandler = require("./middlewares/errorHandler");
 
@@ -11,6 +13,7 @@ const path = require("path")
 const db = require("./config/db");
 const userRouter = require("./routes/userRouter");
 const adminRouter = require("./routes/adminRouter");
+
 db();
 
 

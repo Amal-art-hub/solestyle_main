@@ -1,0 +1,9 @@
+{
+  "ignore": [
+    "public/*",
+    "node_modules/*",
+    "*.log",
+    ".git/*",
+    "debug_output.txt"
+  ]
+}

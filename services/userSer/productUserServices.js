@@ -257,7 +257,7 @@ const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = 
 
             return {
                 ...p,
-                image: variant.images[2], // Matches your logic (3rd image)
+                image: (variant.images && variant.images.length >= 3) ? variant.images[2] : (variant.images[0] || "default.jpg"), // Matches your logic (3rd image)
                 price: finalPrice,
                 originalPrice: variant.price,
                 discount: bestDiscount,
