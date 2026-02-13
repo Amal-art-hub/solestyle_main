@@ -25,11 +25,7 @@ const getCheckoutData = async (userId) => {
             select: "name categoryId isListed isDeleted"
         });
 
-        // cart = cart.toObject();
-        // cart.items = cart.items.filter(item => {
-        //     return item.variant_id && item.variant_id.stock > 0 && item.product_id && !item.product_id.isDeleted && item.product_id.isListed;
-        // })
-
+    
 
         const coupons = await Coupon.find({
             expiry_date: { $gte: new Date() },
@@ -42,11 +38,6 @@ const getCheckoutData = async (userId) => {
             return { cart: null, addresses: [], subtotal: 0, coupons: [] };
         }
 
-        // console.log("------------------------");
-        // console.log("DEBUG: Running getCheckoutData");
-        // console.log("FOUND COUPONS COUNT:", coupons.length);
-        // console.log("FIRST COUPON:", coupons[0]);
-        // console.log("------------------------");
 
 
 
@@ -64,10 +55,6 @@ const getCheckoutData = async (userId) => {
 
 
 
-
-        // if (!cart || cart.items.length === 0) {
-        //     return { cart: null, addresses: [], subtotal: 0 };
-        // }
 
 
 
@@ -138,9 +125,13 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
         for (const item of pendingOrder.items) {
             // Check if variant exists to avoid crash
             if (item.variant_id) {
-                await Variant.findByIdAndUpdate(item.variant_id._id, {
-                    $inc: { stock: -item.quantity }
-                });
+               const updatedVariant = await Variant.findOneAndUpdate(
+    { _id: item.variant_id._id, stock: { $gte: item.quantity } }, 
+    { $inc: { stock: -item.quantity } }
+);
+if (!updatedVariant) {
+    throw new Error(`Sorry, ${item.name_snapshot} just went out of stock before payment completed!`);
+}
             }
         }
 
@@ -180,11 +171,6 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
     for (const item of validItems) {
         const variant = item.variant_id;
 
-
-        // if (variant.stock < item.quantity) {
-        //     throw new Error(`Stock insufficient for ${item.name_snapshot}`);
-        // }
-
         const originalMRP = variant.price;
         const { finalPrice } = await calculateFinalPrice(item.product_id, originalMRP);
         const itemOfferTotal = item.quantity * finalPrice;
@@ -215,10 +201,7 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
         throw new Error("COD not available for orders above ₹1000");
     }
 
-    // const orderNumber = "ORD-" + Date.now() + Math.floor(Math.random() * 1000);
-
-
-    // Generates something like ORD-20240131-A7XC2
+ 
     const datePart = new Date().toISOString().slice(0, 10).replace(/-/g, "");
     const randomPart = Math.random().toString(36).substring(2, 7).toUpperCase();
     const orderNumber = `ORD-${datePart}-${randomPart}`;
@@ -263,9 +246,14 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
     }
 
     for (const item of validItems) {
-        await Variant.findByIdAndUpdate(item.variant_id._id, {
-            $inc: { stock: -item.quantity }
-        });
+        const updatedVariant = await Variant.findOneAndUpdate(
+    { _id: item.variant_id._id, stock: { $gte: item.quantity } }, 
+    { $inc: { stock: -item.quantity } }
+);
+
+if (!updatedVariant) {
+    throw new Error(`Stock for ${item.name_snapshot} was just purchased by another user!`);
+}
     }
 
     await Cart.findOneAndDelete({ user_id: userId });
@@ -280,7 +268,7 @@ const placeOrderService = async (userId, addressId, paymentMethod, couponData, p
 const validateCoupon = async (userId, code) => {
     const coupon = await Coupon.findOne({ code: code.toUpperCase() });
 
-    // let Orders = await Order.find({ user_id: userId, status: "delivered" })
+
 
 
     if (!coupon) throw new Error("Invalid Coupon Code");
@@ -388,7 +376,7 @@ const createRazorpayOrderService = async (userId, addressId, couponData) => {
 
     await newOrder.save();
 
-    return rzpOrder; // Return ID to frontend
+    return rzpOrder; 
 };
 
 

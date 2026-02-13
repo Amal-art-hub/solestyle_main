@@ -51,12 +51,16 @@ const placeOrder = async (req, res) => {
         const { addressId, paymentMethod, paymentDetails } = req.body;
         const couponData = req.session.coupon;
 
+        console.log("SERVER DEBUG: placeOrder called", { userId, paymentMethod, addressId });
+
         if (!addressId) {
+            console.log("SERVER DEBUG: Missing addressId");
             return res.status(statusCode.BAD_REQUEST).json({ success: false, message: "Please select an address" });
         }
 
         const order = await placeOrderService(userId, addressId, paymentMethod, couponData, paymentDetails);
 
+        console.log("SERVER DEBUG: Order placed successfully", order._id);
         req.session.coupon = null;
 
         res.status(statusCode.OK).json({
@@ -66,7 +70,7 @@ const placeOrder = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Place Order Error:", error);
+        console.error("SERVER DEBUG: Place Order Error:", error.message);
         res.status(statusCode.BAD_REQUEST).json({
             success: false,
             message: error.message || "Failed to place order"
@@ -119,7 +123,7 @@ const applyCoupen = async (req, res) => {
             discount = 2000;
         }
 
-        // console.log("DEBUG: Calculated Discount", { discount, discount_type: coupon.discount_type, discount_value: coupon.discount_value });
+
 
 
         req.session.coupon = {
@@ -164,14 +168,14 @@ const createRazorpayOrder = async (req, res) => {
 };
 
 
-// Card Number: 5200 8282 8282 8282
-// Expiry Date: Any future date (e.g., 12/30)
-// CVV: 123
+
 
 const paymentFailed = async (req, res) => {
     try {
+        const message = req.query.message || "We couldn't process your payment. This might be due to a network issue or a declined transaction. Don't worry, you haven't been charged.";
         res.render("paymentFailure", {
             user: req.session.user,
+            message: message
         });
     } catch (error) {
         console.error("Payment Failure Page Error:", error);

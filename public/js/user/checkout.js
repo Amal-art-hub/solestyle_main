@@ -10,8 +10,8 @@ async function placeOrder() {
 
 
 
-    
-      const confirm = await Swal.fire({
+
+    const confirm = await Swal.fire({
         title: "Place Order?",
         text: `Confirm order with ${paymentMethod}?`,
         icon: "question",
@@ -19,28 +19,28 @@ async function placeOrder() {
         confirmButtonText: "Yes"
     });
 
-        if (!confirm.isConfirmed) return;
+    if (!confirm.isConfirmed) return;
 
     if (paymentMethod === "Online") {
         try {
-        
+
             const response = await axios.post("/checkout/razorpay-order", {
-    addressId: addressInput.value 
-});
+                addressId: addressInput.value
+            });
             if (!response.data.success) throw new Error("Failed to start payment");
 
             const orderData = response.data.order;
 
 
             const options = {
-                "key": "rzp_test_S0ywJN5WPSnvu3", 
+                "key": "rzp_test_S0ywJN5WPSnvu3",
                 "amount": orderData.amount,
                 "currency": "INR",
                 "name": "Shoe Project",
                 "description": "Purchase Order",
                 "order_id": orderData.id,
                 "handler": async function (response) {
-                    
+
                     await submitFinalOrder(addressInput.value, "Online", response);
                 },
                 "modal": {
@@ -49,7 +49,7 @@ async function placeOrder() {
                     }
                 },
                 "prefill": {
-                    "name": "User Name", 
+                    "name": "User Name",
                     "email": "user@example.com"
                 },
                 "theme": { "color": "#3399cc" }
@@ -66,37 +66,41 @@ async function placeOrder() {
             console.error(error);
             Swal.fire("Error", "Payment initialization failed", "error");
         }
-        return; 
+        return;
     }
 
-    
+
     await submitFinalOrder(addressInput.value, paymentMethod);
 }
 
 
 async function submitFinalOrder(addressId, paymentMethod, paymentDetails = {}) {
-    // const confirm = await Swal.fire({
-    //     title: 'Place Order?',
-    //     text: `Confirm order with ${paymentMethod}?`,
-    //     icon: 'question',
-    //     showCancelButton: true,
-    //     confirmButtonText: 'Yes'
-    // });
 
 
-        try {
-            const response = await axios.post("/checkout/place-order", {
-                addressId,
-                paymentMethod,
-                paymentDetails
-            });
-            if (response.data.success) {
-                window.location.href = `/order-success/${response.data.orderId}`;
-            }
-        } catch (error) {
-            Swal.fire("Failed", error.response?.data?.message, "error");
+    try {
+        console.log("DEBUG: Sending place-order request...", { addressId, paymentMethod });
+        const response = await axios.post("/checkout/place-order", {
+            addressId,
+            paymentMethod,
+            paymentDetails
+        });
+        console.log("DEBUG: place-order response received:", response.data);
+        if (response.data.success) {
+            window.location.href = `/order-success/${response.data.orderId}`;
+        }
+    } catch (error) {
+        console.error("DEBUG: submitFinalOrder catch hit!", error);
+        const message = error.response?.data?.message || "Failed to place order";
+        console.log("DEBUG: Error message from server:", message);
+
+        if (paymentMethod === "Online") {
+            console.log("DEBUG: Online payment failed, redirecting to failure page...");
+            window.location.href = "/checkout/payment-failure?message=" + encodeURIComponent(message);
+        } else {
+            Swal.fire("Failed", message, "error");
         }
     }
+}
 
 
 /* COUPON FUNCTIONS */
