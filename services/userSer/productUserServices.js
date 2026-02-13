@@ -139,16 +139,35 @@ const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = 
         categoryId: new mongoose.Types.ObjectId(categoryId)
     };
 
-    if (search) {
-        matchStage.$or = [
-            { name: { $regex: search, $options: "i" } },
-            { description: { $regex: search, $options: "i" } }
-        ];
-    }
-
-    // if (filters.brand) {
-    //     matchStage.brandId = new mongoose.Types.ObjectId(filters.brand);
+    // if (search) {
+    //     matchStage.$or = [
+    //         { name: { $regex: search, $options: "i" } },
+    //         { description: { $regex: search, $options: "i" } }
+    //     ];
     // }
+
+
+    // ... inside matchStage logic ...
+
+if (search) {
+    // 1. Keep it inside the IF so it only runs when a user types something
+    const matchingBrands = await Brand.find({ 
+        name: { $regex: search, $options: "i" },
+        isListed: true 
+    }).select("_id");
+    
+    // 2. Map the IDs
+    const matchingBrandIds = matchingBrands.map(b => b._id);
+
+    // 3. Update the matchStage to search name, description, AND brandId
+    matchStage.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+        { brandId: { $in: matchingBrandIds } } // This is the new part
+    ];
+}
+
+   
 
     if (filters.brand) {
 
@@ -281,86 +300,6 @@ const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = 
 
 
 
-
-// const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = '', sort = 'newest', filters = {}) => {
-//     try {
-//         const skip = (page - 1) * limit;
-
-//         let query = {
-//             isListed: true,
-//             categoryId: categoryId
-//         }
-
-//         if (search) {
-//             query.$or = [
-//                 { name: { $regex: search, $options: "i" } },
-//                 { description: { $regex: search, $options: "i" } }
-//             ];
-//         }
-
-//         if (filters.brand) {
-//             query.brandId = filters.brand;
-//         }
-
-//         let mongoSort = { createdAt: -1 };
-//         if (sort === "a-z") mongoSort = { name: 1 };
-//         if (sort === "z-a") mongoSort = { name: -1 };
-
-//         const products = await Product.find(query)
-//             .populate("brandId")
-//             .populate("categoryId")
-//             .sort(mongoSort)
-//             .lean();
-
-//         let processedProducts = await Promise.all(products.map(async (p) => {
-//             const variants = await Variant.find({ productId: p._id, isListed: true }).sort({ price: 1 });
-
-//             if (!variants.length) return null;
-//             const basePrice = variants[0].price;
-//             const { finalPrice, bestDiscount } = await calculateFinalPrice(p, basePrice);
-//             return {
-//                 ...p,
-//                 image: variants[0].images[2],
-//                 price: finalPrice,
-//                 originalPrice: basePrice,
-//                 discount: bestDiscount,
-//                 stock: variants.reduce((acc, v) => acc + v.stock, 0),
-//                 variantId: variants[0]._id
-//             };
-//         }));
-
-//         processedProducts = processedProducts.filter(p => p !== null);
-
-//         if (filters.minPrice || filters.maxPrice) {
-//             const min = parseFloat(filters.minPrice) || 0;
-//             const max = parseFloat(filters.maxPrice) || Infinity;
-//             processedProducts = processedProducts.filter(p => p.price >= min && p.price <= max);
-//         }
-
-//         if (sort === 'price-low') {
-//             processedProducts.sort((a, b) => a.price - b.price);
-//         } else if (sort === 'price-high') {
-//             processedProducts.sort((a, b) => b.price - a.price);
-//         }
-
-//         const totalProducts = processedProducts.length;
-//         const finalProducts = processedProducts.slice(skip, skip + limit);
-//         return {
-//             products: finalProducts,
-//             currentPage: page,
-//             totalPages: Math.ceil(totalProducts / limit),
-//             totalProducts,
-//             filterOptions: await getFilterOptions()
-//         };
-
-
-
-
-
-//     } catch (error) {
-//         throw error;
-//     }
-// }
 
 
 
