@@ -105,7 +105,15 @@ const downloadInvoice = async (req, res) => {
         const templatePath = path.join(__dirname, '../../views/user/invoiceTemplate.ejs');
         const html = await ejs.renderFile(templatePath, { order });
         // 2. Launch Puppeteer
-        const browser = await puppeteer.launch({ headless: 'new' ,    args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+           const browser = await puppeteer.launch({
+        headless: 'new',
+        args: [
+            '--no-sandbox', 
+            '--disable-setuid-sandbox',
+            '--disable-zygote',
+            '--disable-gpu'
+        ]
+    });
         const page = await browser.newPage();
 
         await page.setContent(html, { waitUntil: 'networkidle0' });
