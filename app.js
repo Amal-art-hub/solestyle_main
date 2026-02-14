@@ -1,6 +1,7 @@
 
 
 const express = require("express");
+const morgan = require("morgan");
 const app = express();
 const env = require("dotenv").config();
 const session = require("express-session");
@@ -18,6 +19,7 @@ db();
 
 
 app.set("trust proxy", 1);
+app.use(morgan('dev'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
