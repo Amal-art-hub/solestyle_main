@@ -70,62 +70,7 @@ const calculateFinalPrice = async (product, originalPrice) => {
 
 
 
-// const calculateFinalPrice = async (product, originalPrice) => {
-//     const today = new Date();
 
-
-//     const activeOffers = await Offers.find({
-//         status: 'active',
-//         start_date: { $lte: today },
-//         end_date: { $gte: today }
-//     });
-
-//     let bestDiscount = 0;
-
-//     let isExpiringSoon=false;
-
-
-//     for (const offer of activeOffers) {
-
-//         if (offer.type === 'product' && offer.product_ids.some(id => id.toString() === product._id.toString())) {
-//             if (offer.discount_percentage > bestDiscount) {
-//                 bestDiscount = offer.discount_percentage;
-//               if(offer.end_date-today<=24*60*60*1000){
-//                 isExpiringSoon=true;
-//               }else{
-//                 isExpiringSoon=false;
-
-//             }
-
-
-//         }
-
-//         const catId = product.categoryId._id ? product.categoryId._id.toString() : product.categoryId.toString();
-
-//         if (offer.type === 'category' && offer.category_ids.map(id => id.toString()).includes(catId)) {
-//             if (offer.discount_percentage > bestDiscount) {
-//                 bestDiscount = offer.discount_percentage;
-//                  if(offer.end_date-today<=24*60*60*1000){
-//                 isExpiringSoon=true;
-//               }else{
-//                 isExpiringSoon=false;
-
-//             }
-//             }
-//         }
-//     }
-
-
-//     if (bestDiscount > 0) {
-//         const discountAmount = (originalPrice * bestDiscount) / 100;
-//         const finalPrice = Math.round(originalPrice - discountAmount);
-//         return { finalPrice, bestDiscount ,isExpiringSoon};
-//     }
-
-
-//     return { finalPrice: originalPrice, bestDiscount: 0 };
-// };
-// }
 
 
 
@@ -139,35 +84,29 @@ const getProductsByCategory = async (categoryId, page = 1, limit = 12, search = 
         categoryId: new mongoose.Types.ObjectId(categoryId)
     };
 
-    // if (search) {
-    //     matchStage.$or = [
-    //         { name: { $regex: search, $options: "i" } },
-    //         { description: { $regex: search, $options: "i" } }
-    //     ];
-    // }
 
 
-    // ... inside matchStage logic ...
 
-if (search) {
-    // 1. Keep it inside the IF so it only runs when a user types something
-    const matchingBrands = await Brand.find({ 
-        name: { $regex: search, $options: "i" },
-        isListed: true 
-    }).select("_id");
-    
-    // 2. Map the IDs
-    const matchingBrandIds = matchingBrands.map(b => b._id);
 
-    // 3. Update the matchStage to search name, description, AND brandId
-    matchStage.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { description: { $regex: search, $options: "i" } },
-        { brandId: { $in: matchingBrandIds } } // This is the new part
-    ];
-}
+    if (search) {
+        // 1. Keep it inside the IF so it only runs when a user types something
+        const matchingBrands = await Brand.find({
+            name: { $regex: search, $options: "i" },
+            isListed: true
+        }).select("_id");
 
-   
+        // 2. Map the IDs
+        const matchingBrandIds = matchingBrands.map(b => b._id);
+
+        // 3. Update the matchStage to search name, description, AND brandId
+        matchStage.$or = [
+            { name: { $regex: search, $options: "i" } },
+            { description: { $regex: search, $options: "i" } },
+            { brandId: { $in: matchingBrandIds } } // This is the new part
+        ];
+    }
+
+
 
     if (filters.brand) {
 
@@ -373,7 +312,7 @@ const getTrendingProducts = async () => {
         if (!category) return [];
         const products = await Product.find({ categoryId: category._id, isListed: true })
             .sort({ createdAt: -1 })
-            .limit(3)
+            .limit(10)
             .lean();
 
         const processed = await Promise.all(products.map(async (p) => {
@@ -381,7 +320,7 @@ const getTrendingProducts = async () => {
             if (variant) {
                 return {
                     ...p,
-                    image: variant.images[2],
+                    image: (variant.images && variant.images.length >= 3) ? variant.images[2] : (variant.images[0] || "default.jpg"),
                     price: variant.price,
                     offerPrice: variant.offerPrice
                 };
@@ -389,7 +328,7 @@ const getTrendingProducts = async () => {
             return null;
         }));
 
-        return processed.filter(p => p !== null);
+       return processed.filter(p => p !== null).slice(0, 3);
     };
 
     const [men, women, kids] = await Promise.all([

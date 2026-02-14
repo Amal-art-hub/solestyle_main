@@ -35,7 +35,7 @@ const loadHomepage = async (req, res) => {
       user: req.session.user || null, // ← send logged-in user to EJS
     });
   } catch (error) {
-    console.log("Home page not found");
+    console.log("Home page not found:",error);
     res.status(statusCode.INTERNAL_SERVER_ERROR).send("Server error");
   }
 };
