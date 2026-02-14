@@ -31,36 +31,38 @@
                 <div class="info-row"><span class="label">Phone:</span> <span class="value">
                         <%= user.phone || 'Not set' %>
                     </span></div>
-            
-<div class="info-row referral-section">
-    <div class="referral-header">
-        <span class="label">Refer & Earn</span>
-        <span class="referral-badge">Get <%= referralDiscount %>% Off!</span>
-    </div>
-    
-    <div class="referral-content">
-        <!-- 1. The Code -->
-        <div class="referral-box">
-            <span class="referral-label">Your Code:</span>
-            <div class="code-display" onclick="copyReferral('code', '<%= user.referralCode %>')">
-                <span id="refCode"><%= user.referralCode || 'N/A' %></span>
-                <i class="fas fa-copy"></i>
-            </div>
-        </div>
-        <!-- 2. The Link -->
-        <div class="referral-box">
-            <span class="referral-label">Your Link:</span>
-            <!-- <% const refLink = `http://localhost:5000/signup?ref=${user.referralCode}`; %> -->
-             <% const refLink = `${baseUrl}/signup?ref=${user.referralCode}`; %>
-            <div class="link-display" onclick="copyReferral('link', '<%= refLink %>')">
-                <span class="link-text">/signup?ref=<%= user.referralCode %></span>
-                <i class="fas fa-link"></i>
-                <span class="tooltip">Copy Link</span>
-            </div>
-        </div>
-    </div>
-    <p class="referral-hint">Click the code or link to copy directly to your clipboard!</p>
-</div>
+
+                <div class="info-row referral-section">
+                    <div class="referral-header">
+                        <span class="label">Refer & Earn</span>
+                        <span class="referral-badge">Get <%= referralDiscount %>% Off!</span>
+                    </div>
+
+                    <div class="referral-content">
+                        <!-- 1. The Code -->
+                        <div class="referral-box">
+                            <span class="referral-label">Your Code:</span>
+                            <div class="code-display" onclick="copyReferral('code', '<%= user.referralCode %>')">
+                                <span id="refCode">
+                                    <%= user.referralCode || 'N/A' %>
+                                </span>
+                                <i class="fas fa-copy"></i>
+                            </div>
+                        </div>
+                        <!-- 2. The Link -->
+                        <div class="referral-box">
+                            <span class="referral-label">Your Link:</span>
+                        
+                            <% const refLink=`${baseUrl}/signup?ref=${user.referralCode}`; %>
+                                <div class="link-display" onclick="copyReferral('link', '<%= refLink %>')">
+                                    <span class="link-text">/signup?ref=<%= user.referralCode %></span>
+                                    <i class="fas fa-link"></i>
+                                    <span class="tooltip">Copy Link</span>
+                                </div>
+                        </div>
+                    </div>
+                    <p class="referral-hint">Click the code or link to copy directly to your clipboard!</p>
+                </div>
             </div>
             <div class="actions">
                 <button onclick="openModal('editModal')" class="btn-primary">Edit Profile</button>
@@ -146,11 +148,11 @@
                                 <div style="font-size: 0.9rem; margin-top: 5px;">
                                     <strong>
                                         <!-- <%= coupon.discount_value %> OFF -->
-                                         <%if(coupon.discount_type==="Percentage"){%>
-                                        <%=coupon.discount_value %>%OFF
-                                    <%}else{%>
-                                    Save  ₹<%=coupon.discount_value%>
-                                <%}%>
+                                        <%if(coupon.discount_type==="Percentage"){%>
+                                            <%=coupon.discount_value %>%OFF
+                                                <%}else{%>
+                                                    Save ₹<%=coupon.discount_value%>
+                                                        <%}%>
                                     </strong>
                                     (Min Order: ₹<%= coupon.mincart_value %>)
                                 </div>
