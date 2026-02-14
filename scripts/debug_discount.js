@@ -1,55 +1,25 @@
-const mongoose = require("mongoose");
-const Product = require("../models/product");
-const Offer = require("../models/offers");
-const Category = require("../models/category");
-require("dotenv").config();
+import mongoose from "mongoose";
+import Product from "../models/product.js";
+import Offer from "../models/offers.js";
+import Category from "../models/category.js";
+import 'dotenv/config';
 
-const connectDB = async () => {
+async function debug() {
     try {
-        const uri = process.env.MONGODB_URI || "mongodb://localhost:27017/Shoe-project";
-        console.log(`Connecting to DB (length: ${uri.length})`);
-        await mongoose.connect(uri);
-        console.log("MongoDB Connected");
+        await mongoose.connect(process.env.MONGODB_URI);
+        console.log("DB Connected");
+
+        const products = await Product.find();
+        console.log(`Found ${products.length} products`);
+
+        const offers = await Offer.find();
+        console.log(`Found ${offers.length} offers`);
+
+        process.exit(0);
     } catch (err) {
-        console.error(err.message);
+        console.error(err);
         process.exit(1);
     }
-};
+}
 
-const run = async () => {
-    await connectDB();
-
-    console.log("--- Listing First 50 Products ---");
-    const products = await Product.find({}).limit(50).populate("categoryId");
-    console.log(`Found ${products.length} products total in DB.`);
-
-    let targetProduct = null;
-    products.forEach(p => {
-        console.log(`Product: "${p.name}", ID: ${p._id}, Category: ${p.categoryId ? p.categoryId.name : "N/A"}`);
-        if (p.name.match(/dunk|low/i)) {
-            targetProduct = p;
-            console.log("^^^ POTENTIAL MATCH ^^^");
-        }
-    });
-
-    console.log("\n--- Checking Offers ---");
-    const offers = await Offer.find({});
-    console.log(`Total Offers: ${offers.length}`);
-
-    offers.forEach(offer => {
-        console.log(`Offer: "${offer.name}", Type: ${offer.type}, Value: ${offer.discount_percentage}%, ProductIDs: ${offer.product_ids?.length}, CategoryIDs: ${offer.category_ids?.length}`);
-
-        if (targetProduct) {
-            if (offer.type === "product" && offer.product_ids.map(id => id.toString()).includes(targetProduct._id.toString())) {
-                console.log(`!!! MATCHING PRODUCT OFFER FOUND: ${offer.name} !!!`);
-            }
-            if (offer.type === "category" && targetProduct.categoryId && offer.category_ids.map(id => id.toString()).includes(targetProduct.categoryId._id.toString())) {
-                console.log(`!!! MATCHING CATEGORY OFFER FOUND: ${offer.name} !!!`);
-            }
-        }
-    });
-
-    process.exit(0);
-};
-
-run();
+debug();

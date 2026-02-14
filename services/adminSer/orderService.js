@@ -1,14 +1,13 @@
-const Order = require("../../models/orders");
-const Variant = require("../../models/varient");
-const walletService = require("../../services/userSer/walletService");
+import Order from "../../models/orders.js";
+import Variant from "../../models/varient.js";
+import * as walletService from "../../services/userSer/walletService.js";
 
-
-const getAllOrders = async (page = 1, limit = 5, search = "", status = "") => {
+export const getAllOrders = async (page = 1, limit = 5, search = "", status = "") => {
   const skip = (page - 1) * limit;
   let query = {};
 
   if (search) {
-    query.order_number = { $regex: search, $option: "i" };
+    query.order_number = { $regex: search, $options: "i" };
   }
   if (status) {
     query.status = status;
@@ -26,18 +25,14 @@ const getAllOrders = async (page = 1, limit = 5, search = "", status = "") => {
     totalOrders,
     totalPages: Math.ceil(totalOrders / limit),
     currentPage: parseInt(page),
-
   };
 };
 
-
-
-const updateOrderStatus = async (orderId, newStatus) => {
+export const updateOrderStatus = async (orderId, newStatus) => {
   const order = await Order.findById(orderId);
   if (!order) {
     throw new Error("Order not found");
   }
-
 
   order.status = newStatus;
 
@@ -64,18 +59,17 @@ const updateOrderStatus = async (orderId, newStatus) => {
   return order;
 };
 
-const getOrderById = async (orderId) => {
+export const getOrderById = async (orderId) => {
   const order = await Order.findById(orderId)
     .populate("user_id", "name email phone")
     .populate("items.product_id", "productName")
     .populate("items.variant_id", "images size color")
-
     .populate("address_id");
 
   return order;
 };
 
-const approveReturnService = async (orderId, itemId) => {
+export const approveReturnService = async (orderId, itemId) => {
   const order = await Order.findById(orderId);
   if (!order) throw new Error("Order not found");
   const item = order.items.id(itemId);
@@ -85,18 +79,10 @@ const approveReturnService = async (orderId, itemId) => {
 
   let refundAmount = item.total_amount;
 
-
   if (order.discount_amount && order.discount_amount > 0) {
-
-
     const currentSubtotal = order.items.reduce((sum, i) => sum + i.total_amount, 0);
-
     const itemDiscountPortion = (item.total_amount / currentSubtotal) * order.discount_amount;
-
-
     refundAmount = item.total_amount - itemDiscountPortion;
-
-
     refundAmount = Math.round(refundAmount);
   }
 
@@ -115,7 +101,6 @@ const approveReturnService = async (orderId, itemId) => {
   );
 
   const allItemReturned = order.items.every(item => item.status === "returned");
-
   const allItemcanceled = order.items.every(item => item.status === "canceled");
 
   if (allItemReturned) {
@@ -126,13 +111,11 @@ const approveReturnService = async (orderId, itemId) => {
     order.status = "canceled";
   }
 
-
-
   await order.save();
   return { success: true, message: "Return Approved & Refunded" };
 };
 
-const rejectReturnService = async (orderId, itemId) => {
+export const rejectReturnService = async (orderId, itemId) => {
   const order = await Order.findById(orderId);
   const item = order.items.id(itemId);
   if (item.status !== "Return Request") throw new Error("Invalid Status");
@@ -141,15 +124,6 @@ const rejectReturnService = async (orderId, itemId) => {
   let allItemRejected = order.items.every(item => item.status === "Return Rejected");
 
   if (allItemRejected) { order.status = "Return Rejected"; }
-  // Or revert to previous status if preferred
   await order.save();
   return { success: true, message: "Return Rejected" };
-};
-
-module.exports = {
-  getAllOrders,
-  updateOrderStatus,
-  getOrderById,
-  approveReturnService,
-  rejectReturnService
 };

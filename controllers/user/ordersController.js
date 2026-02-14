@@ -1,18 +1,13 @@
-
-const {
+import {
   OrdersListService
-} = require("../../services/userSer/ordersService");
-const statusCode = require("../../utils/statusCodes.js");
+} from "../../services/userSer/ordersService.js";
+import statusCode from "../../utils/statusCodes.js";
 
-const pdf = require("html-pdf");
-const ejs = require("ejs");
-const path = require("path");
-const user = require("../../models/user");
+import ejs from "ejs";
+import path from "path";
+import User from "../../models/user.js";
 
-
-
-
-const listOrder = async (req, res) => {
+export const listOrder = async (req, res) => {
   try {
     const userId = req.session.user;
     const page = parseInt(req.query.page) || 1;
@@ -25,7 +20,7 @@ const listOrder = async (req, res) => {
       currentPage: page,
       totalPages: result.totalPages,
       searchQuery,
-      user
+      user: User
     });
   } catch (error) {
     console.error(error);
@@ -33,11 +28,6 @@ const listOrder = async (req, res) => {
   }
 };
 
+export const cancelOrderItem = async (req, res) => {
 
-const cancelOrderItem = async (req, res) => {
-
-};
-
-module.exports = {
-  listOrder
 };

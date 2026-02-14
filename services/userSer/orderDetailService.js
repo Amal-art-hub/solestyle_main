@@ -1,10 +1,9 @@
-const Order = require("../../models/orders");
-const Variant = require("../../models/varient");
-const { creditWallet } = require("./walletService");
+import Order from "../../models/orders.js";
+import Variant from "../../models/varient.js";
+import { creditWallet } from "./walletService.js";
 
-const getOrderDetailsService = async (orderId, userId) => {
+export const getOrderDetailsService = async (orderId, userId) => {
     try {
-
         const order = await Order.findOne({ _id: orderId, user_id: userId })
             .populate({
                 path: "items.product_id",
@@ -18,11 +17,6 @@ const getOrderDetailsService = async (orderId, userId) => {
         if (!order) {
             throw new Error("Order not found or access denied");
         }
-        console.log("DEBUG ORDER ITEMS:", order.items.length);
-
-        // order.status = 'delivered';
-        // order.items.forEach(item => item.status = 'delivered');
-
         return order;
     } catch (error) {
         console.error("Service Error in getOrderDetail:", error);
@@ -30,7 +24,7 @@ const getOrderDetailsService = async (orderId, userId) => {
     }
 };
 
-const cancelOrderItemService = async (orderId, itemId, reason) => {
+export const cancelOrderItemService = async (orderId, itemId, reason) => {
     const order = await Order.findById(orderId);
     if (!order) throw new Error("Order not found");
 
@@ -39,15 +33,8 @@ const cancelOrderItemService = async (orderId, itemId, reason) => {
     if (item.status === "canceled") throw new Error("Item already canceled");
     if (order.status === "delivered") throw new Error("Cannot cancel delivered item");
 
-
-    const totalBeforeCoupen = order.final_total + order.discount_amount;
     const itemDiscountRatio = item.total_amount / order.subtotal;
-
-
     const actualRefundAmount = item.total_amount - (order.discount_amount * itemDiscountRatio);
-
-
-
 
     order.final_total -= actualRefundAmount;
     order.subtotal -= item.total_amount;
@@ -66,7 +53,6 @@ const cancelOrderItemService = async (orderId, itemId, reason) => {
         );
     }
 
-
     const allItemsCanceled = order.items.every(itm => itm.status === "canceled");
     if (allItemsCanceled) {
         order.status = "canceled";
@@ -77,9 +63,7 @@ const cancelOrderItemService = async (orderId, itemId, reason) => {
     return { success: true, message: "Item canceled successfully" };
 };
 
-
-
-const cancelOrderService = async (orderId, reason) => {
+export const cancelOrderService = async (orderId, reason) => {
     const order = await Order.findById(orderId);
     if (!order) throw new Error("Order not found");
 
@@ -87,7 +71,6 @@ const cancelOrderService = async (orderId, reason) => {
     if (["shipped", "delivered"].includes(order.status)) throw new Error("Cannot cancel shipped or delivered order");
 
     for (const item of order.items) {
-
         if (item.status !== "canceled") {
             item.status = "canceled";
             item.cancellation_reason = reason || "Order Canceled";
@@ -97,7 +80,6 @@ const cancelOrderService = async (orderId, reason) => {
 
     order.status = "canceled";
     order.cancellation_reason = reason;
-
 
     if (order.payment_method !== "COD") {
         await creditWallet(
@@ -111,8 +93,7 @@ const cancelOrderService = async (orderId, reason) => {
     return { success: true, message: "Order canceled successfully" };
 };
 
-
-const returnOrderItemService = async (orderId, itemId, reason) => {
+export const returnOrderItemService = async (orderId, itemId, reason) => {
     const order = await Order.findById(orderId);
     if (!order) throw new Error("Order not found");
 
@@ -128,38 +109,22 @@ const returnOrderItemService = async (orderId, itemId, reason) => {
         order.status = "Return Request";
     }
 
-
-
-
-
-
-
-    // await Variant.findByIdAndUpdate(item.variant_id, { $inc: { stock: item.quantity } });
-
     await order.save();
     return { success: true, message: "Item returned succesfully" };
 };
 
-
-
-const returnOrderService = async (orderId, reason) => {
+export const returnOrderService = async (orderId, reason) => {
     try {
         const order = await Order.findById(orderId);
         if (!order) throw new Error("Order not found");
 
-
         if (order.status === "returned") throw new Error("Order already returned");
         if (order.status !== "delivered") throw new Error("Order must be delivered to return it");
 
-
         for (const item of order.items) {
-
             if (item.status === "delivered") {
                 item.status = "Return Request";
                 item.return_reason = reason;
-
-
-                // await Variant.findByIdAndUpdate(item.variant_id, { $inc: { stock: item.quantity } });
             }
         }
 
@@ -172,15 +137,4 @@ const returnOrderService = async (orderId, reason) => {
         console.error("SERVICE ERROR:", error);
         throw error;
     }
-};
-
-
-
-
-module.exports = {
-    getOrderDetailsService,
-    cancelOrderItemService,
-    cancelOrderService,
-    returnOrderItemService,
-    returnOrderService
 };

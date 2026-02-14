@@ -1,11 +1,11 @@
-const { getCustomerData,
+import {
+    getCustomerData,
     blockCustomerById,
     unblockCoustomerById
-} = require("../../services/adminSer/customerServices");
-const statusCode = require("../../utils/statusCodes.js");
+} from "../../services/adminSer/customerServices.js";
+import statusCode from "../../utils/statusCodes.js";
 
-
-const getCustomers = async (req, res) => {
+export const getCustomers = async (req, res) => {
     try {
         let search = req.query.search || "";
         let page = parseInt(req.query.page) || 1;
@@ -13,14 +13,12 @@ const getCustomers = async (req, res) => {
 
         const data = await getCustomerData(search, page, limit);
 
-        
         res.status(statusCode.OK).render("customersManag", {
             data: data.userData,
             totalPages: data.totalPages,
             currentPage: data.currentPage,
             search: search,
             activePage: "users"
-
         });
     } catch (error) {
         console.log(error.message);
@@ -28,7 +26,7 @@ const getCustomers = async (req, res) => {
     }
 };
 
-const blockCustomer = async (req, res) => {
+export const blockCustomer = async (req, res) => {
     try {
         const id = req.query.id;
         await blockCustomerById(id);
@@ -40,7 +38,7 @@ const blockCustomer = async (req, res) => {
     }
 };
 
-const unblockCoustomer = async (req, res) => {
+export const unblockCoustomer = async (req, res) => {
     try {
         const id = req.query.id;
         await unblockCoustomerById(id);
@@ -50,10 +48,4 @@ const unblockCoustomer = async (req, res) => {
         console.log(error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Error unblocking customer" });
     }
-};
-
-module.exports = {
-    getCustomers,
-    blockCustomer,
-    unblockCoustomer
 };

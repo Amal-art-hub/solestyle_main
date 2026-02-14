@@ -1,11 +1,13 @@
-const { getDashboardStats,
+import {
+    getDashboardStats,
     getSalesChartData,
     getTopSellingProducts,
     getTopSellingCategories,
     getTopSellingBrands
-} = require("../../services/adminSer/dashboardService");
-const statusCode = require("../../utils/statusCodes.js");
-const loadDashboard = async (req, res) => {
+} from "../../services/adminSer/dashboardService.js";
+import statusCode from "../../utils/statusCodes.js";
+
+export const loadDashboard = async (req, res) => {
     try {
         const [stats, chartData, topProducts, topCategories, topBrands] = await Promise.all([
             getDashboardStats(),
@@ -24,7 +26,7 @@ const loadDashboard = async (req, res) => {
     }
 };
 
-const getChartDataAPI = async (req, res) => {
+export const getChartDataAPI = async (req, res) => {
     try {
         const { filter } = req.query;
         const data = await getSalesChartData(filter);
@@ -32,14 +34,4 @@ const getChartDataAPI = async (req, res) => {
     } catch (error) {
         res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, error: "Database failed" });
     }
-};
-
-
-
-
-
-
-module.exports = {
-    loadDashboard,
-    getChartDataAPI
 };

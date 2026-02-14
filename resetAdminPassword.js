@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
-require("dotenv").config();
-const Admin = require("./models/admin");
+import mongoose from "mongoose";
+import 'dotenv/config';
+import Admin from "./models/admin.js";
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI)

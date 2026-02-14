@@ -1,15 +1,12 @@
-
-const {
+import {
     getSalesReport,
     generateExcel,
     generatePDF
-} = require("../../services/adminSer/salesService");
-const statusCode = require("../../utils/statusCodes");
+} from "../../services/adminSer/salesService.js";
+import statusCode from "../../utils/statusCodes.js";
 
-const loadReport = async (req, res) => {
+export const loadReport = async (req, res) => {
     try {
-
-
         const { period = "daily", startDate, endDate, page = 1 } = req.query;
 
         const sDate = new Date(startDate);
@@ -37,8 +34,6 @@ const loadReport = async (req, res) => {
             }
         }
 
-
-
         const data = await getSalesReport({
             period, startDate, endDate, page: parseInt(page),
             limit: 6, isDownload: false
@@ -60,7 +55,7 @@ const loadReport = async (req, res) => {
     } catch (error) { console.error(error); res.status(statusCode.INTERNAL_SERVER_ERROR).send("Error"); }
 };
 
-const downloadExcel = async (req, res) => {
+export const downloadExcel = async (req, res) => {
     try {
         const { period, startDate, endDate } = req.query;
 
@@ -68,26 +63,21 @@ const downloadExcel = async (req, res) => {
 
         const buffer = await generateExcel(data);
 
-
         res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         res.setHeader("Content-Disposition", "attachment; filename=sales-report.xlsx");
         res.status(statusCode.OK).send(buffer);
     } catch (error) { console.error(error); res.status(statusCode.INTERNAL_SERVER_ERROR).send("Excel Error"); }
 };
 
-const downloadPDF = async (req, res) => {
+export const downloadPDF = async (req, res) => {
     try {
         const { period, startDate, endDate } = req.query;
 
         const data = await getSalesReport({ period, startDate, endDate, isDownload: true });
         const buffer = await generatePDF(data, period || "Custom");
 
-
-
         res.setHeader("Content-Type", "application/pdf");
         res.setHeader("Content-Disposition", "attachment; filename=sales-report.pdf");
         res.status(statusCode.OK).send(buffer);
     } catch (error) { console.error(error); res.status(statusCode.INTERNAL_SERVER_ERROR).send("PDF Error"); }
 };
-
-module.exports = { loadReport, downloadExcel, downloadPDF };

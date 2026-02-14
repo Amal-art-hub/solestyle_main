@@ -1,20 +1,22 @@
-const {
+import {
     getOrderDetailsService,
     cancelOrderItemService,
     cancelOrderService,
     returnOrderItemService,
     returnOrderService
-} = require("../../services/userSer/orderDetailService");
+} from "../../services/userSer/orderDetailService.js";
 
+import statusCode from "../../utils/statusCodes.js";
+import puppeteer from "puppeteer";
+import ejs from "ejs";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
-const statusCode = require("../../utils/statusCodes");
-const puppeteer = require("puppeteer");
-const ejs = require("ejs");
-const fs = require("fs");
-const path = require("path");
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-
-const getOrderDetails = async (req, res) => {
+export const getOrderDetails = async (req, res) => {
     try {
         const orderId = req.params.id;
         const userId = req.session.user;
@@ -22,9 +24,6 @@ const getOrderDetails = async (req, res) => {
         res.render("orderDetails", {
             order,
             user: userId,
-            //  subtotal: subtotal,
-            //  discount: req.session.coupon ? req.session.coupon.discount : 0,
-            //    coupon: req.session.coupon || null
         });
     } catch (error) {
         console.error("Error fetching order details:", error);
@@ -35,7 +34,7 @@ const getOrderDetails = async (req, res) => {
     }
 };
 
-const cancelOrderItem = async (req, res) => {
+export const cancelOrderItem = async (req, res) => {
     try {
         const { orderId, itemId } = req.params;
         const { reason } = req.body;
@@ -47,9 +46,7 @@ const cancelOrderItem = async (req, res) => {
     }
 };
 
-
-
-const cancelOrder = async (req, res) => {
+export const cancelOrder = async (req, res) => {
     try {
         const { orderId } = req.params;
         const { reason } = req.body;
@@ -61,8 +58,7 @@ const cancelOrder = async (req, res) => {
     }
 };
 
-
-const returnOrderItem = async (req, res) => {
+export const returnOrderItem = async (req, res) => {
     try {
         const { orderId, itemId } = req.params;
         const { reason } = req.body;
@@ -77,7 +73,7 @@ const returnOrderItem = async (req, res) => {
     }
 };
 
-const returnOrder = async (req, res) => {
+export const returnOrder = async (req, res) => {
     try {
         const { orderId } = req.params;
         const { reason } = req.body;
@@ -92,12 +88,7 @@ const returnOrder = async (req, res) => {
     }
 };
 
-
-
-
-
-
-const downloadInvoice = async (req, res) => {
+export const downloadInvoice = async (req, res) => {
     try {
         const { orderId } = req.params;
         const order = await getOrderDetailsService(orderId, req.session.user);
@@ -105,15 +96,15 @@ const downloadInvoice = async (req, res) => {
         const templatePath = path.join(__dirname, "../../views/user/invoiceTemplate.ejs");
         const html = await ejs.renderFile(templatePath, { order });
         // 2. Launch Puppeteer
-           const browser = await puppeteer.launch({
-        headless: "new",
-        args: [
-            "--no-sandbox", 
-            "--disable-setuid-sandbox",
-            "--disable-zygote",
-            "--disable-gpu"
-        ]
-    });
+        const browser = await puppeteer.launch({
+            headless: "new",
+            args: [
+                "--no-sandbox",
+                "--disable-setuid-sandbox",
+                "--disable-zygote",
+                "--disable-gpu"
+            ]
+        });
         const page = await browser.newPage();
 
         await page.setContent(html, { waitUntil: "networkidle0" });
@@ -121,19 +112,10 @@ const downloadInvoice = async (req, res) => {
         await browser.close();
 
         res.setHeader("Content-Type", "application/pdf");
-        res.setHeader("Content-Disposition", `attachment; filename=invoice-${order.order_id}.pdf`);
+        res.setHeader("Content-Disposition", `attachment; filename=invoice-${order.order_number}.pdf`);
         res.status(statusCode.OK).send(pdfBuffer);
     } catch (error) {
         console.error("Invoice Error:", error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).send("Could not generate invoice");
     }
-};
-
-module.exports = {
-    getOrderDetails,
-    cancelOrderItem,
-    cancelOrder,
-    returnOrderItem,
-    returnOrder,
-    downloadInvoice
 };

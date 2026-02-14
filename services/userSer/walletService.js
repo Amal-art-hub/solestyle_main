@@ -1,8 +1,7 @@
+import mongoose from "mongoose";
+import Wallet from "../../models/wallet.js";
 
-const mongoose = require("mongoose");
-const Wallet = require("../../models/wallet");
-
-const getWallet = async (userId) => {
+export const getWallet = async (userId) => {
     try {
         let wallet = await Wallet.findOne({ user_id: userId });
         if (!wallet) {
@@ -10,15 +9,12 @@ const getWallet = async (userId) => {
             await wallet.save();
         }
         return wallet;
-
     } catch (error) {
         throw new Error("Error fetching wallet", { cause: error });
-
     }
 };
 
-
-const creditWallet = async (userId, amount, description) => {
+export const creditWallet = async (userId, amount, description) => {
     try {
         let wallet = await getWallet(userId);
 
@@ -38,7 +34,7 @@ const creditWallet = async (userId, amount, description) => {
     }
 };
 
-const debitWallet = async (userId, amount, description) => {
+export const debitWallet = async (userId, amount, description) => {
     let wallet = await Wallet.findOne({ user_id: userId });
 
     if (!wallet) {
@@ -54,9 +50,4 @@ const debitWallet = async (userId, amount, description) => {
     });
 
     return await wallet.save();
-};
-module.exports = {
-    getWallet,
-    creditWallet,
-    debitWallet
 };

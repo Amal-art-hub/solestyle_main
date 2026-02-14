@@ -1,6 +1,6 @@
-const User = require("../../models/user");
+import User from "../../models/user.js";
 
-const getCustomerData = async (search, page, limit) => {
+export const getCustomerData = async (search, page, limit) => {
     const query = {
         $or: [
             { name: { $regex: ".*" + search + ".*", $options: "i" } },
@@ -18,7 +18,7 @@ const getCustomerData = async (search, page, limit) => {
     };
 };
 
-const blockCustomerById = async (id) => {
+export const blockCustomerById = async (id) => {
     try {
         await User.updateOne({ _id: id }, { $set: { isBlock: true } });
     } catch (error) {
@@ -26,19 +26,10 @@ const blockCustomerById = async (id) => {
     }
 };
 
-const unblockCoustomerById = async (id) => {
+export const unblockCoustomerById = async (id) => {
     try {
         await User.updateOne({ _id: id }, { $set: { isBlock: false } });
     } catch (error) {
         console.log(error);
     }
-};
-
-
-
-
-module.exports = {
-    getCustomerData,
-    blockCustomerById,
-    unblockCoustomerById
 };

@@ -1,13 +1,11 @@
-const Cart = require("../../models/cart");
-const Product = require("../../models/product");
-const Variant = require("../../models/varient");
-const Wishlist = require("../../models/wishlist");
+import Cart from "../../models/cart.js";
+import Product from "../../models/product.js";
+import Variant from "../../models/varient.js";
+import Wishlist from "../../models/wishlist.js";
 const MAX_QTY_PER_PERSON = 5;
-const { calculateFinalPrice } = require("./productUserServices");
+import { calculateFinalPrice } from "./productUserServices.js";
 
-
-
-const getCart = async (userId) => {
+export const getCart = async (userId) => {
     try {
         let cart = await Cart.findOne({ user_id: userId })
             .populate({
@@ -20,11 +18,8 @@ const getCart = async (userId) => {
             });
 
         if (!cart) {
-
             return { items: [] };
         }
-
-
 
         cart = cart.toObject();
         // Loop through items to calculate REAL TIME offers
@@ -50,7 +45,7 @@ const getCart = async (userId) => {
     }
 };
 
-const addToCartService = async (userId, variantId, quantity) => {
+export const addToCartService = async (userId, variantId, quantity) => {
     const variant = await Variant.findById(variantId).populate({
         path: "productId",
         populate: { path: "categoryId" }
@@ -60,7 +55,6 @@ const addToCartService = async (userId, variantId, quantity) => {
     if (!variant) throw new Error("Product variant not found");
     const product = variant.productId;
     const category = product.categoryId;
-
 
     const isProductBlocked = product.isDeleted || !product.isListed;
     const isCategoryBlocked = category.isDeleted || !category.isListed;
@@ -74,7 +68,6 @@ const addToCartService = async (userId, variantId, quantity) => {
 
     let cart = await Cart.findOne({ user_id: userId });
     if (!cart) {
-
         if (quantity > MAX_QTY_PER_PERSON) {
             throw new Error(`Limit exceed: Max ${MAX_QTY_PER_PERSON} items allowed per customer`);
         }
@@ -90,12 +83,10 @@ const addToCartService = async (userId, variantId, quantity) => {
             }]
         });
     } else {
-
         const itemIndex = cart.items.findIndex(item =>
             item.variant_id.toString() === variantId.toString()
         );
         if (itemIndex > -1) {
-
             const currentQty = cart.items[itemIndex].quantity;
             const newQty = currentQty + quantity;
 
@@ -108,7 +99,6 @@ const addToCartService = async (userId, variantId, quantity) => {
             }
             cart.items[itemIndex].quantity = newQty;
         } else {
-
             if (quantity > MAX_QTY_PER_PERSON) {
                 throw new Error(`Limit exceed: Max ${MAX_QTY_PER_PERSON} items allowed per customer`);
             }
@@ -132,9 +122,7 @@ const addToCartService = async (userId, variantId, quantity) => {
     return cart;
 };
 
-
-
-const updateQuantityService = async (userId, itemId, action) => {
+export const updateQuantityService = async (userId, itemId, action) => {
     const cart = await Cart.findOne({ user_id: userId }).populate({
         path: "items.variant_id",
         select: "size color price stock"
@@ -153,13 +141,9 @@ const updateQuantityService = async (userId, itemId, action) => {
 
     const variant = item.variant_id;
 
-    // const variantCheck = await Variant.findById(item.variant_id._id);
-    // if (!variantCheck) throw new Error("Product Variant no longer exists");
-
     let newQty = parseInt(item.quantity);
     if (action === "increment") newQty += 1;
     if (action === "decrement") newQty -= 1;
-
 
     if (newQty < 1) throw new Error("Quantity cannot be less than 1");
 
@@ -174,7 +158,6 @@ const updateQuantityService = async (userId, itemId, action) => {
     item.quantity = newQty;
     await cart.save();
 
-
     const validItems = cart.items.filter(item =>
         item.variant_id &&
         item.product_id &&
@@ -183,20 +166,8 @@ const updateQuantityService = async (userId, itemId, action) => {
         item.product_id.isListed
     );
 
-
-
     let grandTotal = 0;
     let totalMRP = 0;
-
-
-    // await Promise.all(validItems.map(async (item) => {
-    //     if (item.variant_id && item.variant_id.price) {
-
-    //         const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price);
-    //         grandTotal += item.quantity * finalPrice;
-    //     }
-    // }));
-
 
     await Promise.all(validItems.map(async (item) => {
         const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price);
@@ -212,33 +183,10 @@ const updateQuantityService = async (userId, itemId, action) => {
     };
 };
 
-
-const removeItemService = async (userId, itemId) => {
+export const removeItemService = async (userId, itemId) => {
     return await Cart.findOneAndUpdate(
         { user_id: userId },
         { $pull: { items: { _id: itemId } } },
         { new: true }
     );
-};
-
-
-// const removeallItemsService = async (user_Id) => {
-//     try {
-//         return await Cart.findOneAndUpdate({ user_id: user_Id },
-//             { $set: { items: [] } },
-//             { new: true }
-//         )
-//     } catch (error) {
-//         console.error("removing all by button problem:", error);
-//     }
-// }
-
-
-
-module.exports = {
-    getCart,
-    addToCartService,
-    updateQuantityService,
-    removeItemService,
-    // removeallItemsService
 };

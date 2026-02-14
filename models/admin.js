@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const { genSalt, hash, compare } = require("bcrypt");
+import mongoose from "mongoose";
+import { genSalt, hash, compare } from "bcrypt";
 
 const adminSchema = new mongoose.Schema({
     email: {
@@ -15,7 +15,6 @@ const adminSchema = new mongoose.Schema({
     },
 }, { timestamps: true });
 
-
 // Use async/await without next() callback for newer Mongoose versions
 adminSchema.pre("save", async function () {
     // Only hash password if it's **not already hashed**
@@ -28,10 +27,9 @@ adminSchema.pre("save", async function () {
     this.password = await hash(this.password, salt);
 });
 
-
 adminSchema.methods.comparePassword = async function (candidatePassword) {
     return await compare(candidatePassword, this.password);
 };
 
 const Admin = mongoose.model("Admin", adminSchema);
-module.exports = Admin;
+export default Admin;

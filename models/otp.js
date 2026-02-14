@@ -1,18 +1,18 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 const otpSchema = new Schema({
     // User's email to associate the code
-    email: { 
-        type: String, 
-        required: true, 
-        unique: true, 
+    email: {
+        type: String,
+        required: true,
+        unique: true,
         trim: true,
         lowercase: true,
     },
     // The 6-digit code
     code: {
-        type: String, 
+        type: String,
         required: true,
     },
     // CRITICAL: TTL Index for automatic expiration
@@ -24,4 +24,4 @@ const otpSchema = new Schema({
 });
 
 const OTP = mongoose.model("OTP", otpSchema);
-module.exports = OTP;
+export default OTP;

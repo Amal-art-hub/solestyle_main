@@ -1,10 +1,7 @@
-// const { getAllBanners,
-//     getBrandSection
-// } = require("../../services/adminSer/bannerService");
-// const statusCode = require("../../utils/statusCodes");
+// import { getAllBanners, getBrandSection } from "../../services/adminSer/bannerService.js";
+// import statusCode from "../../utils/statusCodes.js";
 
-
-// const getBannerPagecont = async (req, res) => {
+// export const getBannerPagecont = async (req, res) => {
 //     try {
 //         const [banner, brandSection] = await Promise.all([getAllBanners(), getBrandSection()]);
 //         res.render("banners", {
@@ -15,8 +12,4 @@
 //         console.error("Error loading banners page:", error);
 //         res.status(statusCode.INTERNAL_SERVER_ERROR).render("page-404");
 //     }
-// }
-
-// module.exports = {
-//     getBannerPagecont
 // }

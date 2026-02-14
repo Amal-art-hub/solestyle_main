@@ -1,6 +1,6 @@
-const Category = require("../../models/category");
+import Category from "../../models/category.js";
 
-const getAllCategories = async (page = 1, limit = 4, search = "") => {
+export const getAllCategories = async (page = 1, limit = 4, search = "") => {
   try {
     const query = {
       $or: [
@@ -26,9 +26,8 @@ const getAllCategories = async (page = 1, limit = 4, search = "") => {
   }
 };
 
-const createCategory = async (data) => {
+export const createCategory = async (data) => {
   try {
-
     if (data.name === "category") {
       return { success: false, message: "cannote be added" };
     }
@@ -51,8 +50,7 @@ const createCategory = async (data) => {
   }
 };
 
-
-const editCategoryService = async (data) => {
+export const editCategoryService = async (data) => {
   try {
     const { id, name, description } = data;
     const existingCategory = await Category.findOne({
@@ -72,7 +70,7 @@ const editCategoryService = async (data) => {
   }
 };
 
-const toggleCategoryStatus = async (id) => {
+export const toggleCategoryStatus = async (id) => {
   try {
     const category = await Category.findById(id);
     if (!category) return { success: false, message: "Category not found" };
@@ -83,12 +81,4 @@ const toggleCategoryStatus = async (id) => {
   } catch (error) {
     throw new Error("Error toggling status: " + error.message, { cause: error });
   }
-};
-
-
-module.exports = {
-  getAllCategories,
-  createCategory,
-  editCategoryService,
-  toggleCategoryStatus
 };

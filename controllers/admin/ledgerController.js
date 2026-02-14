@@ -1,7 +1,7 @@
-const { getLedgerData } = require("../../services/adminSer/ledgerService");
-const statusCode = require("../../utils/statusCodes.js");
+import { getLedgerData } from "../../services/adminSer/ledgerService.js";
+import statusCode from "../../utils/statusCodes.js";
 
-const loadLedger = async (req, res) => {
+export const loadLedger = async (req, res) => {
     try {
         // Extract page and limit from query parameters
         const { period = "daily", startDate, endDate, page = 1, limit = 10 } = req.query;
@@ -14,7 +14,6 @@ const loadLedger = async (req, res) => {
             page: parseInt(page),
             limit: parseInt(limit)
         });
-
 
         res.status(statusCode.OK).render("ledger", {
             ledger,
@@ -39,5 +38,3 @@ const loadLedger = async (req, res) => {
         res.status(statusCode.INTERNAL_SERVER_ERROR).send("Ledger Error");
     }
 };
-
-module.exports = { loadLedger };

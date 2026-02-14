@@ -16,4 +16,4 @@ const statusCode = Object.freeze({
     GATEWAY_TIMEOUT: 504,
 });
 
-module.exports = statusCode;
+export default statusCode;

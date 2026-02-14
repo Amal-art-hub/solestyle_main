@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const returnSchema = new mongoose.Schema({
   order_Id: { type: mongoose.Schema.Types.ObjectId, ref: "Order", required: true },
@@ -9,8 +9,8 @@ const returnSchema = new mongoose.Schema({
 
   amount: { type: Number, required: true },
 
-  refund_method: { 
-    type: String, 
+  refund_method: {
+    type: String,
     enum: ["Original Payment Method", "Store Credit", "Bank Transfer"],
     required: true
   },
@@ -27,4 +27,4 @@ const returnSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-module.exports = mongoose.model("Return", returnSchema);
+export default mongoose.model("Return", returnSchema);

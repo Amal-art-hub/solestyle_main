@@ -1,24 +1,24 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const orderSchema = new mongoose.Schema({
   user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 
   status: {
     type: String,
-     enum: ["pending", "processing", "shipped", "out for delivery", "delivered", "canceled", "returned", "Return Request", "Return Rejected","Payment Pending", "Payment Failed"],
+    enum: ["pending", "processing", "shipped", "out for delivery", "delivered", "canceled", "returned", "Return Request", "Return Rejected", "Payment Pending", "Payment Failed"],
     default: "pending"
   },
 
   subtotal: { type: Number, required: true },
-   offer_discount: { type: Number, default: 0 },
+  offer_discount: { type: Number, default: 0 },
   final_total: { type: Number, required: true },
 
   order_number: { type: String, required: true, unique: true },
   tracking_number: { type: String },
 
-   razorpay_order_id: { type: String }, 
+  razorpay_order_id: { type: String },
   payment_id: { type: mongoose.Schema.Types.ObjectId, ref: "Payment" },
-    payment_method: { type: String, enum: ["COD", "Online", "Wallet"] },
+  payment_method: { type: String, enum: ["COD", "Online", "Wallet"] },
 
   order_date: { type: Date, default: Date.now },
 
@@ -42,7 +42,7 @@ const orderSchema = new mongoose.Schema({
   },
 
   shipped_date: { type: Date },
-  delivered_date: { type: Date }, 
+  delivered_date: { type: Date },
   cancellation_reason: { type: String },
 
   delivery_charge: { type: Number, default: 0 },
@@ -54,13 +54,13 @@ const orderSchema = new mongoose.Schema({
       quantity: { type: Number, required: true },
       total_amount: { type: Number, required: true },
       unit_price: { type: Number, required: true },
-       original_price: { type: Number, required: true },
+      original_price: { type: Number, required: true },
       name_snapshot: { type: String },
       variant_snapshot: { type: String },
 
       status: {
         type: String,
-        enum: ["pending", "processing", "shipped", "delivered", "canceled", "returned", "Return Request", "Return Rejected","Payment Pending", "Payment Failed"],
+        enum: ["pending", "processing", "shipped", "delivered", "canceled", "returned", "Return Request", "Return Rejected", "Payment Pending", "Payment Failed"],
         default: "pending"
       },
       cancellation_reason: { type: String },
@@ -72,4 +72,4 @@ const orderSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-module.exports = mongoose.model("Order", orderSchema);
+export default mongoose.model("Order", orderSchema);

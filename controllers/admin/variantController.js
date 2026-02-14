@@ -1,13 +1,14 @@
-const {
+import {
     getVariantsByProduct,
     createVariant,
     updateVariant,
     deleteVariant,
     toggleVariantListing
-} = require("../../services/adminSer/variantServices");
-const statusCode = require("../../utils/statusCodes.js");
+} from "../../services/adminSer/variantServices.js";
+import statusCode from "../../utils/statusCodes.js";
+import Variant from "../../models/varient.js";
 
-const getVariants = async (req, res) => {
+export const getVariants = async (req, res) => {
     try {
         const { productId } = req.params;
         const page = parseInt(req.query.page) || 1;
@@ -27,10 +28,9 @@ const getVariants = async (req, res) => {
     }
 };
 
-const getVariantDetails = async (req, res) => {
+export const getVariantDetails = async (req, res) => {
     try {
         const { id } = req.params;
-        const Variant = require("../../models/varient");
         const variant = await Variant.findById(id);
 
         if (!variant) {
@@ -44,21 +44,13 @@ const getVariantDetails = async (req, res) => {
     }
 };
 
-const addVariant = async (req, res) => {
+export const addVariant = async (req, res) => {
     try {
-
         console.log("Debug 1:Params productId:", req.params.productId);
         const { productId } = req.params;
 
-
         console.log("DEBUG 2: Body Data ->", JSON.stringify(req.body));
-
         console.log("DEBUG 3: Files Count ->", req.files ? req.files.length : "NO FILES OBJECT");
-
-        // console.log("Adding variant for product:", productId);
-        // console.log("Request body:", req.body);
-        // console.log("Files received:", req.files ? req.files.length : 0);
-
 
         if (!req.files || req.files.length < 3) {
             console.log("Validation failed: Not enough images");
@@ -82,7 +74,7 @@ const addVariant = async (req, res) => {
     }
 };
 
-const editVariant = async (req, res) => {
+export const editVariant = async (req, res) => {
     try {
         const { id } = req.params;
 
@@ -107,7 +99,7 @@ const editVariant = async (req, res) => {
     }
 };
 
-const toggleVariantStatus = async (req, res) => {
+export const toggleVariantStatus = async (req, res) => {
     try {
         const result = await toggleVariantListing(req.params.id);
         res.status(statusCode.OK).json(result);
@@ -117,7 +109,7 @@ const toggleVariantStatus = async (req, res) => {
     }
 };
 
-const removeVariant = async (req, res) => {
+export const removeVariant = async (req, res) => {
     try {
         await deleteVariant(req.params.id);
         res.status(statusCode.OK).json({ success: true, message: "Variant deleted" });
@@ -125,13 +117,4 @@ const removeVariant = async (req, res) => {
         console.error("Error deleting variant:", error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
     }
-};
-
-module.exports = {
-    getVariants,
-    getVariantDetails,
-    addVariant,
-    editVariant,
-    toggleVariantStatus,
-    removeVariant
 };

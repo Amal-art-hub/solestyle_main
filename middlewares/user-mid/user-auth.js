@@ -1,7 +1,7 @@
-const User = require("../../models/user");
-const statusCode = require("../../utils/statusCodes");
+import User from "../../models/user.js";
+import statusCode from "../../utils/statusCodes.js";
 
-const checkUserStatus = async (req, res, next) => {
+export const checkUserStatus = async (req, res, next) => {
   try {
     if (req.session.user) {
       const user = await User.findById(req.session.user._id);
@@ -31,7 +31,7 @@ const checkUserStatus = async (req, res, next) => {
 };
 
 
-const isAuth = (req, res, next) => {
+export const isAuth = (req, res, next) => {
 
   console.log("isaUTH IS WORKING");
   if (req.session.user) {
@@ -48,6 +48,3 @@ const isAuth = (req, res, next) => {
     res.redirect("/login");
   }
 };
-
-
-module.exports = { checkUserStatus, isAuth };

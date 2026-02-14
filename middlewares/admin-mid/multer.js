@@ -1,7 +1,7 @@
-const multer = require("multer");
-const path = require("path");
-const cloudinary = require("cloudinary").v2;
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
+import multer from "multer";
+import path from "path";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 
 // 1. Configure Cloudinary
 cloudinary.config({
@@ -32,8 +32,6 @@ const bannerStorage = new CloudinaryStorage({
   }
 });
 
-
-
 // Add the cloud storage for variants
 const variantCloudStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
@@ -44,12 +42,10 @@ const variantCloudStorage = new CloudinaryStorage({
 });
 
 // Create the uploader
-const variantCloudUpload = multer({ 
-    storage: variantCloudStorage,
-    limits: { fileSize: 5 * 1024 * 1024 } 
+const variantCloudUpload = multer({
+  storage: variantCloudStorage,
+  limits: { fileSize: 5 * 1024 * 1024 }
 });
-
-
 
 // 5. Existing File Filter
 const fileFilter = (req, file, cb) => {
@@ -61,8 +57,7 @@ const fileFilter = (req, file, cb) => {
 };
 
 // 6. Export all three - used for different tasks
-const upload = multer({ storage: storage, fileFilter: fileFilter });
-const variantUpload = multer({ storage: variantStorage, fileFilter: fileFilter });
-const bannerUpload = multer({ storage: bannerStorage });
-
-module.exports = { upload, variantUpload, bannerUpload,variantCloudUpload  };
+export const upload = multer({ storage: storage, fileFilter: fileFilter });
+export const variantUpload = multer({ storage: variantStorage, fileFilter: fileFilter });
+export const bannerUpload = multer({ storage: bannerStorage });
+export { variantCloudUpload };

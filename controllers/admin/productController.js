@@ -1,17 +1,17 @@
-const {
+import {
   getAllProducts,
   getCateAndBrands,
   createProduct,
   toggleProductListing
-} = require("../../services/adminSer/productServices");
-const statusCode = require("../../utils/statusCodes.js");
+} from "../../services/adminSer/productServices.js";
+import statusCode from "../../utils/statusCodes.js";
+import Product from "../../models/product.js";
 
-const getProductList = async (req, res) => {
+export const getProductList = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const search = req.query.search || "";
     const sort = req.query.sort || "newest";
-
 
     const data = await getAllProducts(page, 5, search, sort);
 
@@ -31,7 +31,7 @@ const getProductList = async (req, res) => {
   }
 };
 
-const toggleListing = async (req, res) => {
+export const toggleListing = async (req, res) => {
   try {
     const result = await toggleProductListing(req.query.id);
     if (!result.success) {
@@ -44,7 +44,7 @@ const toggleListing = async (req, res) => {
   }
 };
 
-const getAddProduct = async (req, res) => {
+export const getAddProduct = async (req, res) => {
   try {
     const { categories, brands } = await getCateAndBrands();
 
@@ -55,9 +55,7 @@ const getAddProduct = async (req, res) => {
   }
 };
 
-
-
-const addProducts = async (req, res) => {
+export const addProducts = async (req, res) => {
   try {
     console.log("Received product data:", req.body);
     await createProduct(req.body);
@@ -69,10 +67,9 @@ const addProducts = async (req, res) => {
   }
 };
 
-const getEditProduct = async (req, res) => {
+export const getEditProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const Product = require("../../models/product");
     const { categories, brands } = await getCateAndBrands();
 
     const product = await Product.findById(id)
@@ -95,12 +92,11 @@ const getEditProduct = async (req, res) => {
   }
 };
 
-const updateProduct = async (req, res) => {
+export const updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, description, category, brand } = req.body;
 
-    const Product = require("../../models/product");
     const product = await Product.findById(id);
 
     if (!product) {
@@ -118,13 +114,4 @@ const updateProduct = async (req, res) => {
     console.error("Error updating product:", error);
     res.status(statusCode.INTERNAL_SERVER_ERROR).send("Internal error");
   }
-};
-
-module.exports = {
-  getProductList,
-  toggleListing,
-  getAddProduct,
-  addProducts,
-  getEditProduct,
-  updateProduct
 };

@@ -1,28 +1,34 @@
+import express from "express";
+import "dotenv/config";
+import session from "express-session";
+import MongoStore from "connect-mongo";
+import passport from "passport";
+import path from "path";
+import { fileURLToPath } from "url";
+import morgan from "morgan";
 
+// Import your custom files (MUST end with .js)
+import "./config/passport.js";
+import db from "./config/db.js";
+import userRouter from "./routes/userRouter.js";
+import adminRouter from "./routes/adminRouter.js";
+import errorHandler from "./middlewares/errorHandler.js";
 
-const express = require("express");
-const morgan = require("morgan");
 const app = express();
-const env = require("dotenv").config();
-const session = require("express-session");
-const MongoStore = require("connect-mongo").default;
-const passport = require("passport");    
-require("./config/passport");
-const errorHandler = require("./middlewares/errorHandler");
 
-const path = require("path");
-const db = require("./config/db");
-const userRouter = require("./routes/userRouter");
-const adminRouter = require("./routes/adminRouter");
+// --- THE ESM __DIRNAME TRICK ---
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
+// Initialize Database
 db();
-
 
 app.set("trust proxy", 1);
 app.use(morgan('dev'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: true,
@@ -38,6 +44,7 @@ app.use(session({
     maxAge: 72 * 60 * 60 * 1000
   }
 }));
+
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use(passport.initialize());
@@ -48,9 +55,6 @@ app.use((req, res, next) => {
   next();
 });
 
-
-
-
 app.set("view engine", "ejs");
 app.set("views", [
   path.join(__dirname, "views/user"),
@@ -58,23 +62,22 @@ app.set("views", [
   path.join(__dirname, "views/partials")
 ]);
 
-
+// Routes
 app.use("/", userRouter);
 app.use("/admin", adminRouter);
 
-
+// Error Handling
 app.use("/test-error", (req, res, next) => {
   const err = new Error("This is a deliberate test error");
   err.statusCode = 418;
   next(err);
 });
 
-
 app.use(errorHandler);
 
-
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => { console.log(`Server Running on${PORT}  http://localhost:${PORT}`); });
+app.listen(PORT, () => {
+  console.log(`Server Running on ${PORT} http://localhost:${PORT}`);
+});
 
-
-module.exports = app;
+export default app;

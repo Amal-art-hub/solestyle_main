@@ -1,5 +1,5 @@
-const addressService = require("../../services/userSer/addressServices");
-const statusCode = require("../../utils/statusCodes");
+import * as addressService from "../../services/userSer/addressServices.js";
+import statusCode from "../../utils/statusCodes.js";
 
 // Validation Function (Provided by User)
 const validateAddress = (data) => {
@@ -13,7 +13,7 @@ const validateAddress = (data) => {
 };
 
 // 2. Add New Address
-const addAddress = async (req, res) => {
+export const addAddress = async (req, res) => {
     try {
         const validation = validateAddress(req.body);
         if (!validation.isValid) {
@@ -38,7 +38,7 @@ const addAddress = async (req, res) => {
 };
 
 // 3. Edit Address
-const editAddress = async (req, res) => {
+export const editAddress = async (req, res) => {
     try {
         const validation = validateAddress(req.body);
         if (!validation.isValid) {
@@ -63,7 +63,7 @@ const editAddress = async (req, res) => {
 };
 
 // 4. Delete Address
-const deleteAddress = async (req, res) => {
+export const deleteAddress = async (req, res) => {
     try {
         const userId = req.session.user._id;
         const addressId = req.params.id;
@@ -75,10 +75,4 @@ const deleteAddress = async (req, res) => {
         console.error("Delete Address Error:", error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server Error" });
     }
-};
-
-module.exports = {
-    addAddress,
-    editAddress,
-    deleteAddress
 };

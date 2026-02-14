@@ -1,10 +1,9 @@
-
-const {
+import {
     getWallet
-} = require("../../services/userSer/walletService");
-const statusCode = require("../../utils/statusCodes");
+} from "../../services/userSer/walletService.js";
+import statusCode from "../../utils/statusCodes.js";
 
-const loadWalletPage = async (req, res) => {
+export const loadWalletPage = async (req, res) => {
     try {
         const userId = req.session.user._id;
         const page = parseInt(req.query.page) || 1;
@@ -29,14 +28,8 @@ const loadWalletPage = async (req, res) => {
             pageTitle: "My Wallet"
         });
 
-
     } catch (error) {
         console.error("Error loading wallet:", error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).render("page-404");
     }
-};
-
-
-module.exports = {
-    loadWalletPage
 };

@@ -1,13 +1,12 @@
-const {
+import {
     getAllBrands,
     createBrand,
     toggleBrandStatus,
     editBrand
-} = require("../../services/adminSer/brandServices");
-const statusCode = require("../../utils/statusCodes.js");
+} from "../../services/adminSer/brandServices.js";
+import statusCode from "../../utils/statusCodes.js";
 
-
-const getBrandPage = async (req, res) => {
+export const getBrandPage = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const search = req.query.search || "";
@@ -26,21 +25,19 @@ const getBrandPage = async (req, res) => {
     }
 };
 
-const addBrand = async (req, res) => {
+export const addBrand = async (req, res) => {
     try {
-        // req.body.name is available
         const result = await createBrand(req.body.name);
         if (!result.success) {
             return res.status(statusCode.BAD_REQUEST).json(result);
         }
         res.status(statusCode.OK).json(result);
     } catch (error) {
-        // console.error(error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
     }
 };
 
-const editBrandController = async (req, res) => {
+export const editBrandController = async (req, res) => {
     try {
         const { id, name, description } = req.body;
         const result = await editBrand(id, name, description);
@@ -53,7 +50,7 @@ const editBrandController = async (req, res) => {
     }
 };
 
-const blockBrand = async (req, res) => {
+export const blockBrand = async (req, res) => {
     try {
         await toggleBrandStatus(req.query.id);
         res.status(statusCode.OK).json({ success: true, message: "Brand status updated" });
@@ -62,9 +59,4 @@ const blockBrand = async (req, res) => {
     }
 };
 
-module.exports = {
-    getBrandPage,
-    addBrand,
-    editBrand: editBrandController,
-    blockBrand
-};
+export { editBrandController as editBrand };

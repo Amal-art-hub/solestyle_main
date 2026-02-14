@@ -1,23 +1,23 @@
-const User = require("../../models/user.js");
-const Coupon = require("../../models/Coupen");
-const Offers = require("../../models/offers");
-const nodemailer = require("nodemailer");
-const bcrypt = require("bcrypt");
-const statusCode = require("../../utils/statusCodes.js");
+import User from "../../models/user.js";
+import Coupon from "../../models/Coupen.js";
+import Offers from "../../models/offers.js";
+import nodemailer from "nodemailer";
+import bcrypt from "bcrypt";
+import statusCode from "../../utils/statusCodes.js";
 
-const getHomepageDate = () => {
+export const getHomepageDate = () => {
   return {
     pageTitle: "Home Page",
   };
 };
 
 //generate otp
-function generateOtp() {
+export function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// Send Email (use mailer utility if needed)
-async function sendVerificationEmail(email, otp) {
+// Send Email
+export async function sendVerificationEmail(email, otp) {
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -46,13 +46,12 @@ async function sendVerificationEmail(email, otp) {
 }
 
 //checking user is existed already
-async function checkExistingUser(email,phone) {
-  return await User.findOne({ $or:[{email:email},{phone:phone}]});
+export async function checkExistingUser(email, phone) {
+  return await User.findOne({ $or: [{ email: email }, { phone: phone }] });
 }
 
-// Create a new user and save to DB
 // Create a new user with Referral Logic
-async function createUser({ firstName, lastName, email, phone, password, referralCode }) {
+export async function createUser({ firstName, lastName, email, phone, password, referralCode }) {
   const name = `${firstName} ${lastName}`;
 
   // 1. Generate a Code for THIS new user (e.g. JOHN4821)
@@ -66,7 +65,6 @@ async function createUser({ firstName, lastName, email, phone, password, referra
     if (referrer) {
       console.log("DEBUG: Found Referrer:", referrer.name);
       referredByUserId = referrer._id;
-
 
       const today = new Date();
       const activeReferralOffer = await Offers.findOne({
@@ -110,7 +108,7 @@ async function createUser({ firstName, lastName, email, phone, password, referra
 }
 
 // Verify OTP and create user
-async function verifyOtpService(session, otp) {
+export async function verifyOtpService(session, otp) {
   try {
     if (!session.userOtp) {
       return {
@@ -119,8 +117,6 @@ async function verifyOtpService(session, otp) {
         message: "Session expired. Please signup again."
       };
     }
-
-
 
     if (otp !== session.userOtp) {
       return {
@@ -154,7 +150,7 @@ async function verifyOtpService(session, otp) {
 }
 
 // Resend OTP service
-async function resendOtpService(session) {
+export async function resendOtpService(session) {
   if (!session.userData || !session.userData.email) {
     return {
       success: false,
@@ -166,12 +162,10 @@ async function resendOtpService(session) {
   const { email } = session.userData;
   const otp = generateOtp();
 
-  // Log for debugging
   console.log("========== RESEND OTP SERVICE ==========");
   console.log("Resending OTP to:", email);
   console.log("New OTP:", otp);
 
-  // Send the new OTP via email
   const emailSent = await sendVerificationEmail(email, otp);
 
   if (!emailSent) {
@@ -183,7 +177,6 @@ async function resendOtpService(session) {
     };
   }
 
-  // Update the OTP in the session
   session.userOtp = otp;
 
   console.log("OTP resent successfully to:", email);
@@ -196,37 +189,31 @@ async function resendOtpService(session) {
 }
 
 // Login user with email and password
-async function loginUser(email, password) {
+export async function loginUser(email, password) {
   try {
     if (!email || !password) {
       throw new Error("Email and password are required");
     }
 
-    // Find user by email
     const user = await User.findOne({ email });
 
-    // If user is an admin, redirect to admin login
     if (user?.isAdmin === 1) {
       throw new Error("Please use admin login");
     }
 
-    // Check if user exists
     if (!user) {
       throw new Error("Invalid email or password");
     }
 
-    // Check if user is blocked
     if (user.isBlock) {
       throw new Error("Your account has been blocked. Please contact support.");
     }
 
-    // Verify password
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) {
       throw new Error("Invalid email or password");
     }
 
-    // Return user data without password
     const { password: _, ...userData } = user.toObject();
     return {
       success: true,
@@ -242,7 +229,7 @@ async function loginUser(email, password) {
   }
 }
 
-const resentfortgotService = async (session) => {
+export const resentfortgotService = async (session) => {
   try {
     const email = session.resetEmail;
     if (!email) {
@@ -261,7 +248,6 @@ const resentfortgotService = async (session) => {
     console.log("Resent password otp for:", email);
     console.log("New otp is:", newOtp);
 
-
     const emailSent = await sendVerificationEmail(email, newOtp);
 
     if (!emailSent) {
@@ -273,13 +259,10 @@ const resentfortgotService = async (session) => {
       };
     }
 
-
     return {
       success: true,
       message: "New OTP has been sent to your email"
     };
-
-
 
   } catch (error) {
     console.error("Error in resentfortgotService:", error);
@@ -291,12 +274,10 @@ const resentfortgotService = async (session) => {
   }
 };
 
-
-const verifyResetOtpService = async (session, otp) => {
+export const verifyResetOtpService = async (session, otp) => {
   try {
     const storedOtp = session.resetOtp;
     const email = session.resetEmail;
-    const otpExpiry = session.resetOtpExpiry;
 
     if (!storedOtp || !email) {
       return {
@@ -329,8 +310,7 @@ const verifyResetOtpService = async (session, otp) => {
   }
 };
 
-
-const checkPassword = async (session, newPassword) => {
+export const checkPassword = async (session, newPassword) => {
   try {
     const email = session.resetEmail;
     const otpVerified = session.otpVerified;
@@ -363,21 +343,4 @@ const checkPassword = async (session, newPassword) => {
       message: "Server error",
     };
   }
-};
-
-
-
-
-module.exports = {
-  getHomepageDate,
-  checkExistingUser,
-  generateOtp,
-  sendVerificationEmail,
-  createUser,
-  resendOtpService,
-  verifyOtpService,
-  loginUser,
-  verifyResetOtpService,
-  resentfortgotService,
-  checkPassword
 };

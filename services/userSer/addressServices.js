@@ -1,7 +1,7 @@
-const Address = require("../../models/address.js");
+import Address from "../../models/address.js";
 
 // 2. Add New Address
-const addAddress = async (userId, data) => {
+export const addAddress = async (userId, data) => {
     // Handle Default Shipping Logic
     if (data.is_default_shipping === "true" || data.is_default_shipping === true) {
         await Address.updateMany({ user_id: userId }, { is_default_shipping: false });
@@ -20,7 +20,7 @@ const addAddress = async (userId, data) => {
 };
 
 // 3. Edit Address
-const editAddress = async (addressId, userId, data) => {
+export const editAddress = async (addressId, userId, data) => {
     // Handle Default Shipping Logic
     if (data.is_default_shipping === "true" || data.is_default_shipping === true) {
         await Address.updateMany({ user_id: userId }, { is_default_shipping: false });
@@ -41,12 +41,6 @@ const editAddress = async (addressId, userId, data) => {
 };
 
 // 4. Delete Address
-const deleteAddress = async (addressId, userId) => {
+export const deleteAddress = async (addressId, userId) => {
     return await Address.findOneAndDelete({ _id: addressId, user_id: userId });
-};
-
-module.exports = {
-    addAddress,
-    editAddress,
-    deleteAddress
 };

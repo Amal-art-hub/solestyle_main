@@ -1,10 +1,8 @@
-const Order = require("../../models/orders");
-const User = require("../../models/user");
-const Product = require("../../models/product");
-const { now } = require("mongoose");
+import Order from "../../models/orders.js";
+import User from "../../models/user.js";
+import Product from "../../models/product.js";
 
-
-const getDashboardStats = async () => {
+export const getDashboardStats = async () => {
     const revenueData = await Order.aggregate([
         { $match: { status: "delivered" } },
         { $group: { _id: null, totalRevenue: { $sum: "$final_total" } } }
@@ -18,9 +16,7 @@ const getDashboardStats = async () => {
     };
 };
 
-
-
-const getSalesChartData = async (filter) => {
+export const getSalesChartData = async (filter) => {
     const now = new Date();
     let aggregationPipeline = [];
     let labels = [];
@@ -85,10 +81,7 @@ const getSalesChartData = async (filter) => {
     return { labels, dataPoints };
 };
 
-
-
-
-const getTopSellingProducts = async () => {
+export const getTopSellingProducts = async () => {
     return await Order.aggregate([
         { $match: { status: "delivered" } },
         { $unwind: "$items" },
@@ -97,7 +90,6 @@ const getTopSellingProducts = async () => {
                 _id: "$items.product_id",
                 name: { $first: "$items.name_snapshot" },
                 totalQty: { $sum: "$items.quantity" }
-
             }
         },
         { $sort: { totalQty: -1 } },
@@ -105,7 +97,7 @@ const getTopSellingProducts = async () => {
     ]);
 };
 
-const getTopSellingCategories = async () => {
+export const getTopSellingCategories = async () => {
     return await Order.aggregate([
         { $match: { status: "delivered" } },
         { $unwind: "$items" },
@@ -136,14 +128,10 @@ const getTopSellingCategories = async () => {
         },
         { $sort: { totalQty: -1 } },
         { $limit: 10 }
-
     ]);
 };
 
-
-
-
-const getTopSellingBrands = async () => {
+export const getTopSellingBrands = async () => {
     return await Order.aggregate([
         { $match: { status: "delivered" } },
         { $unwind: "$items" },
@@ -175,13 +163,4 @@ const getTopSellingBrands = async () => {
         { $sort: { totalQty: -1 } },
         { $limit: 10 }
     ]);
-};
-
-
-module.exports = {
-    getDashboardStats,
-    getSalesChartData,
-    getTopSellingProducts,
-    getTopSellingCategories,
-    getTopSellingBrands
 };

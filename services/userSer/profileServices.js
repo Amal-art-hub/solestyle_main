@@ -1,27 +1,21 @@
-const User = require("../../models/user.js");
-const Address = require("../../models/address.js");
-const Coupon = require("../../models/Coupen");
-const bcrypt = require("bcrypt");
-const { generateOtp, sendVerificationEmail } = require("./userService");
-
-
-
+import User from "../../models/user.js";
+import Address from "../../models/address.js";
+import Coupon from "../../models/Coupen.js";
+import bcrypt from "bcrypt";
+import { generateOtp, sendVerificationEmail } from "./userService.js";
 
 //--------------------------------------------------------loading user profile
-const getUserProfile = async (userId) => {
+export const getUserProfile = async (userId) => {
     return await User.findById(userId).select("-password");
 };
 
 //----------------------------------------------------------updating edited data on  profile
-
-const updateUserProfile = async (userId, data) => {
+export const updateUserProfile = async (userId, data) => {
     return await User.findByIdAndUpdate(userId, data, { new: true }).select("-password");
 };
 
-
 //-----------------------------------------updating password
-
-const changePassword = async (userId, oldPass, newPass) => {
+export const changePassword = async (userId, oldPass, newPass) => {
     const user = await User.findById(userId);
     if (!user) throw new Error("User not found");
 
@@ -34,8 +28,7 @@ const changePassword = async (userId, oldPass, newPass) => {
 };
 
 //-------------------------------requesting email otp
-
-const requestEmailChange = async (userId, newEmail) => {
+export const requestEmailChange = async (userId, newEmail) => {
     const existingUser = await User.findOne({ email: newEmail });
     if (existingUser) throw new Error("Email already in use");
 
@@ -53,9 +46,7 @@ const requestEmailChange = async (userId, newEmail) => {
 };
 
 //---------------------------verify otp
-
-const verifyOtp = async (typedOtp, sessionOtp, userId, newEmail) => {
-
+export const verifyOtp = async (typedOtp, sessionOtp, userId, newEmail) => {
     try {
         console.log("--- OTP DEBUG ---");
         console.log("Typed:", typedOtp, typeof typedOtp);
@@ -82,16 +73,13 @@ const verifyOtp = async (typedOtp, sessionOtp, userId, newEmail) => {
         console.error(error);
         return { success: false, message: "Something went wrong" };
     }
-
-
 };
 
-const getAddressByUserId = async (userId) => {
+export const getAddressByUserId = async (userId) => {
     return await Address.find({ user_id: userId });
 };
 
-
-const addAddressService = async (userId, addressData) => {
+export const addAddressService = async (userId, addressData) => {
     if (addressData.is_default_shipping === "true" || addressData.is_default_shipping === true) {
         await Address.updateMany({ user_id: userId }, { is_default_shipping: false });
     }
@@ -103,13 +91,10 @@ const addAddressService = async (userId, addressData) => {
     return await newAddress.save();
 };
 
-
-const editAddressService = async (addressId, userId, addressData) => {
-
+export const editAddressService = async (addressId, userId, addressData) => {
     if (addressData.is_default_shipping === "true" || addressData.is_default_shipping === true) {
         await Address.updateMany({ user_id: userId }, { is_default_shipping: false });
     }
-
 
     if (addressData.is_default_billing === "true" || addressData.is_default_billing === true) {
         await Address.updateMany({ user_id: userId }, { is_default_billing: false });
@@ -122,33 +107,17 @@ const editAddressService = async (addressId, userId, addressData) => {
     );
 };
 
-
-const deleteAddressServic = async (addressId, userId) => {
+export const deleteAddressServic = async (addressId, userId) => {
     return await Address.findOneAndDelete({ _id: addressId, user_id: userId });
 };
 
-
-const getCoupons = async (userId) => {
-    const wallet = await User.findById(userId).select("wallet"); // Assuming wallet is part of User model
-    const walletBalance = wallet && wallet.wallet ? wallet.wallet.balance : 0;
+export const getCoupons = async (userId) => {
+    const user = await User.findById(userId).select("wallet");
+    const walletBalance = user && user.wallet ? user.wallet.balance : 0;
 
     return await Coupon.find({
         isDeleted: false,
         expiry_date: { $gt: new Date() },
-        min_purchase_amount: { $lte: walletBalance } // Example logic
+        min_purchase_amount: { $lte: walletBalance }
     });
-};
-
-
-module.exports = {
-    getUserProfile,
-    updateUserProfile,
-    changePassword,
-    requestEmailChange,
-    verifyOtp,
-    getAddressByUserId,
-    addAddressService,
-    editAddressService,
-    deleteAddressServic,
-    getCoupons
 };

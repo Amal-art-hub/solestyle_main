@@ -1,7 +1,7 @@
-const { getWishlistService, addToWishlistService, removeFromWishlistService } = require("../../services/userSer/wishlistService");
-const statusCode = require("../../utils/statusCodes");
+import { getWishlistService, addToWishlistService, removeFromWishlistService } from "../../services/userSer/wishlistService.js";
+import statusCode from "../../utils/statusCodes.js";
 
-const loadWishlist = async (req, res) => {
+export const loadWishlist = async (req, res) => {
     try {
         const wishlistDoc = await getWishlistService(req.session.user._id);
 
@@ -15,7 +15,7 @@ const loadWishlist = async (req, res) => {
     }
 };
 
-const addToWishlist = async (req, res) => {
+export const addToWishlist = async (req, res) => {
     try {
         const { productId, variantId } = req.body;
         await addToWishlistService(req.session.user._id, productId, variantId);
@@ -29,14 +29,11 @@ const addToWishlist = async (req, res) => {
     }
 };
 
-const removeFromWishlist = async (req, res) => {
+export const removeFromWishlist = async (req, res) => {
     try {
-
         await removeFromWishlistService(req.session.user._id, req.params.id);
         res.status(statusCode.OK).json({ success: true, message: "Removed successfully" });
     } catch (error) {
         res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
     }
 };
-
-module.exports = { loadWishlist, addToWishlist, removeFromWishlist };

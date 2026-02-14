@@ -1,4 +1,4 @@
-const {
+import {
     getUserProfile,
     updateUserProfile,
     changePassword,
@@ -9,68 +9,57 @@ const {
     editAddressService,
     deleteAddressServic,
     getCoupons
-
-} = require("../../services/userSer/profileServices");
-const Offers = require("../../models/offers");
-const statusCode = require("../../utils/statusCodes");
-
-
-
+} from "../../services/userSer/profileServices.js";
+import Offers from "../../models/offers.js";
+import statusCode from "../../utils/statusCodes.js";
 
 //--------------------------------------------------------------------------------- Load User Profile
-const loadProfile = async (req, res) => {
+export const loadProfile = async (req, res) => {
     try {
         const userId = req.session.user._id;
 
         const user = await getUserProfile(userId);
         const coupons = await getCoupons(userId);
 
-                const baseUrl = `${req.protocol}://${req.get("host")}`;
+        const baseUrl = `${req.protocol}://${req.get("host")}`;
 
         const referralOffer = await Offers.findOne({ type: "referral", status: "active" });
         const referralDiscount = referralOffer ? referralOffer.discount_percentage : 10;
-        res.status(statusCode.OK).render("profile", { user, coupons, referralDiscount,baseUrl  });
+        res.status(statusCode.OK).render("profile", { user, coupons, referralDiscount, baseUrl });
     } catch (error) {
         console.error("Profile looad Error:", error);
         res.redirect("/");
     }
 };
 
-
 //---------------------------------------------------------------------------------updating edit profile
-
-
-const updateProfile = async (req, res) => {
+export const updateProfile = async (req, res) => {
     try {
         await updateUserProfile(req.session.user._id, req.body);
         res.redirect("/user/profile?message=profile updated");
     } catch (error) {
         console.error("update profile error", error);
         res.redirect("/user/profile?error?Update failed");
-
     }
 };
 
 //------------------------------------updating password
-
-const updatePassword = async (req, res) => {
+export const updatePassword = async (req, res) => {
     try {
         const { currentPassword, newPassword, confirmPassword } = req.body;
         if (newPassword !== confirmPassword) return res.redirect("/user/profile?error=Password do not match");
 
         const result = await changePassword(req.session.user._id, currentPassword, newPassword);
-        if (!result.success) return res.redirect("/user/profile?error=${result.message}");
+        if (!result.success) return res.redirect(`/user/profile?error=${result.message}`);
         res.redirect("/user/profile?message=Password changed");
     } catch (error) {
         console.error("Update Password Error:", error);
         res.redirect("/user/profile?error=Server Error");
-
     }
 };
 
 //------------------------------loadchangemail
-
-const loadChangeEmail = async (req, res) => {
+export const loadChangeEmail = async (req, res) => {
     try {
         console.log("debugging:", req.session.user);
         res.status(statusCode.OK).render("profile-emailchange", { user: req.session.user });
@@ -80,7 +69,7 @@ const loadChangeEmail = async (req, res) => {
 };
 
 //-------------------------------request for emailchangeotp
-const requestEmailOtp = async (req, res) => {
+export const requestEmailOtp = async (req, res) => {
     try {
         const result = await requestEmailChange(req.session.user._id, req.body.newEmail);
         if (!result.success) return res.status(statusCode.BAD_REQUEST).json({ success: false, message: "Failed" });
@@ -91,10 +80,9 @@ const requestEmailOtp = async (req, res) => {
         console.error("result email otp error:", error);
         res.render("profile-emailchange", { error: "Server Error" });
     }
-
 };
 
-const verifyEmailOtp = async (req, res) => {
+export const verifyEmailOtp = async (req, res) => {
     try {
         const result = await verifyOtp(
             req.body.otp,
@@ -109,7 +97,6 @@ const verifyEmailOtp = async (req, res) => {
 
         // Success Case
         req.session.emailChange = null;
-        // FIX: Send JSON success
         return res.status(statusCode.OK).json({ success: true, message: "Email changed successfully!" });
 
     } catch (error) {
@@ -129,18 +116,17 @@ const validateAddress = (data) => {
     return { isValid: Object.keys(errors).length === 0, errors };
 };
 
-const loadAddressPage = async (req, res) => {
+export const loadAddressPage = async (req, res) => {
     try {
         const addresses = await getAddressByUserId(req.session.user._id);
         res.status(statusCode.OK).render("addresses", { addresses, user: req.session.user });
     } catch (error) {
         console.error(error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).render("page-404");
-
     }
 };
 
-const addAddress = async (req, res) => {
+export const addAddress = async (req, res) => {
     try {
         const validation = validateAddress(req.body);
         if (!validation.isValid) {
@@ -162,8 +148,7 @@ const addAddress = async (req, res) => {
     }
 };
 
-
-const editAddress = async (req, res) => {
+export const editAddress = async (req, res) => {
     try {
         const validation = validateAddress(req.body);
         if (!validation.isValid) {
@@ -185,7 +170,7 @@ const editAddress = async (req, res) => {
     }
 };
 
-const deleteAddress = async (req, res) => {
+export const deleteAddress = async (req, res) => {
     try {
         const userId = req.session.user._id;
         const addressId = req.params.id;
@@ -197,21 +182,3 @@ const deleteAddress = async (req, res) => {
         res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server Error" });
     }
 };
-
-
-
-
-module.exports = {
-    loadProfile,
-    updateProfile,
-    updatePassword,
-    loadChangeEmail,
-    requestEmailOtp,
-    verifyEmailOtp,
-    loadAddressPage,
-    addAddress,
-    editAddress,
-    deleteAddress
-
-};
-

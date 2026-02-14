@@ -1,8 +1,6 @@
-const Order = require("../../models/orders");
-const Variant = require("../../models/varient");
-const Wallet = require("../../models/wallet");
+import Order from "../../models/orders.js";
 
-const OrdersListService = async (userId, page, limit, search) => {
+export const OrdersListService = async (userId, page, limit, search) => {
     const query = { user_id: userId };
 
     if (search) {
@@ -12,7 +10,6 @@ const OrdersListService = async (userId, page, limit, search) => {
         ];
     }
 
-
     const orders = await Order.find(query)
         .sort({ createdAt: -1 })
         .skip((page - 1) * limit)
@@ -20,16 +17,9 @@ const OrdersListService = async (userId, page, limit, search) => {
         .populate("items.product_id", "name")
         .populate("items.variant_id", "images");
 
-
     const count = await Order.countDocuments(query);
     return {
         orders,
         totalPages: Math.ceil(count / limit)
-
     };
-};
-
-
-module.exports = {
-    OrdersListService
 };

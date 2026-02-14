@@ -1,11 +1,14 @@
-const path = require("path");
-const Admin = require(path.join(__dirname, "../../models/admin"));
-const bcrypt = require("bcrypt");
-const { loginAdmin } = require("../../services/adminSer/adminServices"); // if you have service
-const statusCode = require("../../utils/statusCodes.js");
+import path from "path";
+import { fileURLToPath } from "url";
+import Admin from "../../models/admin.js";
+import bcrypt from "bcrypt";
+import { loginAdmin } from "../../services/adminSer/adminServices.js";
+import statusCode from "../../utils/statusCodes.js";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const loadLogin = (req, res) => {
+export const loadLogin = (req, res) => {
   try {
     if (req.session.admin) {
       return res.redirect("/admin/dashboard");
@@ -17,8 +20,7 @@ const loadLogin = (req, res) => {
   }
 };
 
-
-const login = async (req, res) => {
+export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -76,11 +78,7 @@ const login = async (req, res) => {
   }
 };
 
-
-
-
-
-const logout = (req, res) => {
+export const logout = (req, res) => {
   try {
     req.session.destroy(err => {
       if (err) {
@@ -93,16 +91,4 @@ const logout = (req, res) => {
     console.log(("unexpected error during logout", error));
     res.redirect("page-404");
   }
-};
-
-
-
-
-
-module.exports = {
-  loadLogin,
-  login,
-
-  logout,
-
 };

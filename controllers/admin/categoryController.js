@@ -1,12 +1,12 @@
-const {
+import {
   getAllCategories,
   createCategory,
   editCategoryService,
   toggleCategoryStatus
-} = require("../../services/adminSer/categoryServices");
-const statusCode = require("../../utils/statusCodes.js");
+} from "../../services/adminSer/categoryServices.js";
+import statusCode from "../../utils/statusCodes.js";
 
-const categoryInfo = async (req, res) => {
+export const categoryInfo = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const search = req.query.search || "";
@@ -25,7 +25,7 @@ const categoryInfo = async (req, res) => {
   }
 };
 
-const addCategory = async (req, res) => {
+export const addCategory = async (req, res) => {
   try {
     const result = await createCategory(req.body);
     if (!result.success) {
@@ -38,10 +38,10 @@ const addCategory = async (req, res) => {
   }
 };
 
-const editCategory = async (req, res) => {
+export const editCategory = async (req, res) => {
   try {
     const result = await editCategoryService(req.body);
-    if (!result.sucess) {
+    if (!result.success) {
       return res.status(statusCode.BAD_REQUEST).json(result);
     }
     res.status(statusCode.OK).json(result);
@@ -51,7 +51,7 @@ const editCategory = async (req, res) => {
   }
 };
 
-const getListStatus = async (req, res) => {
+export const getListStatus = async (req, res) => {
   try {
     const result = await toggleCategoryStatus(req.query.id);
     if (!result.success) {
@@ -62,13 +62,4 @@ const getListStatus = async (req, res) => {
     console.log(error);
     res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server error" });
   }
-};
-
-
-
-module.exports = {
-  categoryInfo,
-  addCategory,
-  editCategory,
-  getListStatus
 };

@@ -1,10 +1,7 @@
-
-const isAdminLoggedIn=(req,res,next)=>{
-    if(!req.session.admin){
+export const isAdminLoggedIn = (req, res, next) => {
+    if (!req.session.admin) {
         return res.redirect("/admin/login");
-    }else{
+    } else {
         next();
     }
 };
-
-module.exports={isAdminLoggedIn};

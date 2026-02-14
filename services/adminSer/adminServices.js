@@ -1,7 +1,7 @@
-const Admin = require("../../models/admin.js");
-const bcrypt = require("bcrypt");
+import Admin from "../../models/admin.js";
+import bcrypt from "bcrypt";
 
-async function loginAdmin(email, password) {
+export async function loginAdmin(email, password) {
     try {
         if (!email || !password) throw new Error("Email and password are required");
 
@@ -23,5 +23,3 @@ async function loginAdmin(email, password) {
         return { success: false, message: error.message || "An error occurred during login." };
     }
 }
-
-module.exports = { loginAdmin };

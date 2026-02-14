@@ -1,28 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice - <%= order.order_number %></title>
+    <style>
+        body { font-family: 'Helvetica', 'Arial', sans-serif; color: #333; line-height: 1.6; padding: 40px; }
+        .invoice-box { max-width: 800px; margin: auto; border: 1px solid #eee; padding: 30px; }
+        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 20px; }
+        .info-section { display: flex; justify-content: space-between; margin-bottom: 40px; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #f8f9fa; border-bottom: 2px solid #dee2e6; padding: 12px; }
+        td { border-bottom: 1px solid #eee; padding: 12px; }
+        .totals { margin-top: 30px; text-align: right; }
+        .grand-total { font-size: 1.2em; font-weight: bold; color: #27ae60; }
+    </style>
+</head>
+<body>
+    <div class="invoice-box">
+        <div class="header">
+            <div>
+                <h1>INVOICE</h1>
+                <p>Order #: <%= order.order_number %></p>
+                <p>Date: <%= new Date(order.order_date).toLocaleDateString() %></p>
+            </div>
+            <div style="text-align: right;">
+                <h2 style="color: #27ae60;">SoleStyle</h2>
+            </div>
+        </div>
 
-const getOrderDetailsService = async (orderId, userId) => {
-    try {
+        <div class="info-section">
+            <div class="info-block">
+                <h3>Billed To:</h3>
+                <p><strong><%= order.shipping_address_snapshot.name %></strong></p>
+                <p><%= order.shipping_address_snapshot.address_line1 %></p>
+                <p><%= order.shipping_address_snapshot.city %>, <%= order.shipping_address_snapshot.state %></p>
+            </div>
+        </div>
 
-        const order = await Order.findOne({ _id: orderId, user_id: userId })
-            .populate({
-                path: 'items.product_id',
-                select: 'name'
-            })
-            .populate({
-                path: 'items.variant_id',
-                select: 'images'
-            });
+        <table>
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% order.items.forEach(function(item) { %>
+                <tr>
+                    <td><%= item.name_snapshot %></td>
+                    <td><%= item.quantity %></td>
+                    <td>₹<%= item.unit_price %></td>
+                    <td>₹<%= item.total_amount %></td>
+                </tr>
+                <% }); %>
+            </tbody>
+        </table>
 
-        if (!order) {
-            throw new Error("Order not found or access denied");
-        }
-        console.log("DEBUG ORDER ITEMS:", order.items.length);
-
-        // order.status = 'delivered';
-        // order.items.forEach(item => item.status = 'delivered');
-
-        return order;
-    } catch (error) {
-        console.error("Service Error in getOrderDetail:", error);
-        throw error;
-    }
-};
+        <div class="totals">
+            <p>Subtotal: <strong>₹<%= order.subtotal %></strong></p>
+            <p>Discount: <strong style="color: #e74c3c;">- ₹<%= order.discount_amount || 0 %></strong></p>
+            <p class="grand-total">Grand Total: ₹<%= order.final_total %></p>
+        </div>
+    </div>
+</body>
+</html>

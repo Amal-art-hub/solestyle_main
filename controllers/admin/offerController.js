@@ -1,14 +1,14 @@
-const {
+import {
     listOffers,
     getAddOfferService,
     createOfferService,
     getOfferById,
     updateOfferService,
     deleteOfferService
-} = require("../../services/adminSer/offerService");
-const statusCode = require("../../utils/statusCodes.js");
+} from "../../services/adminSer/offerService.js";
+import statusCode from "../../utils/statusCodes.js";
 
-const getOfferList = async (req, res) => {
+export const getOfferList = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = 5;
@@ -30,7 +30,7 @@ const getOfferList = async (req, res) => {
     }
 };
 
-const getAddOffer = async (req, res) => {
+export const getAddOffer = async (req, res) => {
     try {
         const { products, categories } = await getAddOfferService();
         res.status(statusCode.OK).render("addOfferPage", {
@@ -44,13 +44,12 @@ const getAddOffer = async (req, res) => {
     }
 };
 
-const addOffer = async (req, res) => {
+export const addOffer = async (req, res) => {
     try {
         await createOfferService(req.body);
         res.status(statusCode.OK).json({ success: true, message: "Offer created successfully" });
     } catch (error) {
         console.error("Error adding offer:", error);
-
 
         if (error.type === "CONFLICT") {
             return res.status(statusCode.CONFLICT).json({
@@ -64,8 +63,7 @@ const addOffer = async (req, res) => {
     }
 };
 
-
-const getEditOffer = async (req, res) => {
+export const getEditOffer = async (req, res) => {
     try {
         const offer = await getOfferById(req.params.id);
         const { products, categories } = await getAddOfferService();
@@ -82,7 +80,7 @@ const getEditOffer = async (req, res) => {
     }
 };
 
-const updateOffer = async (req, res) => {
+export const updateOffer = async (req, res) => {
     try {
         await updateOfferService(req.params.id, req.body);
 
@@ -102,7 +100,7 @@ const updateOffer = async (req, res) => {
     }
 };
 
-const deleteOffer = async (req, res) => {
+export const deleteOffer = async (req, res) => {
     try {
         await deleteOfferService(req.params.id);
         res.status(statusCode.OK).json({ success: true, message: "Offer deleted successfully" });
@@ -110,13 +108,4 @@ const deleteOffer = async (req, res) => {
         console.error("Error deleting offer:", error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Failed to delete offer" });
     }
-};
-
-module.exports = {
-    getOfferList,
-    getAddOffer,
-    addOffer,
-    getEditOffer,
-    updateOffer,
-    deleteOffer
 };

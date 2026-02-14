@@ -1,4 +1,4 @@
-const Coupon = require("../../models/Coupen");
+import Coupon from "../../models/Coupen.js";
 
 const validateCouponData = (data) => {
     if (!data.code || data.code.trim() === "") throw new Error("Coupon Code is required");
@@ -32,7 +32,7 @@ const validateCouponData = (data) => {
     if (expiry < today) throw new Error("Expiry Date cannot be in the past");
 };
 
-const listCoupons = async (page = 1, limit = 10, search = "") => {
+export const listCoupons = async (page = 1, limit = 10, search = "") => {
     const query = {};
     if (search) query.code = { $regex: new RegExp(search, "i") };
     const coupons = await Coupon.find(query)
@@ -43,7 +43,7 @@ const listCoupons = async (page = 1, limit = 10, search = "") => {
     return { coupons, totalPages: Math.ceil(count / limit), currentPage: page };
 };
 
-const createCouponService = async (data) => {
+export const createCouponService = async (data) => {
     validateCouponData(data);
     const existing = await Coupon.findOne({ code: data.code.toUpperCase() });
     if (existing) throw new Error("Coupon Code already exists (Duplicate)");
@@ -54,8 +54,7 @@ const createCouponService = async (data) => {
     return await coupon.save();
 };
 
-const editCouponService = async (id, data) => {
-    // Shared validation handles code, discount, dates, and mincart
+export const editCouponService = async (id, data) => {
     validateCouponData(data);
 
     const existing = await Coupon.findOne({
@@ -70,13 +69,6 @@ const editCouponService = async (id, data) => {
     }, { new: true });
 };
 
-const deleteCoupenService = async (id) => {
+export const deleteCoupenService = async (id) => {
     return await Coupon.findByIdAndDelete(id);
-};
-
-module.exports = {
-    listCoupons,
-    createCouponService,
-    editCouponService,
-    deleteCoupenService
 };

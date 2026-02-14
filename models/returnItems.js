@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const returnItemSchema = new mongoose.Schema({
   return_id: { type: mongoose.Schema.Types.ObjectId, ref: "Return", required: true },
@@ -14,4 +14,4 @@ const returnItemSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-module.exports = mongoose.model("ReturnItem", returnItemSchema);
+export default mongoose.model("ReturnItem", returnItemSchema);

@@ -1,25 +1,21 @@
-
-const {
+import {
     getCheckoutData,
     placeOrderService,
     validateCoupon,
     createRazorpayOrderService,
     retryPaymentService
-} = require("../../services/userSer/checkoutService");
-const {
+} from "../../services/userSer/checkoutService.js";
+import {
     getWallet,
+} from "../../services/userSer/walletService.js";
+import statusCode from "../../utils/statusCodes.js";
+import crypto from "crypto";
+import Order from "../../models/orders.js";
+import Payment from "../../models/payment.js";
+import Cart from "../../models/cart.js";
 
-} = require("../../services/userSer/walletService");
-const statusCode = require("../../utils/statusCodes");
-const crypto = require("crypto");
-const Order = require("../../models/orders");
-const Payment = require("../../models/payment");
-const Cart = require("../../models/cart");
-
-
-const loadCheckout = async (req, res) => {
+export const loadCheckout = async (req, res) => {
     try {
-
         const userId = req.session.user._id;
         const { cart, addresses, subtotal, coupons } = await getCheckoutData(userId);
         const wallet = await getWallet(userId);
@@ -43,9 +39,7 @@ const loadCheckout = async (req, res) => {
     }
 };
 
-
-
-const placeOrder = async (req, res) => {
+export const placeOrder = async (req, res) => {
     try {
         const userId = req.session.user._id;
         const { addressId, paymentMethod, paymentDetails } = req.body;
@@ -78,7 +72,7 @@ const placeOrder = async (req, res) => {
     }
 };
 
-const orderSuccess = async (req, res) => {
+export const orderSuccess = async (req, res) => {
     try {
         const orderId = req.params.id;
         res.render("orderSuccess", {
@@ -90,14 +84,11 @@ const orderSuccess = async (req, res) => {
     }
 };
 
-
-
-const applyCoupen = async (req, res) => {
+export const applyCoupen = async (req, res) => {
     try {
         const { code } = req.body;
         const userId = req.session.user._id;
         console.log("error is :", code);
-
 
         const { subtotal } = await getCheckoutData(userId);
         console.log("DEBUG: Subtotal fetched", subtotal);
@@ -105,16 +96,13 @@ const applyCoupen = async (req, res) => {
         const coupon = await validateCoupon(userId, code);
         console.log("DEBUG: Coupon validated", coupon);
 
-
         if (subtotal < coupon.mincart_value) {
             throw new Error(`Min purchase of ₹${coupon.min_purchase_amount || coupon.mincart_value} required`);
         }
 
-
         let discount = 0;
         if (coupon.discount_type === "Percentage") {
             discount = (subtotal * coupon.discount_value) / 100;
-            // if (discount > coupon.max_discount_amount) discount = coupon.max_discount_amount;
         } else {
             discount = coupon.discount_value;
         }
@@ -122,9 +110,6 @@ const applyCoupen = async (req, res) => {
         if (discount > 2000) {
             discount = 2000;
         }
-
-
-
 
         req.session.coupon = {
             code: coupon.code,
@@ -140,13 +125,12 @@ const applyCoupen = async (req, res) => {
     }
 };
 
-const removeCoupon = async (req, res) => {
+export const removeCoupon = async (req, res) => {
     req.session.coupon = null;
     res.status(statusCode.OK).json({ success: true });
 };
 
-
-const createRazorpayOrder = async (req, res) => {
+export const createRazorpayOrder = async (req, res) => {
     try {
         const userId = req.session.user._id;
         const couponData = req.session.coupon;
@@ -167,10 +151,7 @@ const createRazorpayOrder = async (req, res) => {
     }
 };
 
-
-
-
-const paymentFailed = async (req, res) => {
+export const paymentFailed = async (req, res) => {
     try {
         const message = req.query.message || "We couldn't process your payment. This might be due to a network issue or a declined transaction. Don't worry, you haven't been charged.";
         res.render("paymentFailure", {
@@ -183,12 +164,9 @@ const paymentFailed = async (req, res) => {
     }
 };
 
-
-
-const verifyRazorpayWebhook = async (req, res) => {
+export const verifyRazorpayWebhook = async (req, res) => {
     try {
         const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
-
 
         const shasum = crypto.createHmac("sha256", secret);
         shasum.update(JSON.stringify(req.body));
@@ -202,16 +180,13 @@ const verifyRazorpayWebhook = async (req, res) => {
                 const paymentDetails = event.payload.payment.entity;
                 const razorpayOrderId = paymentDetails.order_id;
 
-
                 const order = await Order.findOne({
                     razorpay_order_id: razorpayOrderId,
                 });
                 if (order && order.status === "Payment Pending") {
 
-
                     order.status = "pending";
                     order.items.forEach(item => { item.status = "pending"; });
-
 
                     const newPayment = new Payment({
                         user_id: order.user_id,
@@ -226,7 +201,6 @@ const verifyRazorpayWebhook = async (req, res) => {
                     order.payment_id = newPayment._id;
                     await order.save();
 
-
                     await Cart.findOneAndDelete({ user_id: order.user_id });
 
                     console.log(`SUCCESS: Order ${order.order_number} processed via Webhook`);
@@ -238,7 +212,6 @@ const verifyRazorpayWebhook = async (req, res) => {
             console.log("INVALID SIGNATURE: Webhook ignored.");
         }
 
-
         res.status(statusCode.OK).json({ status: "ok" });
     } catch (error) {
         console.error("Webhook Error:", error);
@@ -246,13 +219,11 @@ const verifyRazorpayWebhook = async (req, res) => {
     }
 };
 
-
-const retryPayment = async (req, res) => {
+export const retryPayment = async (req, res) => {
     try {
         const { orderId } = req.body;
         const razrpayOrder = await retryPaymentService(orderId);
         res.status(statusCode.OK).json({ success: true, order: razrpayOrder });
-
 
     } catch (error) {
         console.error("Retry Payment Error:", error);
@@ -260,21 +231,5 @@ const retryPayment = async (req, res) => {
             success: false,
             message: error.message || "Failed to retry payment"
         });
-
     }
-};
-
-
-
-module.exports = {
-    loadCheckout,
-    placeOrder,
-    orderSuccess,
-    applyCoupen,
-    removeCoupon,
-    createRazorpayOrder,
-    paymentFailed,
-    verifyRazorpayWebhook,
-    retryPayment,
-
 };

@@ -1,24 +1,19 @@
-const statusCode = require("../../utils/statusCodes");
-const {
+import statusCode from "../../utils/statusCodes.js";
+import {
     getCart,
     addToCartService,
     updateQuantityService,
     removeItemService,
-    // removeallItemsService
-} = require("../../services/userSer/cartServices");
+} from "../../services/userSer/cartServices.js";
 
-const loadCartPage = async (req, res) => {
+export const loadCartPage = async (req, res) => {
     try {
         const userId = req.session.user._id;
         const cart = await getCart(userId);
 
-
-
-
         res.status(statusCode.OK).render("cart", {
             cart: cart,
             user: req.session.user,
-
         });
     } catch (error) {
         console.error("Load Cart Error:", error);
@@ -26,11 +21,7 @@ const loadCartPage = async (req, res) => {
     }
 };
 
-
-
-
-
-const addToCart = async (req, res) => {
+export const addToCart = async (req, res) => {
     try {
         const userId = req.session.user._id;
         const { variantId, quantity } = req.body;
@@ -49,9 +40,7 @@ const addToCart = async (req, res) => {
     }
 };
 
-
-
-const updateCartQty = async (req, res) => {
+export const updateCartQty = async (req, res) => {
     try {
         const userId = req.session.user._id;
         const { itemId, action } = req.body;
@@ -74,8 +63,7 @@ const updateCartQty = async (req, res) => {
     }
 };
 
-
-const removeCartItem = async (req, res) => {
+export const removeCartItem = async (req, res) => {
     try {
         const userId = req.session.user._id;
         const { itemId } = req.params;
@@ -90,28 +78,4 @@ const removeCartItem = async (req, res) => {
             message: "Server Error"
         });
     }
-};
-
-
-// const removeAllItem=async(req,res)=>{
-//     try {
-//         const user_id=req.session.user._id;
-//         await removeallItemsService(user_id);
-//         res.status(statusCode.OK).json({success:true,message:"Cart cleared"});
-
-//     } catch (error) {
-//         console.error(error);
-//         res.status(statusCode.INTERNAL_SERVER_ERROR).json({     success:false,
-//             message:"Server Error"})
-//     }
-// }
-
-
-
-module.exports = {
-    loadCartPage,
-    addToCart,
-    updateCartQty,
-    removeCartItem,
-    // removeAllItem
 };

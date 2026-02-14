@@ -1,9 +1,9 @@
-const Product = require("../../models/product");
-const Variant = require("../../models/varient");
-const Category = require("../../models/category");
-const Brand = require("../../models/brand");
+import Product from "../../models/product.js";
+import Variant from "../../models/varient.js";
+import Category from "../../models/category.js";
+import Brand from "../../models/brand.js";
 
-const getAllProducts = async (page = 1, limit = 10, search = "", sort = "newest") => {
+export const getAllProducts = async (page = 1, limit = 10, search = "", sort = "newest") => {
     try {
         const skip = (page - 1) * limit;
         const query = {};
@@ -12,17 +12,12 @@ const getAllProducts = async (page = 1, limit = 10, search = "", sort = "newest"
             query.name = { $regex: new RegExp(search, "i") };
         }
 
-
-
         let sortOptions = {};
         if (sort === "oldest") {
             sortOptions = { createdAt: 1 };
         } else {
             sortOptions = { createdAt: -1 };
         }
-
-
-
 
         const products = await Product.find(query)
             .populate("categoryId", "name")
@@ -35,21 +30,18 @@ const getAllProducts = async (page = 1, limit = 10, search = "", sort = "newest"
         const totalPages = Math.ceil(totalProducts / limit);
 
         return {
-
             products,
             currentPage: page,
             totalPages,
             totalProducts
         };
 
-
     } catch (error) {
         throw new Error("Error fetching products: " + error.message, { cause: error });
     }
 };
 
-
-const toggleProductListing = async (id) => {
+export const toggleProductListing = async (id) => {
     try {
         const product = await Product.findById(id);
         if (!product) {
@@ -68,8 +60,7 @@ const toggleProductListing = async (id) => {
     }
 };
 
-
-const getCateAndBrands = async () => {
+export const getCateAndBrands = async () => {
     try {
         const categories = await Category.find({ isListed: true });
         const brands = await Brand.find({ isListed: true });
@@ -79,13 +70,9 @@ const getCateAndBrands = async () => {
     }
 };
 
-
-
-
-const createProduct = async (Data) => {
+export const createProduct = async (Data) => {
     try {
         const { name, description, category, brand } = Data;
-
 
         const categoryData = await Category.findOne({ _id: category, isListed: true });
         const brandData = await Brand.findOne({ _id: brand, isListed: true });
@@ -112,11 +99,4 @@ const createProduct = async (Data) => {
     } catch (error) {
         throw new Error("Error creating product: " + error.message, { cause: error });
     }
-};
-
-module.exports = {
-    getAllProducts,
-    toggleProductListing,
-    getCateAndBrands,
-    createProduct
 };

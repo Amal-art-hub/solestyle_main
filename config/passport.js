@@ -1,14 +1,14 @@
-const passport = require("passport");
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const User = require("../models/user");
-require("dotenv").config();
+import passport from "passport";
+import { Strategy as GoogleStrategy } from "passport-google-oauth20";
+import User from "../models/user.js";
+import "dotenv/config";
 
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-     callbackURL: "http://13.53.129.141.nip.io/auth/google/callback",
+      callbackURL: "http://13.53.129.141.nip.io/auth/google/callback",
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -56,3 +56,5 @@ passport.deserializeUser((id, done) => {
     .then((user) => done(null, user))
     .catch((err) => done(err, null));
 });
+
+export default passport;

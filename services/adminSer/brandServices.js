@@ -1,6 +1,7 @@
-const Brand = require("../../models/brand");
+import Brand from "../../models/brand.js";
+
 // 1. Fetch all Brands with pagination and search
-const getAllBrands = async (page = 1, limit = 4, search = "") => {
+export const getAllBrands = async (page = 1, limit = 4, search = "") => {
     try {
         const skip = (page - 1) * limit;
         const query = {};
@@ -29,7 +30,7 @@ const getAllBrands = async (page = 1, limit = 4, search = "") => {
 };
 
 // 4. Edit Brand
-const editBrand = async (id, name, description) => {
+export const editBrand = async (id, name, description) => {
     try {
         const existingBrand = await Brand.findOne({
             name: { $regex: new RegExp(`^${name}$`, "i") },
@@ -53,7 +54,7 @@ const editBrand = async (id, name, description) => {
 };
 
 // 2. Add a new Brand
-const createBrand = async (name) => {
+export const createBrand = async (name) => {
     try {
         const existingBrand = await Brand.findOne({
             name: { $regex: new RegExp(`^${name}$`, "i") }
@@ -73,36 +74,16 @@ const createBrand = async (name) => {
 };
 
 // 3. Toggle Brand Status (Block/Unblock)
-const toggleBrandStatus = async (id) => {
+export const toggleBrandStatus = async (id) => {
     try {
         const brand = await Brand.findById(id);
         if (!brand) return { success: false, message: "Brand not found" };
 
-        // Ensure model has this field. Assuming isBlocked based on other parts of code (or isListed)
-        // Check model if needed, but standardizing on isBlocked for now as per controller logic.
-        // Actually earlier model view showed 'isListed', let's check model again to be safe.
-        // Assuming isListed based on previous read of models/brand.js
-        // Wait, let's just check the model before committing this line.
-        // But for this step I will assume ISLISTED if I remember correctly from earlier read.
-        // Step 129 showed models/brand.js has isListed: { type: Boolean, default: true }
-
         brand.isListed = !brand.isListed;
         await brand.save();
-        // Return isBlocked inverted logic if controller expects isBlocked, 
-        // OR better, update view/controller to use isListed.
-        // View uses !isBlocked. 
-        // If Model has isListed, then isBlocked = !isListed.
-        // So I should return status: !brand.isListed
-        return { success: true, status: !brand.isListed }; // returns isBlocked status essentially
+        return { success: true, status: !brand.isListed };
 
     } catch (error) {
         throw new Error("Error toggling brand status: " + error.message, { cause: error });
     }
-};
-
-module.exports = {
-    getAllBrands,
-    createBrand,
-    toggleBrandStatus,
-    editBrand
 };

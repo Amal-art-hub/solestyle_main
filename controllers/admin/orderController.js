@@ -1,13 +1,13 @@
-const {
+import {
   getAllOrders,
   updateOrderStatus,
   getOrderById,
   approveReturnService,
   rejectReturnService
-} = require("../../services/adminSer/orderService");
-const statusCode = require("../../utils/statusCodes.js");
+} from "../../services/adminSer/orderService.js";
+import statusCode from "../../utils/statusCodes.js";
 
-const getOrderList = async (req, res) => {
+export const getOrderList = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = 5;
@@ -29,7 +29,7 @@ const getOrderList = async (req, res) => {
   }
 };
 
-const changeStatus = async (req, res) => {
+export const changeStatus = async (req, res) => {
   try {
     const { orderId, status } = req.body;
     console.log(`[DEBUG] Request to change status. ID: ${orderId}, New Status: ${status}`);
@@ -51,8 +51,7 @@ const changeStatus = async (req, res) => {
   }
 };
 
-
-const getOrderDetails = async (req, res) => {
+export const getOrderDetails = async (req, res) => {
   try {
     const orderId = req.params.id;
     const order = await getOrderById(orderId);
@@ -68,8 +67,7 @@ const getOrderDetails = async (req, res) => {
   }
 };
 
-
-const approveReturn = async (req, res) => {
+export const approveReturn = async (req, res) => {
   try {
     const { orderId, itemId } = req.body;
     const result = await approveReturnService(orderId, itemId);
@@ -80,7 +78,7 @@ const approveReturn = async (req, res) => {
   }
 };
 
-const rejectReturn = async (req, res) => {
+export const rejectReturn = async (req, res) => {
   try {
     const { orderId, itemId } = req.body;
     const result = await rejectReturnService(orderId, itemId);
@@ -88,14 +86,4 @@ const rejectReturn = async (req, res) => {
   } catch (error) {
     res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message });
   }
-};
-
-
-
-module.exports = {
-  getOrderList,
-  changeStatus,
-  getOrderDetails,
-  approveReturn,
-  rejectReturn
 };

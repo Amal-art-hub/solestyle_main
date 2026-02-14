@@ -1,14 +1,11 @@
-const Order = require("../../models/orders");
-// const Wallet = require("../../models/wallet");
+import Order from "../../models/orders.js";
 
-const getLedgerData = async ({ period, startDate, endDate, page = 1, limit = 10 }) => {
+export const getLedgerData = async ({ period, startDate, endDate, page = 1, limit = 10 }) => {
     try {
         let matchStage = {
             status: { $in: ["delivered", "returned", "canceled"] }
         };
 
-        // const totalCount = await Order.countDocuments(matchStage);
-        // const totalPages = Math.ceil(totalCount / limit);
         const now = new Date();
         // Date Filtering Logic
         if (period === "daily") {
@@ -26,30 +23,25 @@ const getLedgerData = async ({ period, startDate, endDate, page = 1, limit = 10 
             };
         }
 
-           const statsAggregation=await Order.aggregate([
-            {$match:matchStage},
+        const statsAggregation = await Order.aggregate([
+            { $match: matchStage },
             {
-                $group:{
-                    _id:null,
-                    totalSales:{
-                        $sum:{$cond:[{$eq:["$status","delivered"]},"$final_total",0]}
+                $group: {
+                    _id: null,
+                    totalSales: {
+                        $sum: { $cond: [{ $eq: ["$status", "delivered"] }, "$final_total", 0] }
                     },
-                    totalRefunds:{
-                        $sum:{$cond:[{$in:["$status",["returned","canceled"]]},"$final_total",0]}
+                    totalRefunds: {
+                        $sum: { $cond: [{ $in: ["$status", ["returned", "canceled"]] }, "$final_total", 0] }
                     },
-                    count:{$sum:1}
+                    count: { $sum: 1 }
                 }
             }
-           ]);
+        ]);
 
-
-                   const stats = statsAggregation.length > 0 ? statsAggregation[0] : { totalSales: 0, totalRefunds: 0, count: 0 };
+        const stats = statsAggregation.length > 0 ? statsAggregation[0] : { totalSales: 0, totalRefunds: 0, count: 0 };
         const totalCount = stats.count;
         const totalPages = Math.ceil(totalCount / limit);
-
-
-
-
 
         const orders = await Order.find(matchStage)
             .populate("user_id", "name email")
@@ -58,33 +50,30 @@ const getLedgerData = async ({ period, startDate, endDate, page = 1, limit = 10 
             .skip((page - 1) * limit)
             .limit(limit);
         const ledger = orders.map(order => {
-    const isCredit = order.status === "delivered";
-    return {
-        date: order.createdAt,
-        description: isCredit ? `Sale: ${order.order_number}` : `Refund: ${order.order_number}`,
-        userName: order.user_id ? order.user_id.name : "Unknown User",
-        userEmail: order.user_id ? order.user_id.email : "N/A",
-        type: isCredit ? "credit" : "debit",
-        mrp: order.subtotal,
-        offer: order.offer_discount,
-        coupon: order.discount_amount,
-        amount: order.final_total,
-        method: order.payment_method
-    };
-});
-        return { 
-            ledger, 
-            totalPages, 
-            currentPage: parseInt(page), 
+            const isCredit = order.status === "delivered";
+            return {
+                date: order.createdAt,
+                description: isCredit ? `Sale: ${order.order_number}` : `Refund: ${order.order_number}`,
+                userName: order.user_id ? order.user_id.name : "Unknown User",
+                userEmail: order.user_id ? order.user_id.email : "N/A",
+                type: isCredit ? "credit" : "debit",
+                mrp: order.subtotal,
+                offer: order.offer_discount,
+                coupon: order.discount_amount,
+                amount: order.final_total,
+                method: order.payment_method
+            };
+        });
+        return {
+            ledger,
+            totalPages,
+            currentPage: parseInt(page),
             totalCount,
-            totalSales: stats.totalSales,   
-            totalRefunds: stats.totalRefunds 
+            totalSales: stats.totalSales,
+            totalRefunds: stats.totalRefunds
         };
     } catch (error) {
         console.error("Ledger Service Error:", error);
         throw error;
     }
 };
-
-
-module.exports = { getLedgerData };
