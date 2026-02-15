@@ -52,8 +52,8 @@
                         <!-- 2. The Link -->
                         <div class="referral-box">
                             <span class="referral-label">Your Link:</span>
-                        
-                            <% const refLink=`${baseUrl}/signup?ref=${user.referralCode}`; %>
+
+                            <% var refLink=`${baseUrl}/signup?ref=${user.referralCode}`; %>
                                 <div class="link-display" onclick="copyReferral('link', '<%= refLink %>')">
                                     <span class="link-text">/signup?ref=<%= user.referralCode %></span>
                                     <i class="fas fa-link"></i>
