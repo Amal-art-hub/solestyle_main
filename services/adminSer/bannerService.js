@@ -9,13 +9,14 @@ export const getAllBanners = async () => {
     }
 };
 
-export const addBanner=async(bannerData)=>{
-try {
-    const newBanner=new Banner(bannerData);
-    return await newBanner.save();
-} catch (error) {
-    throw new Error("Could not add banner:",error.message);
-}
+export const addBanner = async (bannerData) => {
+    try {
+        const newBanner = new Banner(bannerData);
+        return await newBanner.save();
+    } catch (error) {
+        console.error("Error in addBanner service:", error);
+        throw new Error("Could not add banner: " + error.message);
+    }
 };
 
 export const getBrandSection = async () => {

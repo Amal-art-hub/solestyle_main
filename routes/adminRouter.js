@@ -88,7 +88,19 @@ router.get("/sales-report/download/pdf", isAdminLoggedIn, salesController.downlo
 router.get("/ledger", isAdminLoggedIn, ledgerController.loadLedger);
 
 
-router.get("/banners",isAdminLoggedIn,bannerController.getBannerPagecont);
-router.post("/banners/add",isAdminLoggedIn,bannerUpload.single("image"),bannerController.addBannerCont);
+router.get("/banners", isAdminLoggedIn, bannerController.getBannerPagecont);
+
+router.post("/banners/add", isAdminLoggedIn, (req, res, next) => {
+    bannerUpload.single("image")(req, res, (err) => {
+        if (err) {
+            console.error("FATAL MULTER ERROR:", err);
+            return res.status(400).json({
+                success: false,
+                message: "Upload failed: " + (err.message || "Unknown error")
+            });
+        }
+        next();
+    });
+}, bannerController.addBannerCont);
 
 export default router;

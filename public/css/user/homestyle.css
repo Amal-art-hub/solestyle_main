@@ -266,12 +266,13 @@ body {
     display: none;
     /* Hidden by default */
     width: 100%;
-    min-height: 600px;
-    /* Slightly taller for more presence */
-    padding: 60px 0 80px 0;
-    /* Bottom padding gives space from edge */
+    min-height: 750px;
+    padding: 0;
+    /* Clear padding to use flex alignment */
     align-items: flex-end;
-    /* SUCCESS: Pushes content to the bottom */
+    /* Vertically bottom */
+    justify-content: flex-start;
+    /* Horizontally left */
     background-size: cover !important;
     background-position: center !important;
     position: relative;

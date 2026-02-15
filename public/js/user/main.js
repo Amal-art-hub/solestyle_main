@@ -7,15 +7,17 @@ function changeSlide(direction) {
     const slides = document.querySelectorAll(".slide");
     const dots = document.querySelectorAll(".dot");
 
-    if (!slides.length) return;
+    if (slides.length <= 1) return; // Don't slide if only one image
 
-    slides[currentSlide].classList.remove("active");
-    dots[currentSlide].classList.remove("active");
+    // Safety: Remove active from current
+    if (slides[currentSlide]) slides[currentSlide].classList.remove("active");
+    if (dots[currentSlide]) dots[currentSlide].classList.remove("active");
 
     currentSlide = (currentSlide + direction + slides.length) % slides.length;
 
-    slides[currentSlide].classList.add("active");
-    dots[currentSlide].classList.add("active");
+    // Safety: Add active to new
+    if (slides[currentSlide]) slides[currentSlide].classList.add("active");
+    if (dots[currentSlide]) dots[currentSlide].classList.add("active");
 }
 
 function goToSlide(index) {
@@ -24,18 +26,21 @@ function goToSlide(index) {
 
     if (!slides.length) return;
 
-    slides[currentSlide].classList.remove("active");
-    dots[currentSlide].classList.remove("active");
+    if (slides[currentSlide]) slides[currentSlide].classList.remove("active");
+    if (dots[currentSlide]) dots[currentSlide].classList.remove("active");
 
     currentSlide = index;
 
-    slides[currentSlide].classList.add("active");
-    dots[currentSlide].classList.add("active");
+    if (slides[currentSlide]) slides[currentSlide].classList.add("active");
+    if (dots[currentSlide]) dots[currentSlide].classList.add("active");
 }
 
-// Auto slide every 5 seconds
+// Auto slide every 5 seconds (only if multiple slides)
 setInterval(() => {
-    changeSlide(1);
+    const slides = document.querySelectorAll(".slide");
+    if (slides.length > 1) {
+        changeSlide(1);
+    }
 }, 5000);
 
 // User Menu Toggle

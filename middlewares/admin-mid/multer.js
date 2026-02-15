@@ -27,7 +27,7 @@ const bannerStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "solestyle/banners",
-    allowed_formats: ["jpg", "png", "webp", "mp4"],
+    allowed_formats: ["jpg", "png", "webp", "mp4", "avif"],
     resource_type: "auto"
   }
 });
@@ -49,7 +49,7 @@ const variantCloudUpload = multer({
 
 // 5. Existing File Filter
 const fileFilter = (req, file, cb) => {
-  const allowedExtensions = /jpeg|jpg|png|webp|gif|mp4/;
+  const allowedExtensions = /jpeg|jpg|png|webp|gif|mp4|avif/;
   const extname = allowedExtensions.test(path.extname(file.originalname).toLowerCase());
   const mimetype = allowedExtensions.test(file.mimetype);
   if (extname && mimetype) { cb(null, true); }
