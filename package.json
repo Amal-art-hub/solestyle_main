@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "start": "nodemon app",
-    "lint": "eslint ."
+    "lint": "eslint .",
+     "test": "vitest"
   },
   "keywords": [],
   "author": "",
@@ -38,6 +39,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "eslint": "^10.0.0"
+    "eslint": "^10.0.0",
+    "vitest": "^4.0.18"
   }
 }

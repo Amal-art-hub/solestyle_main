@@ -17,7 +17,7 @@ import * as bannerController from "../controllers/admin/bannerController.js";
 import { upload, variantUpload, bannerUpload, variantCloudUpload } from "../middlewares/admin-mid/multer.js";
 import { isAdminLoggedIn } from "../middlewares/admin-mid/admin-auth.js";
 
-router.get("/login", adminController.loadLogin);
+router.get("/login",adminController.loadLogin);
 router.post("/login", adminController.login);
 router.get("/logout", adminController.logout);
 
