@@ -59,5 +59,5 @@ const fileFilter = (req, file, cb) => {
 // 6. Export all three - used for different tasks
 export const upload = multer({ storage: storage, fileFilter: fileFilter });
 export const variantUpload = multer({ storage: variantStorage, fileFilter: fileFilter });
-export const bannerUpload = multer({ storage: bannerStorage });
+export const bannerUpload = multer({ storage: bannerStorage, fileFilter: fileFilter });
 export { variantCloudUpload };
