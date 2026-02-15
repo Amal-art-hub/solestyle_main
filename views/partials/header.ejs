@@ -31,13 +31,19 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 100%;
-            background-color: #ffffff;
+            height: 4px;
+            background-color: transparent;
             z-index: 99999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.5s ease, visibility 0.5s;
+            transition: opacity 0.4s ease, visibility 0.4s;
+        }
+
+        #top-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ff4d4d, #f9cb28);
+            box-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+            transition: width 0.3s ease;
+            position: relative;
         }
 
         #global-page-loader.fade-out {
@@ -45,10 +51,37 @@
             visibility: hidden;
         }
 
-        /* Essential for the portal dropdown to appear in the right spot */
-        /* .user-menu-container {
-            position: relative;
-        } */
+        .runner-track {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 5px 12px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #333;
+            border: 1px solid #eee;
+        }
+
+        .shoe-runner {
+            animation: runner 0.8s infinite alternate ease-in-out;
+            display: inline-block;
+        }
+
+        @keyframes runner {
+            from {
+                transform: translateX(0) rotate(-10deg);
+            }
+
+            to {
+                transform: translateX(5px) rotate(10deg);
+            }
+        }
     </style>
 </head>
 
@@ -57,8 +90,8 @@
     <div id="global-page-loader">
         <div id="top-progress-bar"></div>
         <div class="runner-track">
-            <div class="shoe-runner">👟</div>
-            <div class="track-line"></div>
+            <span class="shoe-runner">👟</span>
+            <span>Fastening laces...</span>
         </div>
     </div>
 
@@ -97,27 +130,35 @@
 
                         <!-- </div> -->
 
-                       <a href="/user/wishlist" class="icon-btn" style="text-decoration: none; color: inherit;">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-    </svg>
-    <!-- ADD THIS PART BELOW -->
-    <% if (locals.wishlistCount > 0) { %>
-        <span class="wishlist-badge"><%= wishlistCount %></span>
-    <% } %>
-</a>
+                        <a href="/user/wishlist" class="icon-btn" style="text-decoration: none; color: inherit;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                </path>
+                            </svg>
+                            <!-- ADD THIS PART BELOW -->
+                            <% if (locals.wishlistCount> 0) { %>
+                                <span class="wishlist-badge">
+                                    <%= wishlistCount %>
+                                </span>
+                                <% } %>
+                        </a>
 
-                     <a href="/user/cart" class="icon-btn cart-btn" style="text-decoration: none; color: inherit;">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="9" cy="21" r="1"></circle>
-        <circle cx="20" cy="21" r="1"></circle>
-        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-    </svg>
-    <!-- UPDATE THIS PART BELOW -->
-    <% if (locals.cartCount > 0) { %>
-        <span class="cart-badge"><%= cartCount %></span>
-    <% } %>
-</a>
+                        <a href="/user/cart" class="icon-btn cart-btn" style="text-decoration: none; color: inherit;">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                            <!-- UPDATE THIS PART BELOW -->
+                            <% if (locals.cartCount> 0) { %>
+                                <span class="cart-badge">
+                                    <%= cartCount %>
+                                </span>
+                                <% } %>
+                        </a>
 
                         <!-- WRAP THE BUTTON AND DROPDOWN IN THIS CONTAINER -->
                         <div class="user-menu-container">
@@ -142,14 +183,14 @@
                                 <hr>
                                 <a href="/user/profile">My Profile</a>
                                 <a href="/user/orders">My Orders</a>
-                               
+
                                 <a href="/user/settings">payment method</a>
                                 <a href="/user/addresses">address book</a>
                                 <a href="/user/wallet">wallet</a>
-                           
+
                                 <a href="javascript:void(0)" onclick="openModal('couponModal')">Coupons / Rewards</a>
 
-                
+
                                 <hr>
                                 <a href="/logout" class="logout-link">Logout</a>
                             </div>
@@ -165,16 +206,24 @@
     </header>
 
     <script>
-        // NEW CODE (Much faster)
-        document.addEventListener('DOMContentLoaded', function () {
+        // Optimized Global Loader (Progress Bar style)
+        (function () {
+            const progressBar = document.getElementById('top-progress-bar');
             const loader = document.getElementById('global-page-loader');
-            if (loader) {
-                // We add a tiny 300ms delay just so the user sees the animation briefly
-                setTimeout(() => {
-                    loader.classList.add('fade-out');
-                }, 50);
+
+            if (progressBar) {
+                // Initial progress to show it started
+                setTimeout(() => progressBar.style.width = '30%', 10);
+                setTimeout(() => progressBar.style.width = '70%', 200);
             }
-        });
+
+            window.addEventListener('load', function () {
+                if (progressBar) progressBar.style.width = '100%';
+                setTimeout(() => {
+                    if (loader) loader.classList.add('fade-out');
+                }, 100);
+            });
+        })();
 
         function toggleUserMenu() {
             const dropdown = document.getElementById('userDropdown');
@@ -189,27 +238,27 @@
                 if (dropdown) dropdown.classList.remove('show');
             }
         });
-           
+
         /* --- Replace your existing openModal function with this --- */
-function openModal(id) {
-    const modal = document.getElementById(id); // Look for the "Box"
-    
-    if (modal) {
-        // We found it! (You are on the Profile page)
-        modal.style.display = 'flex';
-    } else {
-        // Not found! (You are on Home/Cart/Products)
-        // Take the user to the Profile page where the box exists
-        window.location.href = '/user/profile'; 
-    }
-}
+        function openModal(id) {
+            const modal = document.getElementById(id); // Look for the "Box"
 
-/* Add this too, to close the modal */
-function closeModal(id) {
-    const modal = document.getElementById(id);
-    if (modal) modal.style.display = 'none';
-}
+            if (modal) {
+                // We found it! (You are on the Profile page)
+                modal.style.display = 'flex';
+            } else {
+                // Not found! (You are on Home/Cart/Products)
+                // Take the user to the Profile page where the box exists
+                window.location.href = '/user/profile';
+            }
+        }
 
-    
+        /* Add this too, to close the modal */
+        function closeModal(id) {
+            const modal = document.getElementById(id);
+            if (modal) modal.style.display = 'none';
+        }
+
+
 
     </script>
