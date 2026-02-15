@@ -1,40 +1,41 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify OTP</title>
-
-    <!-- CSS -->
     <link rel="stylesheet" href="/css/user/homestyle.css">
 
 
-</head>
-
-<body>
 
 
     <%- include('../partials/header') %>
 
         <!-- Hero Section -->
         <section class="hero">
-            <div class="hero-slider">
-                <div class="slide active">
-                    <div class="container">
-                        <div class="hero-content">
-                            <h1>Summer Vibes Sale.</h1>
-                            <p class="hero-discount">Up to 30% Off</p>
-                            <p class="hero-subtitle">All outdoor activities shoes. Find your best fit!</p>
-                            <div class="hero-buttons">
-                                <button class="btn-primary">Shop Sale</button>
-                                <button class="btn-secondary">View All</button>
-                            </div>
+          <div class="hero-slider">
+    <% if (banners && banners.length > 0) { %>
+        <% banners.forEach((banner, index) => { %>
+            <div class="slide <%= index === 0 ? 'active' : '' %>" 
+                 style="background: url('<%= banner.image %>') no-repeat center center; background-size: cover;">
+                <div class="container">
+                    <div class="hero-content">
+                        <h1><%= banner.title %></h1>
+                        <p class="hero-discount"><%= banner.subtitle %></p>
+                        <div class="hero-buttons">
+                            <a href="<%= banner.link %>" class="btn-primary">Shop Now</a>
                         </div>
-                        <div class="hero-image">👟</div>
                     </div>
                 </div>
             </div>
+        <% }) %>
+    <% } else { %>
+        <!-- Default slide if no banners exist -->
+        <div class="slide active">
+            <div class="container">
+                <div class="hero-content">
+                    <h1>Welcome to SoleStyle</h1>
+                    <p class="hero-discount">Step into Luxury</p>
+                </div>
+            </div>
+        </div>
+    <% } %>
+</div>
             <button class="slider-nav prev" onclick="changeSlide(-1)">&#10094;</button>
             <button class="slider-nav next" onclick="changeSlide(1)">&#10095;</button>
             <div class="slider-dots">

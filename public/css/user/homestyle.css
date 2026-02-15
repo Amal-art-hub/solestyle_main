@@ -31,7 +31,7 @@ body {
     align-items: center;
     justify-content: space-between;
     gap: 30px;
-     position: relative;
+    position: relative;
 }
 
 .logo a {
@@ -135,7 +135,8 @@ body {
 
 
 /* Change this line to include both badges */
-.cart-badge, .wishlist-badge { 
+.cart-badge,
+.wishlist-badge {
     position: absolute;
     top: 0;
     right: 0;
@@ -180,7 +181,8 @@ body {
 
 /* User Dropdown */
 .user-menu-container {
-    position: static; /* Untraps the menu from the icon */
+    position: static;
+    /* Untraps the menu from the icon */
 }
 
 .user-menu-trigger {
@@ -189,15 +191,20 @@ body {
 
 .user-dropdown {
     display: none;
-    position: fixed;         /* CHANGE THIS: It now looks at the monitor edge */
-    top: 70px;               /* Adjust this to sit right below the header */
-    right: 0 !important;     /* SUCCESS: This snaps it to the absolute far-right monitor edge */
+    position: fixed;
+    /* CHANGE THIS: It now looks at the monitor edge */
+    top: 70px;
+    /* Adjust this to sit right below the header */
+    right: 0 !important;
+    /* SUCCESS: This snaps it to the absolute far-right monitor edge */
     background: #fff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border-radius: 8px 0 0 8px; /* Curve only the left side for a sleek look */
+    border-radius: 8px 0 0 8px;
+    /* Curve only the left side for a sleek look */
     min-width: 250px;
     padding: 10px 0;
-    z-index: 10000;          /* Make sure it's on top of everything */
+    z-index: 10000;
+    /* Make sure it's on top of everything */
 }
 
 .user-dropdown.show {
@@ -244,14 +251,78 @@ body {
 /* Hero Section */
 .hero {
     position: relative;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: #fff;
-    padding: 100px 0;
     overflow: hidden;
+    background: #000;
+    /* Dark fallback */
+}
+
+.hero-slider {
+    position: relative;
+    width: 100%;
+}
+
+.slide {
+    display: none;
+    /* Hidden by default */
+    width: 100%;
+    min-height: 600px;
+    /* Slightly taller for more presence */
+    padding: 60px 0 80px 0;
+    /* Bottom padding gives space from edge */
+    align-items: flex-end;
+    /* SUCCESS: Pushes content to the bottom */
+    background-size: cover !important;
+    background-position: center !important;
+    position: relative;
+}
+
+/* Add a subtle dark overlay so text is always readable */
+.slide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    /* 30% dark overlay */
+    z-index: 1;
+}
+
+.slide .container {
+    position: relative;
+    z-index: 2;
+    margin-left: 60px;
+    /* Align to the left side of the screen */
+    margin-bottom: 60px;
+    /* Offset from the bottom edge */
+    margin-right: auto;
+    /* Push away from the right */
+}
+
+.slide.active {
+    display: flex;
+    /* Show only the active slide */
+    animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 .hero-content {
     max-width: 600px;
+    text-align: left;
+    /* Ensure text stays left-aligned */
+    margin-bottom: 20px;
+    /* Space above dots if they overlap */
 }
 
 .hero h1 {
@@ -333,6 +404,7 @@ body {
     cursor: pointer;
     font-size: 18px;
     transition: background 0.3s;
+    z-index: 10;
 }
 
 .slider-nav:hover {
@@ -354,6 +426,7 @@ body {
     transform: translateX(-50%);
     display: flex;
     gap: 10px;
+    z-index: 10;
 }
 
 .dot {
@@ -985,10 +1058,12 @@ a.btn-primary-small {
 
 /* MODERN SWEETALERT STYLE - Global Override */
 div:where(.swal2-container) div:where(.swal2-popup) {
-    border-radius: 16px !important; /* Modern rounded corners */
+    border-radius: 16px !important;
+    /* Modern rounded corners */
     padding: 24px !important;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.1) !important;
-    font-family: 'Outfit', sans-serif !important; /* Matches your site font */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1) !important;
+    font-family: 'Outfit', sans-serif !important;
+    /* Matches your site font */
 }
 
 /* Title Styling */
@@ -1006,7 +1081,8 @@ div:where(.swal2-container) .swal2-html-container {
 
 /* Buttons */
 div:where(.swal2-container) button:where(.swal2-confirm) {
-    background-color: #111 !important; /* Black button */
+    background-color: #111 !important;
+    /* Black button */
     border-radius: 8px !important;
     box-shadow: none !important;
     font-weight: 500 !important;
@@ -1024,7 +1100,8 @@ div:where(.swal2-container) button:where(.swal2-cancel) {
 
 div:where(.swal2-container) button:where(.swal2-confirm):focus,
 div:where(.swal2-container) button:where(.swal2-cancel):focus {
-    box-shadow: none !important; /* Remove blue glow */
+    box-shadow: none !important;
+    /* Remove blue glow */
 }
 
 
@@ -1040,15 +1117,18 @@ div:where(.swal2-container) button:where(.swal2-cancel):focus {
 div:where(.swal2-container).swal2-backdrop-show,
 div:where(.swal2-container).swal2-noanimation {
     background: rgba(0, 0, 0, 0.4) !important;
-    backdrop-filter: blur(8px) !important; /* The "Premium" Glass Effect */
+    backdrop-filter: blur(8px) !important;
+    /* The "Premium" Glass Effect */
 }
 
 /* The Popup Card */
 div:where(.swal2-container) div:where(.swal2-popup) {
-    border-radius: 24px !important; /* Very round corners */
+    border-radius: 24px !important;
+    /* Very round corners */
     padding: 32px !important;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.15) !important; /* Deep, soft shadow */
-    border: 1px solid rgba(255,255,255,0.8) !important;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+    /* Deep, soft shadow */
+    border: 1px solid rgba(255, 255, 255, 0.8) !important;
     font-family: 'Outfit', sans-serif !important;
     background: #ffffff !important;
 }
@@ -1056,7 +1136,8 @@ div:where(.swal2-container) div:where(.swal2-popup) {
 /* Icons (Success, Error, etc) */
 div:where(.swal2-icon) {
     border-width: 3px !important;
-    transform: scale(1.1); /* Slightly larger */
+    transform: scale(1.1);
+    /* Slightly larger */
     margin-bottom: 20px !important;
 }
 
@@ -1088,11 +1169,12 @@ div:where(.swal2-actions) {
 div:where(.swal2-container) button:where(.swal2-confirm) {
     background: #111 !important;
     color: #fff !important;
-    border-radius: 50px !important; /* Pill shape */
+    border-radius: 50px !important;
+    /* Pill shape */
     padding: 14px 32px !important;
     font-size: 1rem !important;
     font-weight: 600 !important;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
     transition: transform 0.2s, box-shadow 0.2s !important;
     width: auto !important;
     min-width: 120px !important;
@@ -1100,7 +1182,7 @@ div:where(.swal2-container) button:where(.swal2-confirm) {
 
 div:where(.swal2-container) button:where(.swal2-confirm):hover {
     transform: translateY(-2px) !important;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* Cancel Button (The secondary action) */
@@ -1126,9 +1208,16 @@ div:where(.swal2-container) button:where(.swal2-cancel):hover {
 
 /* --- RUNNING SHOE LOADER --- */
 #global-page-loader {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background-color: #ffffff; z-index: 99999;
-    display: flex; justify-content: center; align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #ffffff;
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 #global-page-loader.fade-out {
@@ -1172,28 +1261,59 @@ div:where(.swal2-container) button:where(.swal2-cancel):hover {
 }
 
 @keyframes shoe-run {
-    0% { left: 0; transform: rotate(-10deg); }
-    50% { left: 80%; transform: rotate(10deg); }
-    100% { left: 0; transform: rotate(-10deg); }
+    0% {
+        left: 0;
+        transform: rotate(-10deg);
+    }
+
+    50% {
+        left: 80%;
+        transform: rotate(10deg);
+    }
+
+    100% {
+        left: 0;
+        transform: rotate(-10deg);
+    }
 }
 
 @keyframes track-glide {
-    0% { left: 0; width: 20px; }
-    50% { left: 80%; width: 50px; }
-    100% { left: 0; width: 20px; }
+    0% {
+        left: 0;
+        width: 20px;
+    }
+
+    50% {
+        left: 80%;
+        width: 50px;
+    }
+
+    100% {
+        left: 0;
+        width: 20px;
+    }
 }
 
 /* Top Progress Bar */
 #top-progress-bar {
-    position: fixed; top: 0; left: 0; height: 3px;
-    background: #111; width: 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: #111;
+    width: 0;
     z-index: 100000;
     animation: progress-fast 2s ease-out forwards;
 }
 
 @keyframes progress-fast {
-    0% { width: 0; }
-    100% { width: 90%; }
+    0% {
+        width: 0;
+    }
+
+    100% {
+        width: 90%;
+    }
 }
 
 /* Keep this for your user portal dropdown */

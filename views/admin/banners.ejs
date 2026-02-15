@@ -2,6 +2,8 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link rel="stylesheet" href="/css/admin/bannerManag.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 
 <body>
     <div class="container">
@@ -20,7 +22,7 @@
                 <div class="card mb-4" style="padding: 20px;">
                     <h4>Add New Slider Banner</h4>
                     <p class="text-muted small">These images appear in the main carousel on the home page.</p>
-                    <form id="addBannerForm" enctype="multipart/form-data">
+                    <form id="addBannerForm" method="POST" enctype="multipart/form-data">
                         <div class="form-group">
                             <label>Banner Image</label>
                             <input type="file" name="image" class="form-control" required accept="image/*" />
@@ -172,6 +174,18 @@
             </form>
         </div>
     </div>
+
+    <div id="cropperModal" class="modal" style="display:none; z-index: 2000;">
+    <div class="modal-content" style="max-width: 800px;">
+        <div class="img-container">
+            <img id="cropperImage" src="" style="max-width: 100%;">
+        </div>
+        <div class="mt-3">
+            <button id="cropButton" class="btn-search">Save Crop</button>
+            <button onclick="closeCropModal()" class="btn-secondary">Cancel</button>
+        </div>
+    </div>
+</div>
 
     <script src="/js/admin/bannerManag.js"></script>
 </body>

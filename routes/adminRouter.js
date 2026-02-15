@@ -12,6 +12,7 @@ import * as coupenController from "../controllers/admin/coupenController.js";
 import * as salesController from "../controllers/admin/salesController.js";
 import * as dashBoardcontroller from "../controllers/admin/dashBoardcontroller.js";
 import * as ledgerController from "../controllers/admin/ledgerController.js";
+import * as bannerController from "../controllers/admin/bannerController.js";
 
 import { upload, variantUpload, bannerUpload, variantCloudUpload } from "../middlewares/admin-mid/multer.js";
 import { isAdminLoggedIn } from "../middlewares/admin-mid/admin-auth.js";
@@ -85,5 +86,9 @@ router.get("/sales-report/download/excel", isAdminLoggedIn, salesController.down
 router.get("/sales-report/download/pdf", isAdminLoggedIn, salesController.downloadPDF);
 
 router.get("/ledger", isAdminLoggedIn, ledgerController.loadLedger);
+
+
+router.get("/banners",isAdminLoggedIn,bannerController.getBannerPagecont);
+router.post("/banners/add",isAdminLoggedIn,bannerUpload.single("image"),bannerController.addBannerCont);
 
 export default router;

@@ -13,6 +13,8 @@ import {
 } from "../../services/userSer/userService.js";
 
 import { getTrendingProducts } from "../../services/userSer/productUserServices.js";
+import Banner from "../../models/Banner.js";
+import BrandSection from "../../models/BrandSection.js";
 import User from "../../models/user.js";
 import 'dotenv/config';
 import statusCode from "../../utils/statusCodes.js";
@@ -26,9 +28,14 @@ export const loadHomepage = async (req, res) => {
   try {
     const data = getHomepageDate();
     const trendingData = await getTrendingProducts();
+
+        const banners = await Banner.find({ status: 'active' }).sort({ order: 1 });
+    const brandSection = await BrandSection.findOne();
     return res.render("home", {
       ...data,
       trending: trendingData,
+            banners: banners,               // 🚀 AND PASS THIS
+      brandSection: brandSection || {},
       user: req.session.user || null,
     });
   } catch (error) {
