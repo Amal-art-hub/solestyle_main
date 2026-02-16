@@ -273,32 +273,57 @@ export const getProductDetailService = async (productId) => {
 };
 
 export const getTrendingProducts = async () => {
-    const fetchByCategory = async (categoryName) => {
-        const category = await Category.findOne({ name: categoryName, isListed: true });
-        if (!category) return [];
+    const categoryNames = ["Men", "Women", "Kids"];
 
-        const products = await Product.find({ categoryId: category._id, isListed: true })
-            .sort({ createdAt: -1 })
-            .limit(10)
-            .lean();
+    // 1. Fetch categories in batch
+    const categories = await Category.find({
+        name: { $in: categoryNames },
+        isListed: true
+    }).lean();
 
-        if (products.length === 0) return [];
+    if (categories.length === 0) return { men: [], women: [], kids: [] };
 
-        // Batch fetch ONE variant for each product to find the best price/image
-        const productIds = products.map(p => p._id);
-        const variants = await Variant.find({
-            productId: { $in: productIds },
-            isListed: true
-        }).sort({ price: 1 }).lean();
+    const categoryMap = categories.reduce((acc, cat) => {
+        acc[cat.name] = cat._id;
+        return acc;
+    }, {});
 
-        // Group variants by productId
-        const variantMap = variants.reduce((acc, v) => {
-            const pid = v.productId.toString();
-            if (!acc[pid]) acc[pid] = v; // First one (cheapest due to sort)
-            return acc;
-        }, {});
+    // 2. Fetch products for all categories in batch
+    const allProducts = await Product.find({
+        categoryId: { $in: categories.map(c => c._id) },
+        isListed: true
+    }).sort({ createdAt: -1 }).lean();
 
-        const processed = products.map(p => {
+    // 3. Group products by category and limit to 10 each for variant fetching
+    const productsByCategory = {
+        Men: allProducts.filter(p => p.categoryId.toString() === categoryMap["Men"]?.toString()).slice(0, 10),
+        Women: allProducts.filter(p => p.categoryId.toString() === categoryMap["Women"]?.toString()).slice(0, 10),
+        Kids: allProducts.filter(p => p.categoryId.toString() === categoryMap["Kids"]?.toString()).slice(0, 10)
+    };
+
+    const allProductIds = [
+        ...productsByCategory.Men.map(p => p._id),
+        ...productsByCategory.Women.map(p => p._id),
+        ...productsByCategory.Kids.map(p => p._id)
+    ];
+
+    if (allProductIds.length === 0) return { men: [], women: [], kids: [] };
+
+    // 4. Batch fetch variants for ALL trending products
+    const allVariants = await Variant.find({
+        productId: { $in: allProductIds },
+        isListed: true
+    }).sort({ price: 1 }).lean();
+
+    // Create a map of first (cheapest) variant for each product
+    const variantMap = allVariants.reduce((acc, v) => {
+        const pid = v.productId.toString();
+        if (!acc[pid]) acc[pid] = v;
+        return acc;
+    }, {});
+
+    const processProducts = (products) => {
+        return products.map(p => {
             const variant = variantMap[p._id.toString()];
             if (variant) {
                 return {
@@ -309,16 +334,12 @@ export const getTrendingProducts = async () => {
                 };
             }
             return null;
-        });
-
-        return processed.filter(p => p !== null).slice(0, 3);
+        }).filter(p => p !== null).slice(0, 3);
     };
 
-    const [men, women, kids] = await Promise.all([
-        fetchByCategory("Men"),
-        fetchByCategory("Women"),
-        fetchByCategory("Kids")
-    ]);
-
-    return { men, women, kids };
+    return {
+        men: processProducts(productsByCategory.Men),
+        women: processProducts(productsByCategory.Women),
+        kids: processProducts(productsByCategory.Kids)
+    };
 };

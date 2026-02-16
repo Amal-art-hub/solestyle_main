@@ -260,12 +260,17 @@ body {
 .hero-slider {
     position: relative;
     width: 100%;
+    aspect-ratio: 16 / 7;
+    min-height: 400px;
+    background: #f4f4f4;
+    /* Light gray instead of black */
+    overflow: hidden;
 }
 
 .slide {
     display: none;
     width: 100%;
-    min-height: 750px;
+    height: 100%;
     padding: 0;
     align-items: flex-end;
     justify-content: flex-start;

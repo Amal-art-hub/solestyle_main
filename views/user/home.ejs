@@ -1,163 +1,166 @@
-<link rel="stylesheet" href="/css/user/homestyle.css">
+<% const optimizeUrl=(url)=> {
+    if (typeof url === 'string' && url.includes('cloudinary.com')) {
+    return url.replace('/upload/', '/upload/f_auto,q_auto,w_1200,c_fill/');
+    }
+    return url || '';
+    };
+    %>
 
+    <%- include('../partials/header') %>
 
-
-
-<%- include('../partials/header') %>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-slider">
-            <% if (banners && banners.length> 0) { %>
-                <% banners.forEach((banner, index)=> { %>
-                    <div class="slide <%= index === 0 ? 'active' : '' %>">
-                        <img src="<%= banner.image %>" alt="<%= banner.title %>" class="slide-img" <%=index===0
-                            ? 'fetchpriority="high"' : 'loading="lazy"' %>>
-                        <div class="container">
-                            <div class="hero-content">
-                                <h1>
-                                    <%= banner.title %>
-                                </h1>
-                                <p class="hero-discount">
-                                    <%= banner.subtitle %>
-                                </p>
-                                <div class="hero-buttons">
-                                    <a href="<%= banner.link %>" class="btn-primary">Shop Now</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <% }) %>
-                        <% } else { %>
-                            <!-- Default slide if no banners exist -->
-                            <div class="slide active">
-                                <div class="container">
-                                    <div class="hero-content">
-                                        <h1>Welcome to SoleStyle</h1>
-                                        <p class="hero-discount">Step into Luxury</p>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-slider">
+                <% if (banners && banners.length> 0) { %>
+                    <% banners.forEach((banner, index)=> { %>
+                        <div class="slide <%= index === 0 ? 'active' : '' %>">
+                            <img src="<%= optimizeUrl(banner.image) %>" alt="<%= banner.title %>" class="slide-img"
+                                <%=index===0 ? 'fetchpriority="high"' : 'loading="lazy"' %>>
+                            <div class="container">
+                                <div class="hero-content">
+                                    <h1>
+                                        <%= banner.title %>
+                                    </h1>
+                                    <p class="hero-discount">
+                                        <%= banner.subtitle %>
+                                    </p>
+                                    <div class="hero-buttons">
+                                        <a href="<%= banner.link %>" class="btn-primary">Shop Now</a>
                                     </div>
                                 </div>
                             </div>
-                            <% } %>
-        </div>
-        <button class="slider-nav prev" onclick="changeSlide(-1)">&#10094;</button>
-        <button class="slider-nav next" onclick="changeSlide(1)">&#10095;</button>
-        <div class="slider-dots">
-            <span class="dot active" onclick="goToSlide(0)"></span>
-            <span class="dot" onclick="goToSlide(1)"></span>
-            <span class="dot" onclick="goToSlide(2)"></span>
-        </div>
-    </section>
+                        </div>
+                        <% }) %>
+                            <% } else { %>
+                                <!-- Default slide if no banners exist -->
+                                <div class="slide active">
+                                    <div class="container">
+                                        <div class="hero-content">
+                                            <h1>Welcome to SoleStyle</h1>
+                                            <p class="hero-discount">Step into Luxury</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% } %>
+            </div>
+            <button class="slider-nav prev" onclick="changeSlide(-1)">&#10094;</button>
+            <button class="slider-nav next" onclick="changeSlide(1)">&#10095;</button>
+            <div class="slider-dots">
+                <span class="dot active" onclick="goToSlide(0)"></span>
+                <span class="dot" onclick="goToSlide(1)"></span>
+                <span class="dot" onclick="goToSlide(2)"></span>
+            </div>
+        </section>
 
-    <!-- Experience Section -->
-    <section class="experience">
-        <div class="container">
-            <h2>Experience SoleStyle</h2>
-            <p class="subtitle">Get behind the scenes and discover what makes us. Because it's more. This is our
-                story - told by us to you.</p>
+        <!-- Experience Section -->
+        <section class="experience">
+            <div class="container">
+                <h2>Experience SoleStyle</h2>
+                <p class="subtitle">Get behind the scenes and discover what makes us. Because it's more. This is our
+                    story - told by us to you.</p>
 
-            <div class="video-box">
-                <button class="play-btn">
-                    <svg width="64" height="64" viewBox="0 0 24 24" fill="white">
-                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                    </svg>
-                </button>
-                <div class="video-info">
-                    <h3>The Art of the Sole</h3>
-                    <p>Discover how we craft shoes that stand the test with innovative materials and meticulous
-                        artisanship.</p>
+                <div class="video-box">
+                    <button class="play-btn">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="white">
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                        </svg>
+                    </button>
+                    <div class="video-info">
+                        <h3>The Art of the Sole</h3>
+                        <p>Discover how we craft shoes that stand the test with innovative materials and meticulous
+                            artisanship.</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- New 3-Column Grid -->
-    <div class="category-grid-container" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 150px;">
+        <!-- New 3-Column Grid -->
+        <div class="category-grid-container" style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 150px;">
 
-        <!-- Column 1: Men -->
-        <div class="category-column">
-            <h3 style="text-align: center; margin-bottom: 15px;">Men's Trending</h3>
-            <% if (trending.men && trending.men.length> 0) { %>
-                <% trending.men.forEach(product=> { %>
-                    <!-- Reuse your existing product-card HTML here -->
-                    <div class="product-card">
-                        <!-- ... Insert your Product Card Code ... -->
-                        <div class="product-image">
-                            <a href="/product/<%= product._id %>">
-                                <img src="<%= product.image.startsWith('http') ? product.image : '/uploads/variant-images/' + product.image %>"
-                                    alt="<%= product.name %>" loading="lazy"
-                                    style="width: 100%; height: 250px; object-fit: cover;">
-                            </a>
+            <!-- Column 1: Men -->
+            <div class="category-column">
+                <h3 style="text-align: center; margin-bottom: 15px;">Men's Trending</h3>
+                <% if (trending.men && trending.men.length> 0) { %>
+                    <% trending.men.forEach(product=> { %>
+                        <!-- Reuse your existing product-card HTML here -->
+                        <div class="product-card">
+                            <!-- ... Insert your Product Card Code ... -->
+                            <div class="product-image">
+                                <a href="/product/<%= product._id %>">
+                                    <img src="<%= optimizeUrl(product.image.startsWith('http') ? product.image : '/uploads/variant-images/' + product.image) %>"
+                                        alt="<%= product.name %>" loading="lazy"
+                                        style="width: 100%; height: 250px; object-fit: cover;">
+                                </a>
+                            </div>
+                            <div class="product-info">
+                                <h4>
+                                    <%= product.name %>
+                                </h4>
+                                <p>₹<%= product.price %>
+                                </p>
+                            </div>
                         </div>
-                        <div class="product-info">
-                            <h4>
-                                <%= product.name %>
-                            </h4>
-                            <p>₹<%= product.price %>
-                            </p>
+                        <% }) %>
+                            <% } %>
+            </div>
+            <!-- Column 2: Women -->
+            <div class="category-column">
+                <h3 style="text-align: center; margin-bottom: 15px;">Women's Trending</h3>
+                <% if (trending.women && trending.women.length> 0) { %>
+                    <% trending.women.forEach(product=> { %>
+                        <!-- Reuse product-card HTML -->
+                        <div class="product-card">
+                            <!-- ... Product Card Content ... -->
+                            <div class="product-image">
+                                <a href="/product/<%= product._id %>">
+                                    <img src="<%= optimizeUrl(product.image.startsWith('http') ? product.image : '/uploads/variant-images/' + product.image) %>"
+                                        alt="<%= product.name %>" loading="lazy"
+                                        style="width: 100%; height: 250px; object-fit: cover;">
+                                </a>
+                            </div>
+                            <div class="product-info">
+                                <h4>
+                                    <%= product.name %>
+                                </h4>
+                                <p>₹<%= product.price %>
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                    <% }) %>
-                        <% } %>
+                        <% }) %>
+                            <% } %>
+            </div>
+            <!-- Column 3: Kids -->
+            <div class="category-column">
+                <h3 style="text-align: center; margin-bottom: 15px;">Kids' Trending</h3>
+                <% if (trending.kids && trending.kids.length> 0) { %>
+                    <% trending.kids.forEach(product=> { %>
+                        <!-- Reuse product-card HTML -->
+                        <div class="product-card">
+                            <!-- ... Product Card Content ... -->
+                            <div class="product-image">
+                                <a href="/product/<%= product._id %>">
+                                    <img src="<%= optimizeUrl(product.image.startsWith('http') ? product.image : '/uploads/variant-images/' + product.image) %>"
+                                        alt="<%= product.name %>" loading="lazy"
+                                        style="width: 100%; height: 250px; object-fit: cover;">
+                                </a>
+                            </div>
+                            <div class="product-info">
+                                <h4>
+                                    <%= product.name %>
+                                </h4>
+                                <p>₹<%= product.price %>
+                                </p>
+                            </div>
+                        </div>
+                        <% }) %>
+                            <% } %>
+            </div>
         </div>
-        <!-- Column 2: Women -->
-        <div class="category-column">
-            <h3 style="text-align: center; margin-bottom: 15px;">Women's Trending</h3>
-            <% if (trending.women && trending.women.length> 0) { %>
-                <% trending.women.forEach(product=> { %>
-                    <!-- Reuse product-card HTML -->
-                    <div class="product-card">
-                        <!-- ... Product Card Content ... -->
-                        <div class="product-image">
-                            <a href="/product/<%= product._id %>">
-                                <img src="<%= product.image.startsWith('http') ? product.image : '/uploads/variant-images/' + product.image %>"
-                                    alt="<%= product.name %>" loading="lazy"
-                                    style="width: 100%; height: 250px; object-fit: cover;">
-                            </a>
-                        </div>
-                        <div class="product-info">
-                            <h4>
-                                <%= product.name %>
-                            </h4>
-                            <p>₹<%= product.price %>
-                            </p>
-                        </div>
-                    </div>
-                    <% }) %>
-                        <% } %>
-        </div>
-        <!-- Column 3: Kids -->
-        <div class="category-column">
-            <h3 style="text-align: center; margin-bottom: 15px;">Kids' Trending</h3>
-            <% if (trending.kids && trending.kids.length> 0) { %>
-                <% trending.kids.forEach(product=> { %>
-                    <!-- Reuse product-card HTML -->
-                    <div class="product-card">
-                        <!-- ... Product Card Content ... -->
-                        <div class="product-image">
-                            <a href="/product/<%= product._id %>">
-                                <img src="<%= product.image.startsWith('http') ? product.image : '/uploads/variant-images/' + product.image %>"
-                                    alt="<%= product.name %>" loading="lazy"
-                                    style="width: 100%; height: 250px; object-fit: cover;">
-                            </a>
-                        </div>
-                        <div class="product-info">
-                            <h4>
-                                <%= product.name %>
-                            </h4>
-                            <p>₹<%= product.price %>
-                            </p>
-                        </div>
-                    </div>
-                    <% }) %>
-                        <% } %>
-        </div>
-    </div>
 
-    </section>
+        </section>
 
-    <!-- Trending Chappals -->
-    <!-- <section class="products light-bg">
+        <!-- Trending Chappals -->
+        <!-- <section class="products light-bg">
             <div class="container">
                 <div class="section-header">
                     <div>
@@ -246,8 +249,8 @@
             </div>
         </section> -->
 
-    <!-- Latest Crocs -->
-    <!-- <section class="products">
+        <!-- Latest Crocs -->
+        <!-- <section class="products">
             <div class="container">
                 <div class="section-header">
                     <div>
@@ -299,58 +302,58 @@
             </div>
         </section> -->
 
-    <!-- Why Choose Section -->
-    <section class="why-choose">
-        <div class="container">
-            <h2>Why Choose SoleStyle?</h2>
-            <p class="subtitle">We're not the first to do it, this. We, a pioneer of crafted, utility, art in style.
-            </p>
+        <!-- Why Choose Section -->
+        <section class="why-choose">
+            <div class="container">
+                <h2>Why Choose SoleStyle?</h2>
+                <p class="subtitle">We're not the first to do it, this. We, a pioneer of crafted, utility, art in style.
+                </p>
 
-            <div class="features-grid">
-                <div class="feature">
-                    <div class="feature-icon blue">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <rect x="1" y="3" width="15" height="13"></rect>
-                            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-                            <circle cx="5.5" cy="18.5" r="2.5"></circle>
-                            <circle cx="18.5" cy="18.5" r="2.5"></circle>
-                        </svg>
+                <div class="features-grid">
+                    <div class="feature">
+                        <div class="feature-icon blue">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <rect x="1" y="3" width="15" height="13"></rect>
+                                <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                            </svg>
+                        </div>
+                        <h3>Comfort Technology</h3>
+                        <p>We prioritize your comfort with advanced cushioning and ergonomic support in every step you
+                            take.</p>
                     </div>
-                    <h3>Comfort Technology</h3>
-                    <p>We prioritize your comfort with advanced cushioning and ergonomic support in every step you
-                        take.</p>
-                </div>
 
-                <div class="feature">
-                    <div class="feature-icon green">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <path
-                                d="M12 2a10 10 0 0 0-9.95 9h11.64L9.74 7.05a1 1 0 0 1 1.41-1.41l5.66 5.65a1 1 0 0 1 0 1.42l-5.66 5.65a1 1 0 0 1-1.41-1.41L13.69 13H2.05A10 10 0 1 0 12 2z">
-                            </path>
-                        </svg>
+                    <div class="feature">
+                        <div class="feature-icon green">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path
+                                    d="M12 2a10 10 0 0 0-9.95 9h11.64L9.74 7.05a1 1 0 0 1 1.41-1.41l5.66 5.65a1 1 0 0 1 0 1.42l-5.66 5.65a1 1 0 0 1-1.41-1.41L13.69 13H2.05A10 10 0 1 0 12 2z">
+                                </path>
+                            </svg>
+                        </div>
+                        <h3>Sustainable Materials</h3>
+                        <p>Eco-friendly choices with recycled materials, reducing environmental impact without
+                            compromising on quality.</p>
                     </div>
-                    <h3>Sustainable Materials</h3>
-                    <p>Eco-friendly choices with recycled materials, reducing environmental impact without
-                        compromising on quality.</p>
-                </div>
 
-                <div class="feature">
-                    <div class="feature-icon purple">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <circle cx="12" cy="10" r="3"></circle>
-                            <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"></path>
-                        </svg>
+                    <div class="feature">
+                        <div class="feature-icon purple">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <circle cx="12" cy="10" r="3"></circle>
+                                <path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"></path>
+                            </svg>
+                        </div>
+                        <h3>Artisan Designs</h3>
+                        <p>Unique designs crafted with attention to detail by skilled artisans creating footwear that
+                            stands out.</p>
                     </div>
-                    <h3>Artisan Designs</h3>
-                    <p>Unique designs crafted with attention to detail by skilled artisans creating footwear that
-                        stands out.</p>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <%- include('../partials/footer') %>
+        <%- include('../partials/footer') %>

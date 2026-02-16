@@ -27,19 +27,23 @@ export const pageNotFound = (req, res) => {
 export const loadHomepage = async (req, res) => {
   try {
     const data = getHomepageDate();
-    const trendingData = await getTrendingProducts();
 
-        const banners = await Banner.find({ status: 'active' }).sort({ order: 1 });
-    const brandSection = await BrandSection.findOne();
+    // Parallelize all database calls
+    const [trendingData, banners, brandSection] = await Promise.all([
+      getTrendingProducts(),
+      Banner.find({ status: 'active' }).sort({ order: 1 }),
+      BrandSection.findOne()
+    ]);
+
     return res.render("home", {
       ...data,
       trending: trendingData,
-            banners: banners,               // 🚀 AND PASS THIS
+      banners: banners,
       brandSection: brandSection || {},
       user: req.session.user || null,
     });
   } catch (error) {
-    console.log("Home page not found:", error);
+    console.log("Home page error:", error);
     res.status(statusCode.INTERNAL_SERVER_ERROR).send("Server error");
   }
 };
