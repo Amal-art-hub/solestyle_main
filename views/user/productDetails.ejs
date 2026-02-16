@@ -232,7 +232,7 @@
                                 <!-- <a href="/product/<%= p._id %>"> -->
                                 <a href="/product/<%= p._id %>?variantId=<%= p.variantId %>">
                                     <img src="<%= (p.image && p.image.startsWith('http')) ? p.image : (p.image ? '/uploads/variant-images/' + p.image : '/images/placeholder.jpg') %>"
-                                        alt="<%= p.name %>">
+                                        alt="<%= p.name %>" loading="lazy">
                                     <div class="info">
                                         <h3>
                                             <%= p.name %>

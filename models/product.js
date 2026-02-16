@@ -27,4 +27,8 @@ const productSchema = new mongoose.Schema({
   }
 }, { timestamps: true });
 
+productSchema.index({ categoryId: 1 });
+productSchema.index({ brandId: 1 });
+productSchema.index({ isListed: 1 });
+
 export default mongoose.model("Product", productSchema);

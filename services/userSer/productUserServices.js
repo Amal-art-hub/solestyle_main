@@ -11,16 +11,16 @@ export const getFilterOptions = async () => {
     return { brands };
 };
 
-export const calculateFinalPrice = async (product, originalPrice,activeOffers = null) => {
+export const calculateFinalPrice = async (product, originalPrice, activeOffers = null) => {
     const today = new Date();
 
     if (!activeOffers) {
-     activeOffers = await Offers.find({
-        status: "active",
-        start_date: { $lte: today },
-        end_date: { $gte: today }
-    });
-}
+        activeOffers = await Offers.find({
+            status: "active",
+            start_date: { $lte: today },
+            end_date: { $gte: today }
+        });
+    }
 
     let bestDiscount = 0;
     let isExpiringSoon = false;
@@ -159,7 +159,7 @@ export const getProductsByCategory = async (categoryId, page = 1, limit = 12, se
     const totalProducts = metadata.length > 0 ? metadata[0].total : 0;
     const products = result[0].data;
 
-        const today = new Date();
+    const today = new Date();
     const activeOffers = await Offers.find({
         status: "active",
         start_date: { $lte: today },
@@ -168,7 +168,7 @@ export const getProductsByCategory = async (categoryId, page = 1, limit = 12, se
 
     const processedProducts = await Promise.all(products.map(async (p) => {
         const variant = p.variantDetails;
-        const { finalPrice, bestDiscount, isExpiringSoon } = await calculateFinalPrice(p, variant.price,activeOffers);
+        const { finalPrice, bestDiscount, isExpiringSoon } = await calculateFinalPrice(p, variant.price, activeOffers);
 
         return {
             ...p,
@@ -198,10 +198,18 @@ export const getProductDetailService = async (productId) => {
         .lean();
 
     if (!product) return null;
+
+    // Fetch offers once
+    const activeOffers = await Offers.find({
+        startDate: { $lte: new Date() },
+        endDate: { $gte: new Date() },
+        isListed: true
+    }).lean();
+
     let variants = await Variant.find({ productId: product._id, isListed: true }).sort({ price: 1 }).lean();
 
     variants = await Promise.all(variants.map(async (v) => {
-        const { finalPrice, bestDiscount } = await calculateFinalPrice(product, v.price);
+        const { finalPrice, bestDiscount } = await calculateFinalPrice(product, v.price, activeOffers);
         return {
             ...v,
             discountedPrice: finalPrice,
@@ -216,12 +224,30 @@ export const getProductDetailService = async (productId) => {
         isListed: true
     }).limit(4).lean();
 
-    const relatedWithImage = (await Promise.all(related.map(async (p) => {
-        const v = await Variant.findOne({ productId: p._id }).sort({ price: 1 });
+    if (related.length === 0) {
+        return { product, variants, relatedProducts: [], reviews: [], avgRating: 0 };
+    }
+
+    // Batch fetch variants for related products
+    const relatedIds = related.map(p => p._id);
+    const relatedVariants = await Variant.find({
+        productId: { $in: relatedIds },
+        isListed: true
+    }).sort({ price: 1 }).lean();
+
+    // Group related variants by productId
+    const relatedVariantMap = relatedVariants.reduce((acc, v) => {
+        const pid = v.productId.toString();
+        if (!acc[pid]) acc[pid] = v;
+        return acc;
+    }, {});
+
+    const relatedWithImage = await Promise.all(related.map(async (p) => {
+        const v = relatedVariantMap[p._id.toString()];
         if (!v) return null;
 
         const basePrice = v.price || 0;
-        const { finalPrice, bestDiscount } = await calculateFinalPrice(p, basePrice);
+        const { finalPrice, bestDiscount } = await calculateFinalPrice(p, basePrice, activeOffers);
         return {
             ...p,
             image: v.images[2] || v.images[0],
@@ -230,7 +256,8 @@ export const getProductDetailService = async (productId) => {
             discount: bestDiscount,
             variantId: v._id
         };
-    }))).filter(p => p !== null);
+    }));
+    const filteredRelated = relatedWithImage.filter(p => p !== null);
 
     const reviews = await Feedback.find({ product_id: product._id })
         .populate("user_id", "name")
@@ -242,20 +269,37 @@ export const getProductDetailService = async (productId) => {
         const sum = reviews.reduce((acc, curr) => acc + curr.rating, 0);
         avgRating = (sum / reviews.length).toFixed(1);
     }
-    return { product, variants, relatedProducts: relatedWithImage, reviews, avgRating };
+    return { product, variants, relatedProducts: filteredRelated, reviews, avgRating };
 };
 
 export const getTrendingProducts = async () => {
     const fetchByCategory = async (categoryName) => {
         const category = await Category.findOne({ name: categoryName, isListed: true });
         if (!category) return [];
+
         const products = await Product.find({ categoryId: category._id, isListed: true })
             .sort({ createdAt: -1 })
             .limit(10)
             .lean();
 
-        const processed = await Promise.all(products.map(async (p) => {
-            const variant = await Variant.findOne({ productId: p._id, isListed: true }).sort({ price: 1 });
+        if (products.length === 0) return [];
+
+        // Batch fetch ONE variant for each product to find the best price/image
+        const productIds = products.map(p => p._id);
+        const variants = await Variant.find({
+            productId: { $in: productIds },
+            isListed: true
+        }).sort({ price: 1 }).lean();
+
+        // Group variants by productId
+        const variantMap = variants.reduce((acc, v) => {
+            const pid = v.productId.toString();
+            if (!acc[pid]) acc[pid] = v; // First one (cheapest due to sort)
+            return acc;
+        }, {});
+
+        const processed = products.map(p => {
+            const variant = variantMap[p._id.toString()];
             if (variant) {
                 return {
                     ...p,
@@ -265,7 +309,7 @@ export const getTrendingProducts = async () => {
                 };
             }
             return null;
-        }));
+        });
 
         return processed.filter(p => p !== null).slice(0, 3);
     };

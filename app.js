@@ -13,8 +13,10 @@ import db from "./config/db.js";
 import userRouter from "./routes/userRouter.js";
 import adminRouter from "./routes/adminRouter.js";
 import errorHandler from "./middlewares/errorHandler.js";
+import compression from "compression";
 
 const app = express();
+app.use(compression());
 
 // --- THE ESM __DIRNAME TRICK ---
 const __filename = fileURLToPath(import.meta.url);

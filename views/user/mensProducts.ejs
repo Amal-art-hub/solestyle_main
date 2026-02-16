@@ -110,7 +110,7 @@
                                 <!-- NEW: Image Badge -->
                                 <div class="image-wrapper" style="position: relative;">
                                     <img src="<%= p.image.startsWith('http') ? p.image : '/uploads/variant-images/' + p.image %>"
-                                        alt="<%= p.name %>">
+                                        alt="<%= p.name %>" loading="lazy" class="product-image">
                                     <% if (p.discount> 0) { %>
                                         <span style="
                     position: absolute;

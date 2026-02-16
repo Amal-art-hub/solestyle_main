@@ -8,15 +8,20 @@
         <%= typeof title !=='undefined' ? title : 'SoleStyle - Premium Footwear' %>
     </title>
 
+
     <!-- External CSS -->
     <link rel="stylesheet" href="/css/user/homestyle.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-    <!-- CRITICAL INLINE CSS: This stops the "writing" flash instantly -->
-    <style>
-        /* debugging */
-        /* 
+    <!-- LCP Preload -->
+    <% if (typeof banners !=='undefined' && banners && banners.length> 0) { %>
+        <link rel="preload" as="image" href="<%= banners[0].image %>" fetchpriority="high">
+        <% } %>
+            <!-- CRITICAL INLINE CSS: This stops the "writing" flash instantly -->
+            <style>
+                /* debugging */
+                /* 
 .container { border: 2px solid blue !important; }        
 .header-content { border: 2px solid cyan !important; }   
 .header-actions { border: 2px solid yellow !important; } 
@@ -26,63 +31,63 @@
 
 
 
-        #global-page-loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background-color: transparent;
-            z-index: 99999;
-            transition: opacity 0.4s ease, visibility 0.4s;
-        }
+                #global-page-loader {
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 4px;
+                    background-color: transparent;
+                    z-index: 99999;
+                    transition: opacity 0.4s ease, visibility 0.4s;
+                }
 
-        #top-progress-bar {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #ff4d4d, #f9cb28);
-            box-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
-            transition: width 0.3s ease;
-            position: relative;
-        }
+                #top-progress-bar {
+                    height: 100%;
+                    width: 0%;
+                    background: linear-gradient(90deg, #ff4d4d, #f9cb28);
+                    box-shadow: 0 0 10px rgba(255, 77, 77, 0.5);
+                    transition: width 0.3s ease;
+                    position: relative;
+                }
 
-        #global-page-loader.fade-out {
-            opacity: 0;
-            visibility: hidden;
-        }
+                #global-page-loader.fade-out {
+                    opacity: 0;
+                    visibility: hidden;
+                }
 
-        .runner-track {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 5px 12px;
-            border-radius: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #333;
-            border: 1px solid #eee;
-        }
+                .runner-track {
+                    position: absolute;
+                    top: 10px;
+                    right: 20px;
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    background: rgba(255, 255, 255, 0.9);
+                    padding: 5px 12px;
+                    border-radius: 20px;
+                    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                    font-size: 0.8rem;
+                    font-weight: 600;
+                    color: #333;
+                    border: 1px solid #eee;
+                }
 
-        .shoe-runner {
-            animation: runner 0.8s infinite alternate ease-in-out;
-            display: inline-block;
-        }
+                .shoe-runner {
+                    animation: runner 0.8s infinite alternate ease-in-out;
+                    display: inline-block;
+                }
 
-        @keyframes runner {
-            from {
-                transform: translateX(0) rotate(-10deg);
-            }
+                @keyframes runner {
+                    from {
+                        transform: translateX(0) rotate(-10deg);
+                    }
 
-            to {
-                transform: translateX(5px) rotate(10deg);
-            }
-        }
-    </style>
+                    to {
+                        transform: translateX(5px) rotate(10deg);
+                    }
+                }
+            </style>
 </head>
 
 <body>
