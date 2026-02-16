@@ -23,8 +23,15 @@
 }
 
 @keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-3px); }
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-3px);
+    }
 }
 
 .breadcrumbs a {
@@ -94,7 +101,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, rgba(0,0,0,0.05) 0%, transparent 100%);
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.05) 0%, transparent 100%);
     opacity: 0;
     transition: opacity 0.3s ease;
 }
@@ -105,12 +112,12 @@
 
 .thumbnail-wrapper:hover {
     transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .thumbnail-wrapper.active {
     border-color: #000;
-    box-shadow: 0 0 0 3px rgba(0,0,0,0.1);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
 }
 
 .thumbnail-wrapper img {
@@ -136,12 +143,12 @@
     align-items: center;
     justify-content: center;
     border: 1px solid #e5e7eb;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
     transition: all 0.3s ease;
 }
 
 .main-image-wrapper:hover {
-    box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
 }
 
 .main-image-wrapper::before {
@@ -157,8 +164,15 @@
 }
 
 @keyframes shimmer {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
 }
 
 .main-image-wrapper img {
@@ -188,6 +202,7 @@
         opacity: 0;
         transform: translateX(-20px);
     }
+
     to {
         opacity: 1;
         transform: translateX(0);
@@ -260,8 +275,15 @@
 }
 
 @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
 }
 
 .description-box {
@@ -317,7 +339,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(0,0,0,0.05), transparent);
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.05), transparent);
     transition: left 0.5s ease;
 }
 
@@ -328,14 +350,14 @@
 .size-box:hover {
     border-color: #666;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .size-box.selected {
     background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
     color: white;
     border-color: #000;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     transform: scale(1.05);
 }
 
@@ -378,7 +400,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(0,0,0,0.03), transparent);
+    background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.03), transparent);
     transition: left 0.5s ease;
 }
 
@@ -389,14 +411,14 @@
 .color-btn:hover {
     border-color: #666;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .color-btn.active {
     border-color: #000;
     background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
     color: white;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 /* Utility to hide sizes that don't match the selected color */
@@ -436,7 +458,7 @@
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
     transition: left 0.5s ease;
 }
 
@@ -448,12 +470,12 @@
 .btn-add-cart {
     background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
     color: white;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .btn-add-cart:hover {
     transform: translateY(-3px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
 .btn-add-cart:active {
@@ -464,14 +486,14 @@
     background: #fff;
     color: #333;
     border: 2px solid #e5e7eb;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .btn-buy-now:hover {
     background: #fafafa;
     border-color: #d1d5db;
     transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
 }
 
 .btn-wishlist {
@@ -546,13 +568,28 @@
     animation: bounce 2s ease-in-out infinite;
 }
 
-.info-item:nth-child(1) i { animation-delay: 0s; }
-.info-item:nth-child(2) i { animation-delay: 0.2s; }
-.info-item:nth-child(3) i { animation-delay: 0.4s; }
+.info-item:nth-child(1) i {
+    animation-delay: 0s;
+}
+
+.info-item:nth-child(2) i {
+    animation-delay: 0.2s;
+}
+
+.info-item:nth-child(3) i {
+    animation-delay: 0.4s;
+}
 
 @keyframes bounce {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-3px); }
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-3px);
+    }
 }
 
 /* Related Products */
@@ -597,13 +634,41 @@
     border: 1px solid #e5e7eb;
 }
 
+.product-card.small a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.product-card.small .info h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+    transition: color 0.3s ease;
+}
+
+.product-card.small:hover .info h3 {
+    color: #000;
+}
+
+.product-card.small .info .price {
+    font-size: 15px;
+    font-weight: 600;
+    color: #666;
+}
+
 .product-card.small:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(0,0,0,0.1);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
 }
 
 .product-card.small img {
     height: 200px;
+    width: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    margin-bottom: 12px;
     transition: transform 0.3s ease;
 }
 
@@ -621,7 +686,7 @@
     cursor: none;
     display: none;
     background-repeat: no-repeat;
-    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
     pointer-events: none;
     z-index: 10;
 }
