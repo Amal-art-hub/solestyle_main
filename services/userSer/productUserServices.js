@@ -11,13 +11,16 @@ export const getFilterOptions = async () => {
     return { brands };
 };
 
-export const calculateFinalPrice = async (product, originalPrice) => {
+export const calculateFinalPrice = async (product, originalPrice,activeOffers = null) => {
     const today = new Date();
-    const activeOffers = await Offers.find({
+
+    if (!activeOffers) {
+     activeOffers = await Offers.find({
         status: "active",
         start_date: { $lte: today },
         end_date: { $gte: today }
     });
+}
 
     let bestDiscount = 0;
     let isExpiringSoon = false;
@@ -156,9 +159,16 @@ export const getProductsByCategory = async (categoryId, page = 1, limit = 12, se
     const totalProducts = metadata.length > 0 ? metadata[0].total : 0;
     const products = result[0].data;
 
+        const today = new Date();
+    const activeOffers = await Offers.find({
+        status: "active",
+        start_date: { $lte: today },
+        end_date: { $gte: today }
+    });
+
     const processedProducts = await Promise.all(products.map(async (p) => {
         const variant = p.variantDetails;
-        const { finalPrice, bestDiscount, isExpiringSoon } = await calculateFinalPrice(p, variant.price);
+        const { finalPrice, bestDiscount, isExpiringSoon } = await calculateFinalPrice(p, variant.price,activeOffers);
 
         return {
             ...p,
