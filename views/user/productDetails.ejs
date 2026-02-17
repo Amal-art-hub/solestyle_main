@@ -170,11 +170,10 @@
                             <button class="btn-add-cart" onclick="addToCart()">
                                 <i class="fa fa-shopping-cart"></i> Add to Cart
                             </button>
-                            <button class="btn-buy-now">Buy Now</button>
-                            <!-- <button class="checkout-btn"   >
-                                    
-                                    Proceed to Checkout
-                                </button> -->
+                            <button class="btn-buy-now" <%= currentVariant.stock === 0 ? 'disabled' : '' %>
++         onclick="buyNow()">
++         Buy now</button></button>
+                          
                             <button class="btn-wishlist" onclick="addToWishlist()"><i class="fa fa-heart"></i></button>
                         </div>
 

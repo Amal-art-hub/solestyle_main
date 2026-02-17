@@ -200,11 +200,11 @@ export const getProductDetailService = async (productId) => {
     if (!product) return null;
 
     // Fetch offers once
-    const activeOffers = await Offers.find({
-        startDate: { $lte: new Date() },
-        endDate: { $gte: new Date() },
-        isListed: true
-    }).lean();
+   const activeOffers = await Offers.find({
+    status: "active",
+    start_date: { $lte: new Date() },
+    end_date: { $gte: new Date() }
+}).lean();
 
     let variants = await Variant.find({ productId: product._id, isListed: true }).sort({ price: 1 }).lean();
 

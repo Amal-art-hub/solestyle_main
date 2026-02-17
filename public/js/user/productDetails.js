@@ -269,6 +269,36 @@ async function addToWishlist() {
 }
 
 
+async function buyNow() {
+    const variantId = document.getElementById("selectedVariantId").value;
+    if (!variantId) {
+        Swal.fire({ icon: "warning", title: "Please select a size", toast: true, position: "top-end", showConfirmButton: false, timer: 3000 });
+        return;
+    }
+
+    try {
+        // Step 1: Add to cart
+        const response = await axios.post("/cart/add", { variantId, quantity: 1 });
+        
+        if (response.data.success) {
+            // Step 2: Redirect to checkout on success
+            window.location.href = "/checkout";
+        }
+    } catch (error) {
+        if (error.response?.status === 401) {
+            window.location.href = "/login";
+        } else {
+            Swal.fire({ 
+                icon: "error", 
+                title: "Wait...", 
+                text: error.response?.data?.message || "Something went wrong" 
+            });
+        }
+    }
+}
+
+
+
 
 
 
