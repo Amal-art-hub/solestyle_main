@@ -13,6 +13,7 @@ import crypto from "crypto";
 import Order from "../../models/orders.js";
 import Payment from "../../models/payment.js";
 import Cart from "../../models/cart.js";
+import Coupon from "../../models/Coupen.js";
 
 export const loadCheckout = async (req, res) => {
     try {
@@ -164,6 +165,62 @@ export const paymentFailed = async (req, res) => {
     }
 };
 
+// export const verifyRazorpayWebhook = async (req, res) => {
+
+//     try {
+//         const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
+
+//         const shasum = crypto.createHmac("sha256", secret);
+//         shasum.update(JSON.stringify(req.body));
+//         const digest = shasum.digest("hex");
+//         if (digest === req.headers["x-razorpay-signature"]) {
+//             console.log("Webhook Verified! Payment Captured.");
+
+//             const event = req.body;
+//             if (event.event === "payment.captured") {
+
+//                 const paymentDetails = event.payload.payment.entity;
+//                 const razorpayOrderId = paymentDetails.order_id;
+
+//                 const order = await Order.findOne({
+//                     razorpay_order_id: razorpayOrderId,
+//                 });
+//                 if (order && order.status === "Payment Pending") {
+
+//                     order.status = "pending";
+//                     order.items.forEach(item => { item.status = "pending"; });
+
+//                     const newPayment = new Payment({
+//                         user_id: order.user_id,
+//                         order_id: order._id,
+//                         payment_method: "Razorpay",
+//                         amount: order.final_total,
+//                         status: "completed",
+//                         transaction_id: paymentDetails.id
+//                     });
+//                     await newPayment.save();
+
+//                     order.payment_id = newPayment._id;
+//                     await order.save();
+
+//                     await Cart.findOneAndDelete({ user_id: order.user_id });
+
+//                     console.log(`SUCCESS: Order ${order.order_number} processed via Webhook`);
+//                 } else {
+//                     console.log("Order already processed or not found.");
+//                 }
+//             }
+//         } else {
+//             console.log("INVALID SIGNATURE: Webhook ignored.");
+//         }
+
+//         res.status(statusCode.OK).json({ status: "ok" });
+//     } catch (error) {
+//         console.error("Webhook Error:", error);
+//         res.status(200).json({ status: "error" });
+//     }
+// };
+
 export const verifyRazorpayWebhook = async (req, res) => {
     try {
         const secret = process.env.RAZORPAY_WEBHOOK_SECRET;
@@ -171,6 +228,7 @@ export const verifyRazorpayWebhook = async (req, res) => {
         const shasum = crypto.createHmac("sha256", secret);
         shasum.update(JSON.stringify(req.body));
         const digest = shasum.digest("hex");
+
         if (digest === req.headers["x-razorpay-signature"]) {
             console.log("Webhook Verified! Payment Captured.");
 
@@ -183,8 +241,9 @@ export const verifyRazorpayWebhook = async (req, res) => {
                 const order = await Order.findOne({
                     razorpay_order_id: razorpayOrderId,
                 });
-                if (order && order.status === "Payment Pending") {
 
+                if (order && order.status === "Payment Pending") {
+                    // Update order status to successful
                     order.status = "pending";
                     order.items.forEach(item => { item.status = "pending"; });
 
@@ -201,6 +260,15 @@ export const verifyRazorpayWebhook = async (req, res) => {
                     order.payment_id = newPayment._id;
                     await order.save();
 
+                    // ✅ FIXED: Mark coupon as used after payment is confirmed
+                    if (order.coupon_id) {
+                        await Coupon.findByIdAndUpdate(order.coupon_id, {
+                            $addToSet: { used_by: order.user_id }
+                        });
+                        console.log(`SUCCESS: Coupon marked as used for order ${order.order_number}`);
+                    }
+
+                    // Clear the user's cart
                     await Cart.findOneAndDelete({ user_id: order.user_id });
 
                     console.log(`SUCCESS: Order ${order.order_number} processed via Webhook`);
@@ -218,6 +286,10 @@ export const verifyRazorpayWebhook = async (req, res) => {
         res.status(200).json({ status: "error" });
     }
 };
+
+
+
+
 
 export const retryPayment = async (req, res) => {
     try {

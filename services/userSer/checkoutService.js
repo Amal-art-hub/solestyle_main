@@ -19,10 +19,16 @@ export const getCheckoutData = async (userId) => {
             select: "name categoryId isListed isDeleted"
         });
 
-        const coupons = await Coupon.find({
-            expiry_date: { $gte: new Date() },
-            used_by: { $ne: userId }
-        });
+   
+const coupons = await Coupon.find({
+    status: "active",            
+    expiry_date: { $gte: new Date() },
+    used_by: { $ne: userId },      
+    $or: [
+        { userId: userId },        
+        { userId: null }          
+    ]
+});
 
         if (!cart) {
             return { cart: null, addresses: [], subtotal: 0, coupons: [] };
@@ -292,6 +298,7 @@ export const createRazorpayOrderService = async (userId, addressId, couponData) 
         subtotal: totalMrpPrice,
         offer_discount: totalOfferSaving,
         discount_amount: couponDiscount,
+        coupon_id: couponData ? couponData._id : null,
         final_total: finalPayable,
         order_number: order_number,
         address_id: addressId,

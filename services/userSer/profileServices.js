@@ -112,12 +112,17 @@ export const deleteAddressServic = async (addressId, userId) => {
 };
 
 export const getCoupons = async (userId) => {
-    const user = await User.findById(userId).select("wallet");
-    const walletBalance = user && user.wallet ? user.wallet.balance : 0;
-
-    return await Coupon.find({
-        isDeleted: false,
+    // We fetch coupons that are active and not yet expired.
+    // We check for both global coupons (userId: null) AND 
+    // the user's personal referral reward coupons.
+    
+  return await Coupon.find({
+        status: "active",
         expiry_date: { $gt: new Date() },
-        min_purchase_amount: { $lte: walletBalance }
+        used_by: { $ne: userId }, // NEW: Only show if NOT used by this user
+        $or: [
+            { userId: userId },
+            { userId: null }
+        ]
     });
 };
