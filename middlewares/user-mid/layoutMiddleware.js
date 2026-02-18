@@ -2,19 +2,25 @@ import Category from "../../models/category.js";
 import Cart from "../../models/cart.js";
 import Wishlist from "../../models/wishlist.js";
 
-export const loadCategories = async (req, res, next) => {
+export const loadLayoutData = async (req, res, next) => {
   try {
     
- const [menCategory, womenCategory, kidsCategory] = await Promise.all([
-    Category.findOne({ name: "Men", isListed: true }),
-    Category.findOne({ name: "Women", isListed: true }),
-    Category.findOne({ name: "Kids", isListed: true })
-]);
+//  const [menCategory, womenCategory, kidsCategory] = await Promise.all([
+//     Category.findOne({ name: "Men", isListed: true }),
+//     Category.findOne({ name: "Women", isListed: true }),
+//     Category.findOne({ name: "Kids", isListed: true })
+// ]);
 
+
+const allCategories=await Category.find({isListed:true});
+
+res.locals.categories=allCategories;
+
+    res.locals.user = req.session.user || null; 
    
-    res.locals.menCategoryId = menCategory?._id || "";
-    res.locals.womenCategoryId = womenCategory?._id || "";
-    res.locals.kidsCategoryId = kidsCategory?._id || "";
+    // res.locals.menCategoryId = menCategory?._id || "";
+    // res.locals.womenCategoryId = womenCategory?._id || "";
+    // res.locals.kidsCategoryId = kidsCategory?._id || "";
 
 
     if (req.session.user) {

@@ -3,7 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Men's Collection | SoleStyle</title>
+    <title>
+        <%= (products && products.length> 0) ? products[0].categoryId.name + "'s Collection" : "Collection" %> |
+            SoleStyle
+    </title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <link rel="stylesheet" href="/css/user/homestyle.css">
@@ -16,7 +19,7 @@
 
             <!-- Sidebar Filters -->
             <aside class="filters-sidebar">
-                <form action="/mens-products" method="GET">
+                <form action="/shop" method="GET">
                     <input type="hidden" name="category" value="<%= categoryId %>">
                     <input type="hidden" name="search" value="<%= search %>">
                     <input type="hidden" name="sort" value="<%= sort %>">
@@ -41,7 +44,7 @@
                     </div>
                     <div class="filter-actions">
                         <button type="submit">Apply</button>
-                        <a href="/mens-products?category=<%= categoryId %>">Clear</a>
+                        <a href="/shop?category=<%= categoryId %>">Clear</a>
                     </div>
                 </form>
             </aside>
@@ -50,7 +53,7 @@
 
                 <!-- Top Bar: Search & Sort -->
                 <div class="top-bar">
-                    <form action="/mens-products" method="GET" class="search-form">
+                    <form action="/shop" method="GET" class="search-form">
                         <input type="hidden" name="category" value="<%= categoryId %>">
                         <input type="text" name="search" placeholder="Search..." value="<%= search %>">
                         <button type="submit">🔍</button>

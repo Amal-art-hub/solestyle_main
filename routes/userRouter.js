@@ -12,9 +12,9 @@ import * as walletController from "../controllers/user/walletController.js";
 import * as wishlistController from "../controllers/user/wishlistController.js";
 
 import { checkUserStatus, isAuth } from "../middlewares/user-mid/user-auth.js";
-import { loadCategories } from "../middlewares/user-mid/categoryMiddleware.js";
+import { loadLayoutData } from "../middlewares/user-mid/layoutMiddleware.js";
 
-router.use(loadCategories);
+router.use(loadLayoutData);
 
 router.get("/pageNotFound", userController.pageNotFound);
 router.get("/", userController.loadHomepage);
@@ -50,14 +50,16 @@ router.post("/reset-password", userController.resetPassword);
 router.get("/logout", userController.logout);
 
 //mens products showing area
-router.get("/mens-products", checkUserStatus, productController.getMensProducts);
+// Replace lines 53, 57, 60 with:
+router.get("/shop", checkUserStatus, productController.shopCategory);
+
 router.get("/product/:id", checkUserStatus, productController.getProductDetails);
 
 //Women products showing area
-router.get("/womens-products", checkUserStatus, productController.getWomenProducts);
+// router.get("/womens-products", checkUserStatus, productController.getWomenProducts);
 
 //kids products showing
-router.get("/kids-products", checkUserStatus, productController.getKidsProducts);
+// router.get("/kids-products", checkUserStatus, productController.getKidsProducts);
 
 //---------------------------------------------------------------------------------------------profile
 //opening profile 

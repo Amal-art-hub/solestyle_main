@@ -129,7 +129,15 @@ export const updateQuantityService = async (userId, itemId, action) => {
     }).populate({
         path: "items.product_id",
         select: "name isDeleted isListed categoryId"
+        ,populate:{
+            path:"categoryId",
+            select:"name"
+        }
     });
+
+
+   
+
     if (!cart) throw new Error("Cart not found");
 
     const item = cart.items.id(itemId);
@@ -147,9 +155,19 @@ export const updateQuantityService = async (userId, itemId, action) => {
 
     if (newQty < 1) throw new Error("Quantity cannot be less than 1");
 
+
+    let category=item.product_id.categoryId.name;
+    let product=item.product_id.name;
+
+// if(product.toLowerCase()==="cortex" && newQty>2){
+//     throw new Error("Limited edition");
+// }
+
     if (newQty > MAX_QTY_PER_PERSON) {
         throw new Error(`Maximum limit is${MAX_QTY_PER_PERSON} per customer`);
     }
+
+if(category && category.name)
 
     if (newQty > variant.stock) {
         throw new Error(`Out of Stock! Only${variant.stock} available.`);

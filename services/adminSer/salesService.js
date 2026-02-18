@@ -9,8 +9,11 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const getSalesReport = async ({ period, startDate, endDate, page = 1, limit = 6, isDownload = false }) => {
+  
     let matchStage = {
         status: "delivered",
+       
+
     };
 
     const now = new Date();
@@ -29,6 +32,8 @@ export const getSalesReport = async ({ period, startDate, endDate, page = 1, lim
         };
     }
 
+
+    
     const pipeline = [
         { $match: matchStage },
         {

@@ -42,13 +42,13 @@
                             <% data.forEach(user=> { %>
                                 <tr>
                                     <td>
-                                        <%= user.name.toUpperCase() %>
+                                        <%= user.name %>
                                     </td>
                                     <td>
                                         <%= user.email %>
                                     </td>
                                     <td>
-                                        <%= user.phone && user.phone.toString().length===10?user.phone:"N/A" %>
+                                        <%= user.phone && user.phone.toString().length===10?user.phone:"N/A"  %>
                                     </td>
                                     <td>
                                         <% if(user.isBlock) { %>

@@ -4,7 +4,7 @@ import {
 } from "../../services/userSer/productUserServices.js";
 import statusCode from "../../utils/statusCodes.js";
 
-export const getMensProducts = async (req, res) => {
+export const shopCategory  = async (req, res) => {
     try {
         const categoryId = req.query.category;
 
@@ -30,7 +30,7 @@ export const getMensProducts = async (req, res) => {
             sort,
             filters,
             categoryId,
-            user: req.session.user || null
+            // user: req.session.user || null
         });
 
     } catch (error) {
@@ -61,72 +61,72 @@ export const getProductDetails = async (req, res) => {
     }
 };
 
-export const getWomenProducts = async (req, res) => {
-    try {
-        const categoryId = req.query.category;
+// export const getWomenProducts = async (req, res) => {
+//     try {
+//         const categoryId = req.query.category;
 
-        if (!categoryId) {
-            return res.redirect("/");
-        }
+//         if (!categoryId) {
+//             return res.redirect("/");
+//         }
 
-        const page = parseInt(req.query.page) || 1;
-        const search = req.query.search || "";
-        const sort = req.query.sort || "newest";
+//         const page = parseInt(req.query.page) || 1;
+//         const search = req.query.search || "";
+//         const sort = req.query.sort || "newest";
 
-        const filters = {
-            brand: req.query.brand,
-            minPrice: req.query.minPrice,
-            maxPrice: req.query.maxPrice
-        };
+//         const filters = {
+//             brand: req.query.brand,
+//             minPrice: req.query.minPrice,
+//             maxPrice: req.query.maxPrice
+//         };
 
-        const data = await getProductsByCategory(categoryId, page, 12, search, sort, filters);
+//         const data = await getProductsByCategory(categoryId, page, 12, search, sort, filters);
 
-        res.status(statusCode.OK).render("mensProducts", {
-            ...data,
-            search,
-            sort,
-            filters,
-            categoryId,
-            user: req.session.user || null
-        });
+//         res.status(statusCode.OK).render("mensProducts", {
+//             ...data,
+//             search,
+//             sort,
+//             filters,
+//             categoryId,
+//             user: req.session.user || null
+//         });
 
-    } catch (error) {
-        console.error(error);
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send("Server Error");
-    }
-};
+//     } catch (error) {
+//         console.error(error);
+//         res.status(statusCode.INTERNAL_SERVER_ERROR).send("Server Error");
+//     }
+// };
 
-export const getKidsProducts = async (req, res) => {
-    try {
-        const categoryId = req.query.category;
+// export const getKidsProducts = async (req, res) => {
+//     try {
+//         const categoryId = req.query.category;
 
-        if (!categoryId) {
-            return res.redirect("/");
-        }
+//         if (!categoryId) {
+//             return res.redirect("/");
+//         }
 
-        const page = parseInt(req.query.page) || 1;
-        const search = req.query.search || "";
-        const sort = req.query.sort || "newest";
+//         const page = parseInt(req.query.page) || 1;
+//         const search = req.query.search || "";
+//         const sort = req.query.sort || "newest";
 
-        const filters = {
-            brand: req.query.brand,
-            minPrice: req.query.minPrice,
-            maxPrice: req.query.maxPrice
-        };
+//         const filters = {
+//             brand: req.query.brand,
+//             minPrice: req.query.minPrice,
+//             maxPrice: req.query.maxPrice
+//         };
 
-        const data = await getProductsByCategory(categoryId, page, 12, search, sort, filters);
+//         const data = await getProductsByCategory(categoryId, page, 12, search, sort, filters);
 
-        res.status(statusCode.OK).render("mensProducts", {
-            ...data,
-            search,
-            sort,
-            filters,
-            categoryId,
-            user: req.session.user || null
-        });
+//         res.status(statusCode.OK).render("mensProducts", {
+//             ...data,
+//             search,
+//             sort,
+//             filters,
+//             categoryId,
+//             user: req.session.user || null
+//         });
 
-    } catch (error) {
-        console.error(error);
-        res.status(statusCode.INTERNAL_SERVER_ERROR).send("Server Error");
-    }
-};
+//     } catch (error) {
+//         console.error(error);
+//         res.status(statusCode.INTERNAL_SERVER_ERROR).send("Server Error");
+//     }
+// };
