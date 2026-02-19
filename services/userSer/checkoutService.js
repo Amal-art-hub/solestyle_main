@@ -19,16 +19,16 @@ export const getCheckoutData = async (userId) => {
             select: "name categoryId isListed isDeleted"
         });
 
-   
-const coupons = await Coupon.find({
-    status: "active",            
-    expiry_date: { $gte: new Date() },
-    used_by: { $ne: userId },      
-    $or: [
-        { userId: userId },        
-        { userId: null }          
-    ]
-});
+
+        const coupons = await Coupon.find({
+            status: "active",
+            expiry_date: { $gte: new Date() },
+            used_by: { $ne: userId },
+            $or: [
+                { userId: userId },
+                { userId: null }
+            ]
+        });
 
         if (!cart) {
             return { cart: null, addresses: [], subtotal: 0, coupons: [] };
@@ -147,8 +147,9 @@ export const placeOrderService = async (userId, addressId, paymentMethod, coupon
             product_id: item.product_id,
             variant_id: item.variant_id._id,
             quantity: item.quantity,
-            unit_price: finalPrice,
+           
             original_price: originalMRP,
+             unit_price: finalPrice,
             total_amount: itemOfferTotal,
             name_snapshot: item.name_snapshot,
             variant_snapshot: `Size:${variant.size}, Color:${variant.color}`,
@@ -199,6 +200,9 @@ export const placeOrderService = async (userId, addressId, paymentMethod, coupon
         items: orderItems,
         payment_id: null
     });
+
+
+  
 
     await newOrder.save();
 
@@ -271,6 +275,8 @@ export const createRazorpayOrderService = async (userId, addressId, couponData) 
             status: "Payment Pending"
         });
     }
+
+    
 
     let totalOfferSaving = totalMrpPrice - totalOfferPrice;
     let couponDiscount = couponData ? couponData.discount : 0;

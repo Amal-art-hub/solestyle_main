@@ -201,20 +201,30 @@
                     <div class="card">
                         <h3>Payment Summary</h3>
                         <div class="summary-row">
-                            <span>Subtotal</span>
-                            <span>₹<%= order.subtotal %></span>
+                            <span>M.R.P</span>
+                            <span>₹<%= order.subtotal.toFixed(2) %></span>
                         </div>
                         <div class="summary-row">
-                            <span>Discount</span>
-                            <span>- ₹<%= order.discount_amount %></span>
+                            <span>Offer Discount</span>
+                            <span>- ₹<%= order.offer_discount.toFixed(2) %></span>
+                        </div>
+                         <div class="summary-row">
+                            <span>Coupen Discount</span>
+                            <span>- ₹<%= order.discount_amount.toFixed(2) %></span>
                         </div>
                         <div class="summary-row">
                             <span>Shipping</span>
                             <span>Free</span>
                         </div>
+
+                        <% const totalSavings = order.offer_discount + order.discount_amount; %>
+                        <div class="summary-row" style="color: #27ae60; font-weight: bold; background: #f9f9f9; padding: 5px; border-radius: 4px;">
+                            <span>Total Savings</span>
+                            <span>₹<%=totalSavings.toFixed(2)%></span>
+                        </div>
                         <div class="summary-row total-row">
                             <span>Grand Total</span>
-                            <span>₹<%= order.final_total %></span>
+                            <span>₹<%= order.final_total.toFixed(2) %></span>
                         </div>
                         <p style="margin-top:10px; font-size:0.85rem; color:#666;">
                             Payment Method: <strong>

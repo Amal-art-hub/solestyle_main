@@ -10,13 +10,13 @@ async function updateQty(itemId, action) {
             // A. Update the Quantity display for this specific item
             const qtyElement = document.getElementById(`qty-display-${itemId}`);
             if (qtyElement) {
-                qtyElement.innerText = response.data.newQty; 
+                qtyElement.innerText = response.data.newQty;
             }
 
             // B. Update the Final Totals in the summary box
             const totalElement = document.getElementById("cart-total");
             const subtotalElement = document.getElementById("cart-subtotal");
-            
+
             if (totalElement) totalElement.innerText = "₹" + response.data.cartTotal;
             if (subtotalElement) subtotalElement.innerText = "₹" + response.data.cartTotal;
 
@@ -43,10 +43,10 @@ async function updateQty(itemId, action) {
         }
     } catch (error) {
         // Handle Errors (Out of Stock, Max Limit per person, etc.)
-        const msg = error.response && error.response.data 
-            ? error.response.data.message 
+        const msg = error.response && error.response.data
+            ? error.response.data.message
             : "Cannot update quantity";
-            
+
         Swal.fire({
             icon: "warning",
             title: "Limit Reached",
@@ -73,7 +73,7 @@ async function removeItem(itemId) {
     if (result.isConfirmed) {
         try {
             const response = await axios.delete(`/cart/remove/${itemId}`);
-            
+
             if (response.data.success) {
                 Swal.fire({
                     icon: "success",
@@ -90,13 +90,13 @@ async function removeItem(itemId) {
 
 
 function proceedToCheckout() {
-   
+
     const loader = document.getElementById("global-page-loader");
     if (loader) {
         loader.classList.remove("fade-out");
     }
-    
-    
+
+
     window.location.href = "/checkout";
 }
 

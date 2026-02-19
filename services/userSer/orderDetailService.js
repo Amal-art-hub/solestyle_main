@@ -1,3 +1,4 @@
+import { ConsoleMessage } from "puppeteer";
 import Order from "../../models/orders.js";
 import Variant from "../../models/varient.js";
 import { creditWallet } from "./walletService.js";
@@ -24,44 +25,141 @@ export const getOrderDetailsService = async (orderId, userId) => {
     }
 };
 
+// export const cancelOrderItemService = async (orderId, itemId, reason) => {
+//     const order = await Order.findById(orderId);
+
+
+//     if (!order) throw new Error("Order not found");
+
+//     const item = order.items.id(itemId);
+//     if (!item) throw new Error("Item not found");
+//       if (item.status === "canceled") throw new Error("Item already canceled");
+//     if (["shipped", "delivered"].includes(order.status)) {
+//         throw new Error(`Cannot cancel item when order is ${order.status}`);
+//     }
+
+
+//      const totalPreCoupon = order.subtotal - order.offer_discount;
+
+
+
+ 
+
+//     const itemOfferSavings=(item.original_price-item.unit_price*item.quantity);
+
+//     order.offer_discount-=itemOfferSavings;
+
+
+// const AfterOffrPrice=order.subtotal-order.offer_discount;
+//     const itemDiscountRatio = item.total_amount / AfterOffrPrice;
+//     const actualRefundAmount = item.total_amount - (order.discount_amount * itemDiscountRatio);
+
+//     order.final_total -= item.total_amount;
+//         console.log(order.subtotal );
+//     console.log(item.original_price);
+//     order.subtotal -= (item.original_price*item.quantity);
+//     order.discount_amount -= (order.discount_amount * itemDiscountRatio);
+//     order.final_total-=item.total_amount;
+    
+//     order.offer_discount-=item.original_price-item.unit_price;
+//     console.log(order.offer_discount);
+
+//     item.status = "canceled";
+//     item.cancellation_reason = reason;
+
+//     await Variant.findByIdAndUpdate(item.variant_id, { $inc: { stock: item.quantity } });
+
+//     if (order.payment_method !== "COD") {
+//         await creditWallet(
+//             order.user_id,
+//             Math.round(actualRefundAmount),
+//             `Refund for cancellation of item in Order #${order.order_number}`
+//         );
+//     }
+
+//     const allItemsCanceled = order.items.every(itm => itm.status === "canceled");
+//     if (allItemsCanceled) {
+//         order.status = "canceled";
+//         order.cancellation_reason = reason;
+//     }
+
+//     await order.save();
+//     return { success: true, message: "Item canceled successfully" };
+// };
+
 export const cancelOrderItemService = async (orderId, itemId, reason) => {
+    // 1. Fetch Order and Item
     const order = await Order.findById(orderId);
     if (!order) throw new Error("Order not found");
 
     const item = order.items.id(itemId);
     if (!item) throw new Error("Item not found");
+    
+    // 2. Safety Guards
     if (item.status === "canceled") throw new Error("Item already canceled");
-    if (order.status === "delivered") throw new Error("Cannot cancel delivered item");
+    if (["shipped", "delivered"].includes(order.status)) {
+        throw new Error(`Cannot cancel item when order is ${order.status}`);
+    }
 
-    const itemDiscountRatio = item.total_amount / order.subtotal;
-    const actualRefundAmount = item.total_amount - (order.discount_amount * itemDiscountRatio);
 
-    order.final_total -= actualRefundAmount;
-    order.subtotal -= item.total_amount;
-    order.discount_amount -= (order.discount_amount * itemDiscountRatio);
 
+    // A. Pre-Coupon Total (This is the price the coupon was acting on)
+    const orderTotalBeforeCoupon = order.subtotal - order.offer_discount;
+
+    // B. Calculate Coupon Share (What part of the coupon does this item 'own'?)
+    const itemRatio = item.total_amount / orderTotalBeforeCoupon;
+    const couponShareForThisItem = order.discount_amount * itemRatio;
+
+    // C. Calculate Offer Savings (The 'Ghost Discount' we need to remove)
+    const itemOfferSavings = (item.original_price * item.quantity) - item.total_amount;
+
+    // D. Update Database Fields (Subtracting all 3 components)
+    order.subtotal -= (item.original_price * item.quantity);
+     console.log(itemOfferSavings);
+    order.offer_discount -= itemOfferSavings; 
+    
+    console.log(order.offer_discount);
+    order.discount_amount -= couponShareForThisItem;      
+
+    // E. The Safety Net: Synchronize the Grand Total
+    
+    order.final_total = Math.max(0, order.subtotal - order.offer_discount - order.discount_amount + (order.delivery_charge || 0));
+
+    // F. Calculate Wallet Refund
+    const refundAmount = item.total_amount - couponShareForThisItem;
+
+
+
+    // 3. Update Status and Return Stock
     item.status = "canceled";
     item.cancellation_reason = reason;
-
     await Variant.findByIdAndUpdate(item.variant_id, { $inc: { stock: item.quantity } });
 
-    if (order.payment_method !== "COD") {
+    // 4. Handle Wallet Refund
+    if (order.payment_method !== "COD" && order.status !== "Payment Failed") {
         await creditWallet(
             order.user_id,
-            Math.round(actualRefundAmount),
-            `Refund for cancellation of item in Order #${order.order_number}`
+            Math.round(refundAmount), // Using Round for whole numbers in Wallet
+            `Refund for cancellation of ${item.name_snapshot} (Order #${order.order_number})`
         );
     }
 
-    const allItemsCanceled = order.items.every(itm => itm.status === "canceled");
-    if (allItemsCanceled) {
+    // 5. If all items are canceled, cancel the entire order status
+    const allCanceled = order.items.every(itm => itm.status === "canceled");
+    if (allCanceled) {
         order.status = "canceled";
         order.cancellation_reason = reason;
     }
 
+    // 6. Save and Finish
     await order.save();
-    return { success: true, message: "Item canceled successfully" };
+    return { success: true, message: "Item canceled and refund processed correctly." };
 };
+
+
+
+
+
 
 export const cancelOrderService = async (orderId, reason) => {
     const order = await Order.findById(orderId);
