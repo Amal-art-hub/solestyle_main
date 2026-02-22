@@ -52,6 +52,7 @@ router.get("/logout", userController.logout);
 //mens products showing area
 // Replace lines 53, 57, 60 with:
 router.get("/shop", checkUserStatus, productController.shopCategory);
+router.get("/search-suggestions", checkUserStatus, productController.getSearchSuggestions);
 
 router.get("/product/:id", checkUserStatus, productController.getProductDetails);
 
@@ -119,8 +120,8 @@ router.get("/user/orders/invoice/:orderId", isAuth, checkUserStatus, orderDetail
 
 //-----------------------------------------------------------------------------------------wallet
 router.get("/user/wallet", isAuth, checkUserStatus, walletController.loadWalletPage);
-router.post("/user/wallet/topup/create-order",isAuth,checkUserStatus,walletController.createTopupOrder);
-router.post("/user/wallet/topup/verify",isAuth,checkUserStatus,walletController.verifyTopupPayment);
+router.post("/user/wallet/topup/create-order", isAuth, checkUserStatus, walletController.createTopupOrder);
+router.post("/user/wallet/topup/verify", isAuth, checkUserStatus, walletController.verifyTopupPayment);
 
 //wishlist
 router.get("/user/wishlist", isAuth, checkUserStatus, wishlistController.loadWishlist);

@@ -1,10 +1,11 @@
 import {
     getProductsByCategory,
     getProductDetailService,
+    getSearchSuggestions as getSuggestionsService
 } from "../../services/userSer/productUserServices.js";
 import statusCode from "../../utils/statusCodes.js";
 
-export const shopCategory  = async (req, res) => {
+export const shopCategory = async (req, res) => {
     try {
         const categoryId = req.query.category;
 
@@ -130,3 +131,14 @@ export const getProductDetails = async (req, res) => {
 //         res.status(statusCode.INTERNAL_SERVER_ERROR).send("Server Error");
 //     }
 // };
+
+export const getSearchSuggestions = async (req, res) => {
+    try {
+        const query = req.query.q;
+        const suggestions = await getSuggestionsService(query);
+        res.status(statusCode.OK).json({ success: true, suggestions });
+    } catch (error) {
+        console.error("Search Suggestion Error:", error);
+        res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Error fetching suggestions" });
+    }
+};
