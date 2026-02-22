@@ -1,68 +1,439 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Invoice - <%= order.order_number %></title>
+    <title>Invoice - <%= order.order_number %>
+    </title>
     <style>
-        body { font-family: 'Helvetica', 'Arial', sans-serif; color: #333; line-height: 1.6; padding: 40px; }
-        .invoice-box { max-width: 800px; margin: auto; border: 1px solid #eee; padding: 30px; }
-        .header { display: flex; justify-content: space-between; border-bottom: 2px solid #333; padding-bottom: 20px; margin-bottom: 20px; }
-        .info-section { display: flex; justify-content: space-between; margin-bottom: 40px; }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background: #f8f9fa; border-bottom: 2px solid #dee2e6; padding: 12px; }
-        td { border-bottom: 1px solid #eee; padding: 12px; }
-        .totals { margin-top: 30px; text-align: right; }
-        .grand-total { font-size: 1.2em; font-weight: bold; color: #27ae60; }
+        /* CSS resets for PDF generation */
+        * {
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            font-size: 12px;
+            background: #fff;
+        }
+
+        .page-container {
+            width: 794px;
+            /* A4 width at 96dpi */
+            margin: 0 auto;
+            padding: 40px;
+            min-height: 1123px;
+            /* A4 height */
+            position: relative;
+        }
+
+        /* HEADER SECTION */
+        .invoice-header {
+            border-bottom: 3px solid #1a1a1a;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            display: table;
+            width: 100%;
+        }
+
+        .header-left {
+            display: table-cell;
+            vertical-align: bottom;
+        }
+
+        .header-right {
+            display: table-cell;
+            width: 300px;
+            text-align: right;
+            vertical-align: top;
+        }
+
+        .brand-name {
+            font-size: 36px;
+            font-weight: 900;
+            color: #000;
+            margin: 0;
+            line-height: 1;
+            letter-spacing: -1px;
+        }
+
+        .brand-tagline {
+            font-size: 12px;
+            color: #666;
+            font-weight: bold;
+            margin-top: 5px;
+            text-transform: uppercase;
+        }
+
+        .invoice-title {
+            font-size: 48px;
+            color: #e0e0e0;
+            font-weight: 900;
+            margin: 0;
+            line-height: 0.8;
+        }
+
+        .order-meta {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #444;
+        }
+
+        /* INFORMATION GRID */
+        .info-grid {
+            display: table;
+            width: 100%;
+            margin-bottom: 40px;
+        }
+
+        .info-col {
+            display: table-cell;
+            width: 50%;
+            vertical-align: top;
+        }
+
+        .info-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #999;
+            font-weight: bold;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .info-content {
+            font-size: 13px;
+            line-height: 1.4;
+            color: #222;
+        }
+
+        /* ITEMS TABLE */
+        table.items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        table.items-table th {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            text-transform: uppercase;
+            font-size: 10px;
+            padding: 12px 10px;
+            text-align: left;
+            letter-spacing: 1px;
+        }
+
+        table.items-table td {
+            padding: 15px 10px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+
+        .item-name {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+
+        .item-variant {
+            font-size: 11px;
+            color: #666;
+        }
+
+        /* TOTALS SECTION */
+        .summary-container {
+            display: table;
+            width: 100%;
+        }
+
+        .summary-gap {
+            display: table-cell;
+        }
+
+        .summary-block {
+            display: table-cell;
+            width: 280px;
+        }
+
+        .summary-row {
+            display: table;
+            width: 100%;
+            padding: 5px 0;
+            font-size: 13px;
+        }
+
+        .summary-label {
+            display: table-cell;
+            text-align: left;
+            color: #666;
+        }
+
+        .summary-value {
+            display: table-cell;
+            text-align: right;
+            font-weight: bold;
+        }
+
+        .summary-row.discount {
+            color: #d32f2f;
+        }
+
+        .summary-row.total {
+            border-top: 2px solid #000;
+            margin-top: 10px;
+            padding-top: 15px;
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .summary-row.paid {
+            background-color: #f1f8f6;
+            color: #2e7d32;
+            padding: 8px 5px;
+            margin-top: 5px;
+            font-weight: bold;
+        }
+
+        .payment-info {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            border-left: 4px solid #1a1a1a;
+        }
+
+        /* STATUS STAMP */
+        .status-stamp {
+            position: absolute;
+            top: 200px;
+            right: 40px;
+            border: 4px solid;
+            padding: 10px 20px;
+            font-size: 24px;
+            font-weight: 900;
+            text-transform: uppercase;
+            transform: rotate(-15deg);
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .stamp-paid {
+            color: #2e7d32;
+            border-color: #2e7d32;
+        }
+
+        .stamp-unpaid {
+            color: #c62828;
+            border-color: #c62828;
+        }
+
+        /* FOOTER */
+        .footer {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            right: 40px;
+            text-align: center;
+            font-size: 10px;
+            color: #999;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
+        @media print {
+            body {
+                margin: 0;
+            }
+
+            .page-container {
+                border: none;
+                padding: 20px;
+            }
+        }
     </style>
 </head>
+
 <body>
-    <div class="invoice-box">
-        <div class="header">
-            <div>
-                <h1>INVOICE</h1>
-                <p>Order #: <%= order.order_number %></p>
-                <p>Date: <%= new Date(order.order_date).toLocaleDateString() %></p>
+    <div class="page-container">
+        <!-- HEADER -->
+        <div class="invoice-header">
+            <div class="header-left">
+                <p class="brand-name">SOLESTYLE</p>
+                <p class="brand-tagline">Premium Footwear & Luxury Accessories</p>
             </div>
-            <div style="text-align: right;">
-                <h2 style="color: #27ae60;">SoleStyle</h2>
-            </div>
-        </div>
-
-        <div class="info-section">
-            <div class="info-block">
-                <h3>Billed To:</h3>
-                <p><strong><%= order.shipping_address_snapshot.name %></strong></p>
-                <p><%= order.shipping_address_snapshot.address_line1 %></p>
-                <p><%= order.shipping_address_snapshot.city %>, <%= order.shipping_address_snapshot.state %></p>
+            <div class="header-right">
+                <h1 class="invoice-title">INVOICE</h1>
+                <div class="order-meta">
+                    <strong>Invoice ID:</strong> #INV-<%= order.order_number %><br>
+                        <strong>Date:</strong>
+                        <%= new Date().toLocaleDateString('en-IN', {day: '2-digit' , month: 'long' , year: 'numeric' })
+                            %>
+                </div>
             </div>
         </div>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Description</th>
-                    <th>Qty</th>
-                    <th>Price</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                <% order.items.forEach(function(item) { %>
-                <tr>
-                    <td><%= item.name_snapshot %></td>
-                    <td><%= item.quantity %></td>
-                    <td>₹<%= item.unit_price %></td>
-                    <td>₹<%= item.total_amount %></td>
-                </tr>
-                <% }); %>
-            </tbody>
-        </table>
+        <% const isPaid=['Online', 'Wallet' ].includes(order.payment_method) || order.status==='delivered' ; const
+            paidAmount=isPaid ? order.final_total : 0; %>
+            <!-- STATUS STAMP -->
+            <div class="status-stamp <%= isPaid ? 'stamp-paid' : 'stamp-unpaid' %>">
+                <%= isPaid ? 'PAYMENT RECEIVED' : 'PAYMENT PENDING' %>
+            </div>
 
-        <div class="totals">
-            <p>Subtotal: <strong>₹<%= order.subtotal %></strong></p>
-            <p>Discount: <strong style="color: #e74c3c;">- ₹<%= order.discount_amount || 0 %></strong></p>
-            <p class="grand-total">Grand Total: ₹<%= order.final_total %></p>
-        </div>
+            <!-- INFO GRID -->
+            <div class="info-grid">
+                <div class="info-col">
+                    <div class="info-label">Billed From</div>
+                    <div class="info-content">
+                        <strong>SoleStyle E-commerce Pvt Ltd</strong><br>
+                        Global Trade Center, MG Road<br>
+                        Kochi, Kerala, 682016<br>
+                        GSTIN: 32AAAAA0000A1Z5<br>
+                        Phone: +91 98765 43210
+                    </div>
+                </div>
+                <div class="info-col" style="padding-left: 40px;">
+                    <div class="info-label">Shipped To</div>
+                    <div class="info-content">
+                        <strong>
+                            <%= order.shipping_address_snapshot.name %>
+                        </strong><br>
+                        <%= order.shipping_address_snapshot.address_line1 %><br>
+                            <% if(order.shipping_address_snapshot.address_line2) { %>
+                                <%= order.shipping_address_snapshot.address_line2 %><br>
+                                    <% } %>
+                                        <%= order.shipping_address_snapshot.city %>, <%=
+                                                order.shipping_address_snapshot.state %><br>
+                                                Pincode: <%= order.shipping_address_snapshot.postal_code %><br>
+                                                    Phone: <%= order.shipping_address_snapshot.phone %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ITEMS TABLE -->
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">SR.</th>
+                        <th>PRODUCT DESCRIPTION</th>
+                        <th style="text-align: center; width: 80px;">SIZE</th>
+                        <th style="text-align: center; width: 60px;">QTY</th>
+                        <th style="text-align: right; width: 100px;">PRC (₹)</th>
+                        <th style="text-align: right; width: 120px;">TOTAL (₹)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% order.items.forEach(function(item, index) { %>
+                        <tr>
+                            <td style="color: #999;">
+                                <%= index + 1 %>
+                            </td>
+                            <td>
+                                <div class="item-name">
+                                    <%= item.name_snapshot %>
+                                </div>
+                                <div class="item-variant">SKU: SS-<%= item.product_id ?
+                                        item.product_id.toString().slice(-6).toUpperCase() : 'N/A' %>
+                                </div>
+                            </td>
+                            <td style="text-align: center; font-weight: bold;">
+                                <%= item.variant_snapshot || 'N/A' %>
+                            </td>
+                            <td style="text-align: center;">
+                                <%= item.quantity %>
+                            </td>
+                            <td style="text-align: right;">
+                                <%= item.unit_price.toFixed(2) %>
+                            </td>
+                            <td style="text-align: right; font-weight: bold;">
+                                <%= item.total_amount.toFixed(2) %>
+                            </td>
+                        </tr>
+                        <% }); %>
+                </tbody>
+            </table>
+
+            <!-- SUMMARY -->
+            <div class="summary-container">
+                <div class="summary-gap">
+                    <div class="payment-info">
+                        <div class="info-label">Payment Information</div>
+                        <div class="info-content">
+                            Method: <strong>
+                                <%= order.payment_method %>
+                            </strong><br>
+                            <% if(order.razorpay_order_id) { %>
+                                Transaction Ref: <%= order.razorpay_order_id %><br>
+                                    <% } %>
+                                        Status: <span
+                                            style="color: <%= isPaid ? '#2e7d32' : '#c62828' %>; font-weight: bold;">
+                                            <%= isPaid ? 'CONFIRMED' : 'PENDING' %>
+                                        </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="summary-block">
+                    <div class="summary-row">
+                        <div class="summary-label">M.R.P</div>
+                        <div class="summary-value">₹<%= order.subtotal.toFixed(2) %>
+                        </div>
+                    </div>
+                    <% if(order.offer_discount> 0) { %>
+                        <div class="summary-row discount">
+                            <div class="summary-label">Offer Discount</div>
+                            <div class="summary-value">- ₹<%= order.offer_discount.toFixed(2) %>
+                            </div>
+                        </div>
+                        <% } %>
+                            <% if(order.discount_amount> 0) { %>
+                                <div class="summary-row discount">
+                                    <div class="summary-label">Coupen Discount</div>
+                                    <div class="summary-value">- ₹<%= order.discount_amount.toFixed(2) %>
+                                    </div>
+                                </div>
+                                <% } %>
+                                    <div class="summary-row">
+                                        <div class="summary-label">Shipping</div>
+                                        <div class="summary-value">Free</div>
+                                    </div>
+
+                                    <% const totalSavings=order.offer_discount + order.discount_amount; %>
+                                        <% if(totalSavings> 0) { %>
+                                            <div class="summary-row"
+                                                style="color: #27ae60; font-weight: bold; background: #f9f9f9; padding: 5px; border-radius: 4px;">
+                                                <div class="summary-label">Total Savings</div>
+                                                <div class="summary-value">₹<%= totalSavings.toFixed(2) %>
+                                                </div>
+                                            </div>
+                                            <% } %>
+
+                                                <div class="summary-row total">
+                                                    <div class="summary-label">Grand Total</div>
+                                                    <div class="summary-value">₹<%= order.final_total.toFixed(2) %>
+                                                    </div>
+                                                </div>
+
+                                                <div class="summary-row paid">
+                                                    <div class="summary-label">Paid Amount</div>
+                                                    <div class="summary-value">₹<%= paidAmount.toFixed(2) %>
+                                                    </div>
+                                                </div>
+                </div>
+            </div>
+
+            <div class="footer">
+                <p><strong>Conditions of Sale:</strong> All items remain the property of SoleStyle E-commerce until paid
+                    in full. Returns subject to 7-day policy.</p>
+                <p>This is a digitally generated Tax Invoice and is valid without a physical signature under the
+                    Information Technology Act, 2000.</p>
+                <p>&copy; <%= new Date().getFullYear() %> SoleStyle Hub. All rights reserved. Visit us at
+                        www.solestyle.com</p>
+            </div>
     </div>
 </body>
+
 </html>
