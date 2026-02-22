@@ -117,7 +117,10 @@ async function applyCoupon() {
             document.getElementById("applyBtn").style.display = "none";
             document.getElementById("removeBtn").style.display = "block";
             document.getElementById("couponCode").disabled = true;
-            location.reload(); // Reload to update totals (Simple way)
+
+            // Dynamic update without reload
+            document.getElementById("discountAmount").innerText = response.data.discount;
+            document.getElementById("totalAmount").innerText = "₹" + response.data.newTotal;
         }
     } catch (error) {
         Swal.fire("Invalid Coupon", error.response?.data?.message || "Error applying coupon", "error");
@@ -129,7 +132,17 @@ async function removeCoupon() {
         const response = await axios.post("/checkout/remove-coupon");
         if (response.data.success) {
             Swal.fire("Removed", "Coupon removed", "info");
-            location.reload();
+
+            // Update UI
+            document.getElementById("applyBtn").style.display = "block";
+            document.getElementById("removeBtn").style.display = "none";
+            const codeInput = document.getElementById("couponCode");
+            codeInput.disabled = false;
+            codeInput.value = "";
+
+            // Dynamic update without reload
+            document.getElementById("discountAmount").innerText = "0";
+            document.getElementById("totalAmount").innerText = "₹" + response.data.newTotal;
         }
     } catch (error) {
         Swal.fire("Error", "Could not remove coupon", "error");

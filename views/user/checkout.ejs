@@ -92,7 +92,7 @@
                             </div>
 
                             <!-- COD Option -->
-                            <label class="payment-option finalAmount > 1000 ? 'disabled' : '' %>">
+                            <label class="payment-option <%= finalAmount > 1000 ? 'disabled' : '' %>">
                                 <input type="radio" name="paymentMethod" value="COD" <%=finalAmount> 1000 ? 'disabled' :
                                 'checked' %>>
                                 <span>Cash on Delivery (COD)</span>
@@ -287,15 +287,16 @@
 
                                 <div class="summary-row">
                                     <span>Subtotal</span>
-                                    <span>₹<%= subtotal %></span>
+                                    <span id="subtotalAmount">₹<%= subtotal %></span>
                                 </div>
 
 
                                 <!-- NEW DISCOUNT ROW -->
                                 <div class="summary-row">
                                     <span>Discount</span>
-                                    <span style="color: #e74c3c;">- ₹<%= typeof discount !=='undefined' ? discount : 0
-                                            %></span>
+                                    <span style="color: #e74c3c;">- ₹<span id="discountAmount">
+                                            <%= typeof discount !=='undefined' ? discount : 0 %>
+                                        </span></span>
                                 </div>
 
                                 <div class="summary-row">
@@ -306,7 +307,8 @@
 
                                 <div class="summary-row total">
                                     <span>Total Amount</span>
-                                    <span>₹<%= subtotal - (typeof discount !=='undefined' ? discount : 0) %></span>
+                                    <span id="totalAmount">₹<%= subtotal - (typeof discount !=='undefined' ? discount :
+                                            0) %></span>
                                 </div>
 
                                 <button type="button" class="place-order-btn" onclick="placeOrder()">

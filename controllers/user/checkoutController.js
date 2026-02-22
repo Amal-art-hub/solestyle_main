@@ -127,8 +127,14 @@ export const applyCoupen = async (req, res) => {
 };
 
 export const removeCoupon = async (req, res) => {
-    req.session.coupon = null;
-    res.status(statusCode.OK).json({ success: true });
+    try {
+        const userId = req.session.user._id;
+        req.session.coupon = null;
+        const { subtotal } = await getCheckoutData(userId);
+        res.status(statusCode.OK).json({ success: true, newTotal: subtotal });
+    } catch (error) {
+        res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Error removing coupon" });
+    }
 };
 
 export const createRazorpayOrder = async (req, res) => {
