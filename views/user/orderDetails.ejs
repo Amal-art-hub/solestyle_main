@@ -208,7 +208,7 @@
                             <span>Offer Discount</span>
                             <span>- ₹<%= order.offer_discount.toFixed(2) %></span>
                         </div>
-                         <div class="summary-row">
+                        <div class="summary-row">
                             <span>Coupen Discount</span>
                             <span>- ₹<%= order.discount_amount.toFixed(2) %></span>
                         </div>
@@ -217,20 +217,21 @@
                             <span>Free</span>
                         </div>
 
-                        <% const totalSavings = order.offer_discount + order.discount_amount; %>
-                        <div class="summary-row" style="color: #27ae60; font-weight: bold; background: #f9f9f9; padding: 5px; border-radius: 4px;">
-                            <span>Total Savings</span>
-                            <span>₹<%=totalSavings.toFixed(2)%></span>
-                        </div>
-                        <div class="summary-row total-row">
-                            <span>Grand Total</span>
-                            <span>₹<%= order.final_total.toFixed(2) %></span>
-                        </div>
-                        <p style="margin-top:10px; font-size:0.85rem; color:#666;">
-                            Payment Method: <strong>
-                                <%= order.payment_id ? 'Online' : 'Cash on Delivery' %>
-                            </strong>
-                        </p>
+                        <% const totalSavings=order.offer_discount + order.discount_amount; %>
+                            <div class="summary-row"
+                                style="color: #27ae60; font-weight: bold; background: #f9f9f9; padding: 5px; border-radius: 4px;">
+                                <span>Total Savings</span>
+                                <span>₹<%=totalSavings.toFixed(2)%></span>
+                            </div>
+                            <div class="summary-row total-row">
+                                <span>Grand Total</span>
+                                <span>₹<%= order.final_total.toFixed(2) %></span>
+                            </div>
+                            <p style="margin-top:10px; font-size:0.85rem; color:#666;">
+                                Payment Method: <strong>
+                                    <%= order.payment_id ? 'Online' : 'Cash on Delivery' %>
+                                </strong>
+                            </p>
                     </div>
 
                     <!-- ACTIONS CARD -->
@@ -281,14 +282,22 @@
                                                                             cannot be cancelled.</p>
                                                                         <% } %>
 
-                                                                            <% if (order.status==='delivered' ) { %>
-                                                                                <a href="/user/orders/invoice/<%= order._id %>"
-                                                                                    class="btn-action btn-invoice"
-                                                                                    style="background-color: #34495e; color: white; text-decoration: none; padding: 10px 15px; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
-                                                                                    <i class="fas fa-file-download"></i>
-                                                                                    Download Invoice
-                                                                                </a>
-                                                                                <% } %>
+                                                                            <% const isPaid=['Online', 'Wallet'
+                                                                                ].includes(order.payment_method); const
+                                                                                isSuccess = !['Payment Pending', 'Payment Failed' , 'canceled'
+                                                                                ].includes(order.status); const
+                                                                                canDownloadInvoice=(isPaid && isSuccess)
+                                                                                || (order.status==='delivered' ); %>
+
+                                                                                <% if (canDownloadInvoice) { %>
+                                                                                    <a href="/user/orders/invoice/<%= order._id %>"
+                                                                                        class="btn-action btn-invoice"
+                                                                                        style="background-color: #34495e; color: white; text-decoration: none; padding: 10px 15px; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                                                                                        <i
+                                                                                            class="fas fa-file-download"></i>
+                                                                                        Download Invoice
+                                                                                    </a>
+                                                                                    <% } %>
                             </div>
                         </div>
                         <% } %>
