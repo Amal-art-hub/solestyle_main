@@ -18,11 +18,11 @@ import compression from "compression";
 const app = express();
 app.use(compression());
 
-// --- THE ESM __DIRNAME TRICK ---
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Initialize Database
+
 db();
 
 app.set("trust proxy", 1);

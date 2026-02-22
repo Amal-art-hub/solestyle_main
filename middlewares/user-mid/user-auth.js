@@ -33,9 +33,9 @@ export const checkUserStatus = async (req, res, next) => {
 
 export const isAuth = (req, res, next) => {
 
-  console.log("isaUTH IS WORKING");
+
   if (req.session.user) {
-    //  console.log("do have session")
+   
     next();
   } else {
     console.log("dont have session");

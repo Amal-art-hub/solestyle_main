@@ -72,6 +72,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     headers: { "Content-Type": "application/json" }
                 });
 
+                console.log(response);
+
                 if (response.data.success) {
                     // Success Swal + redirect
                     Swal.fire({

@@ -178,6 +178,8 @@ export const login = async (req, res) => {
 
     const result = await loginUser(email, password);
 
+    console.log("login responces:",result);
+
     if (!result.success) {
       const code = result.message.includes("blocked")
         ? statusCode.FORBIDDEN

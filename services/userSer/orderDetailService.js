@@ -43,7 +43,7 @@ export const getOrderDetailsService = async (orderId, userId) => {
 
 
 
- 
+
 
 //     const itemOfferSavings=(item.original_price-item.unit_price*item.quantity);
 
@@ -60,7 +60,7 @@ export const getOrderDetailsService = async (orderId, userId) => {
 //     order.subtotal -= (item.original_price*item.quantity);
 //     order.discount_amount -= (order.discount_amount * itemDiscountRatio);
 //     order.final_total-=item.total_amount;
-    
+
 //     order.offer_discount-=item.original_price-item.unit_price;
 //     console.log(order.offer_discount);
 
@@ -94,7 +94,7 @@ export const cancelOrderItemService = async (orderId, itemId, reason) => {
 
     const item = order.items.id(itemId);
     if (!item) throw new Error("Item not found");
-    
+
     // 2. Safety Guards
     if (item.status === "canceled") throw new Error("Item already canceled");
     if (["shipped", "delivered"].includes(order.status)) {
@@ -115,14 +115,14 @@ export const cancelOrderItemService = async (orderId, itemId, reason) => {
 
     // D. Update Database Fields (Subtracting all 3 components)
     order.subtotal -= (item.original_price * item.quantity);
-     console.log(itemOfferSavings);
-    order.offer_discount -= itemOfferSavings; 
-    
+    console.log(itemOfferSavings);
+    order.offer_discount -= itemOfferSavings;
+
     console.log(order.offer_discount);
-    order.discount_amount -= couponShareForThisItem;      
+    order.discount_amount -= couponShareForThisItem;
 
     // E. The Safety Net: Synchronize the Grand Total
-    
+
     order.final_total = Math.max(0, order.subtotal - order.offer_discount - order.discount_amount + (order.delivery_charge || 0));
 
     // F. Calculate Wallet Refund

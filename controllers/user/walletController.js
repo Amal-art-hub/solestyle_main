@@ -1,6 +1,11 @@
 import {
-    getWallet
+    getWallet,
+    createWalletTopupOrder,
+    verifyWalletPayment,
+    creditWallet 
 } from "../../services/userSer/walletService.js";
+
+
 import statusCode from "../../utils/statusCodes.js";
 
 export const loadWalletPage = async (req, res) => {
@@ -31,5 +36,39 @@ export const loadWalletPage = async (req, res) => {
     } catch (error) {
         console.error("Error loading wallet:", error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).render("page-404");
+    }
+};
+
+export const createTopupOrder = async (req, res) => {
+    try {
+        const { amount } = req.body;
+        const order = await createWalletTopupOrder(amount);
+        res.status(statusCode.OK).json({
+            success: true,
+            order,
+            key: process.env.RAZORPAY_KEY_ID
+        });
+
+    } catch (error) {
+        console.error("Topup order error:", error);
+        res.status(statusCode.INTERNAL_SERVER_ERROR).json({
+            success: false, message: "Failed to create order"
+        });
+    }
+};
+
+export const verifyTopupPayment = async (req, res) => {
+    try {
+        const { razorpay_order_id, razorpay_payment_id, razorpay_signature, amount } = req.body;
+        const userId = req.session.user._id;
+        const isValid = verifyWalletPayment(razorpay_order_id, razorpay_payment_id, razorpay_signature);
+        if (!isValid) {
+            return res.status(statusCode.BAD_REQUEST).json({ success: false, message: "Payment verification failed" });
+        }
+        await creditWallet(userId, Number(amount), "Wallet Top-up via Razorpay");
+        res.status(statusCode.OK).json({ success: true, message: "Wallet topped up!" });
+    } catch (error) {
+        console.error("Topup verify error:", error);
+        res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Verification failed" });
     }
 };

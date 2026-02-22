@@ -119,6 +119,8 @@ router.get("/user/orders/invoice/:orderId", isAuth, checkUserStatus, orderDetail
 
 //-----------------------------------------------------------------------------------------wallet
 router.get("/user/wallet", isAuth, checkUserStatus, walletController.loadWalletPage);
+router.post("/user/wallet/topup/create-order",isAuth,checkUserStatus,walletController.createTopupOrder);
+router.post("/user/wallet/topup/verify",isAuth,checkUserStatus,walletController.verifyTopupPayment);
 
 //wishlist
 router.get("/user/wishlist", isAuth, checkUserStatus, wishlistController.loadWishlist);

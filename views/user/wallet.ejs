@@ -23,6 +23,35 @@
             </div>
         </div>
 
+
+<!-- TOP UP SECTION -->
+<div class="topup-card">
+    <h3>Add Money to Wallet</h3>
+
+    <!-- Preset Amounts -->
+    <div class="preset-amounts">
+        <button class="preset-btn" onclick="initiateTopup(100)">₹100</button>
+        <button class="preset-btn" onclick="initiateTopup(250)">₹250</button>
+        <button class="preset-btn active" onclick="initiateTopup(500)">₹500 ⭐</button>
+        <button class="preset-btn" onclick="initiateTopup(1000)">₹1000</button>
+    </div>
+
+    <!-- Custom Amount -->
+    <div class="custom-row">
+        <input type="number" id="customAmount" placeholder="Enter amount (₹)" min="1" max="50000" />
+        <button class="pay-btn" onclick="initiateCustomTopup()">Pay Now →</button>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
         <!-- Transaction History -->
         <h3>Transaction History</h3>
         
@@ -61,35 +90,16 @@
                 </div>
             <% } %>
         </div>
-                    <!-- Inside history-container div -->
             
-            <!-- Pagination Controls -->
 
 
             <%- include('../partials/pagination') %>
-            <!-- <% if (totalPages > 1) { %>
-                <div class="pagination-wrapper">
-                   
-                    <% if (currentPage > 1) { %>
-                        <a href="/user/wallet?page=<%= currentPage - 1 %>" class="pagination-btn">
-                            &laquo; Prev
-                        </a>
-                    <% } %>
-
-                    <span class="pagination-info">
-                        Page <%= currentPage %> of <%= totalPages %>
-                    </span>
-
-                    
-                    <% if (currentPage < totalPages) { %>
-                        <a href="/user/wallet?page=<%= currentPage + 1 %>" class="pagination-btn">
-                            Next &raquo;
-                        </a>
-                    <% } %>
-                </div>
-            <% } %> -->
+          
 
         </div> <!-- End of history-container -->
     </div>
 
 <%- include('../partials/footer') %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="/js/user/wallet.js"></script>

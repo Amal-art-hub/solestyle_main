@@ -118,3 +118,101 @@
     font-size: 0.9rem;
     color: #666;
 }
+
+
+
+
+
+/* ===== TOPUP CARD ===== */
+.topup-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 28px;
+    margin: 20px 0;
+    border: 1px solid #efefef;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+}
+
+.topup-card h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 20px;
+}
+
+/* Preset buttons row */
+.preset-amounts {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.preset-btn {
+    flex: 1;
+    padding: 12px 8px;
+    border: 2px solid #e5e5e5;
+    border-radius: 10px;
+    background: #fafafa;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    min-width: 70px;
+}
+
+.preset-btn:hover,
+.preset-btn.active {
+    background: #111;
+    border-color: #111;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Custom input row */
+.custom-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.custom-row input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid #e5e5e5;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+    color: #111;
+}
+
+.custom-row input:focus {
+    border-color: #111;
+}
+
+.pay-btn {
+    padding: 12px 22px;
+    background: #111;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+}
+
+.pay-btn:hover {
+    background: #333;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+@media (max-width: 500px) {
+    .preset-amounts { grid-template-columns: repeat(2,1fr); display: grid; }
+    .custom-row { flex-direction: column; }
+}
