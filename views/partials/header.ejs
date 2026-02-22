@@ -93,113 +93,144 @@
                     }
                 }
 
-                /* GLOBAL SEARCH STYLES */
+                /* HEADER CONTENT RESTRUCTURE */
+                .header-content {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    height: 60px;
+                    position: relative;
+                }
+
+                .main-nav {
+                    position: absolute;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    display: flex;
+                    gap: 35px;
+                }
+
+                .main-nav a {
+                    font-weight: 600;
+                    text-transform: uppercase;
+                    font-size: 0.85rem;
+                    letter-spacing: 0.5px;
+                    color: #111;
+                    text-decoration: none;
+                }
+
+                .header-actions-group {
+                    display: flex;
+                    align-items: center;
+                    gap: 25px;
+                }
+
+                .header-icons {
+                    display: flex;
+                    align-items: center;
+                    gap: 18px;
+                }
+
+                /* LOGO PLACEMENT */
+                .header .container {
+                    max-width: 1400px;
+                    padding: 0 40px;
+                    margin: 0 auto;
+                }
+
+                .logo a {
+                    font-size: 22px;
+                    font-weight: 800;
+                    letter-spacing: -0.5px;
+                }
+
+                /* CAPSULE SEARCH */
                 .search-bar-form {
-                    flex-grow: 1;
-                    max-width: 450px;
-                    margin: 0 40px;
+                    width: 200px;
+                    /* Compact width */
                 }
 
                 .search-container {
                     position: relative;
-                    width: 100%;
                     display: flex;
                     align-items: center;
-                    background: #f5f5f5;
-                    border-radius: 8px;
-                    padding: 8px 15px;
-                    transition: all 0.2s ease;
-                    border: 1px solid transparent;
+                    background: #f3f3f3;
+                    border-radius: 25px;
+                    padding: 6px 15px;
+                    transition: all 0.3s ease;
                 }
 
                 .search-container:focus-within {
                     background: #fff;
-                    border-color: #000;
-                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-                }
-
-                .search-icon {
-                    color: #888;
-                    margin-right: 12px;
-                    flex-shrink: 0;
+                    box-shadow: 0 0 0 1px #000;
                 }
 
                 #globalSearchInput {
                     border: none;
                     background: transparent;
                     width: 100%;
-                    font-size: 0.95rem;
+                    padding-left: 10px;
+                    font-size: 0.85rem;
                     outline: none;
-                    color: #333;
                 }
 
                 .search-suggestions-dropdown {
                     position: absolute;
-                    top: calc(100% + 8px);
-                    left: 0;
+                    top: calc(100% + 10px);
                     right: 0;
+                    width: 350px;
                     background: white;
                     border-radius: 12px;
-                    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
                     z-index: 9999;
                     max-height: 450px;
                     overflow-y: auto;
                     display: none;
                     border: 1px solid #eee;
-                    padding: 8px 0;
                 }
 
                 .suggestion-item {
                     display: flex;
                     align-items: center;
-                    padding: 12px 16px;
+                    padding: 12px 15px;
                     cursor: pointer;
                     transition: background 0.2s;
-                    border-bottom: 1px solid #f9f9f9;
-                }
-
-                .suggestion-item:last-child {
-                    border-bottom: none;
                 }
 
                 .suggestion-item:hover {
-                    background-color: #f8f8f8;
+                    background: #f9f9f9;
                 }
 
                 .suggestion-image {
-                    width: 45px;
-                    height: 45px;
+                    width: 40px;
+                    height: 40px;
                     object-fit: cover;
-                    border-radius: 6px;
-                    margin-right: 15px;
-                    border: 1px solid #eee;
-                }
-
-                .suggestion-info {
-                    display: flex;
-                    flex-direction: column;
-                    overflow: hidden;
+                    border-radius: 4px;
+                    margin-right: 12px;
                 }
 
                 .suggestion-name {
-                    font-size: 0.9rem;
-                    font-weight: 600;
-                    color: #1a1a1a;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
+                    font-size: 0.85rem;
+                    font-weight: 500;
                 }
 
                 .no-suggestions {
                     padding: 20px;
-                    color: #888;
                     text-align: center;
-                    font-size: 0.9rem;
-                    font-style: italic;
+                    color: #888;
                 }
 
+                .icon-btn {
+                    color: #111;
+                    position: relative;
+                }
+
+                /* Mobile Adjustment */
                 @media (max-width: 992px) {
-                    .search-bar-form {
+
+                    .main-nav,
+                    .search-bar-form,
+                    .top-utility-bar {
                         display: none;
                     }
                 }
@@ -224,8 +255,6 @@
                 </div>
 
                 <nav class="main-nav">
-
-
                     <% if(locals.categories && categories.length> 0) { %>
                         <% categories.forEach(category=> { %>
                             <a href="/shop?category=<%= category._id %>">
@@ -233,108 +262,87 @@
                             </a>
                             <% }) %>
                                 <% } %>
-                                    <!-- <% if(locals.menCategoryId) { %> -->
-                                    <!-- <a href="/mens-products?category=<%= menCategoryId %>">Men</a>
-                        <% } %>
-                            <% if(locals.womenCategoryId) { %>
-                                <a href="/womens-products?category=<%= womenCategoryId %>">Women</a>
-                                <% } %>
-                                    <% if(locals.kidsCategoryId) { %>
-                                        <a href="/kids-products?category=<%= kidsCategoryId %>">Kids</a>
-                                        <% } %> -->
                 </nav>
 
-                <form action="/shop" method="GET" class="search-bar-form">
-                    <div class="search-container">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" class="search-icon">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="m21 21-4.35-4.35"></path>
-                        </svg>
-                        <input type="text" name="search" id="globalSearchInput" placeholder="Search products..."
-                            autocomplete="off">
-                        <div id="globalSearchSuggestions" class="search-suggestions-dropdown"></div>
-                    </div>
-                </form>
-
-                <div class="header-actions">
-                    <% if (typeof user !=='undefined' && user) { %>
-
-
-
-
-                        <!-- </div> -->
-
-                        <a href="/user/wishlist" class="icon-btn" style="text-decoration: none; color: inherit;">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <path
-                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
-                                </path>
+                <div class="header-actions-group">
+                    <form action="/shop" method="GET" class="search-bar-form">
+                        <div class="search-container">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" class="search-icon">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <path d="m21 21-4.35-4.35"></path>
                             </svg>
-                            <!-- ADD THIS PART BELOW -->
-                            <% if (locals.wishlistCount> 0) { %>
-                                <span class="wishlist-badge">
-                                    <%= wishlistCount %>
-                                </span>
-                                <% } %>
-                        </a>
-
-                        <a href="/user/cart" class="icon-btn cart-btn" style="text-decoration: none; color: inherit;">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2">
-                                <circle cx="9" cy="21" r="1"></circle>
-                                <circle cx="20" cy="21" r="1"></circle>
-                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                            </svg>
-                            <!-- UPDATE THIS PART BELOW -->
-                            <% if (locals.cartCount> 0) { %>
-                                <span class="cart-badge">
-                                    <%= cartCount %>
-                                </span>
-                                <% } %>
-                        </a>
-
-                        <!-- WRAP THE BUTTON AND DROPDOWN IN THIS CONTAINER -->
-                        <div class="user-menu-container">
-                            <button class="icon-btn user-menu-trigger" onclick="toggleUserMenu()">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
-                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                                    <circle cx="12" cy="7" r="4"></circle>
-                                </svg>
-                            </button>
-
-
-                            <div class="user-dropdown" id="userDropdown">
-                                <div class="user-info">
-                                    <strong>
-                                        <%= user.name %>
-                                    </strong>
-                                    <span>
-                                        <%= user.email %>
-                                    </span>
-                                </div>
-                                <hr>
-                                <a href="/user/profile">My Profile</a>
-                                <a href="/user/orders">My Orders</a>
-
-                                <a href="/user/settings">payment method</a>
-                                <a href="/user/addresses">address book</a>
-                                <a href="/user/wallet">wallet</a>
-
-                                <a href="javascript:void(0)" onclick="openModal('couponModal')">Coupons / Rewards</a>
-
-
-                                <hr>
-                                <a href="/logout" class="logout-link">Logout</a>
-                            </div>
+                            <input type="text" name="search" id="globalSearchInput" placeholder="Search..."
+                                autocomplete="off">
+                            <div id="globalSearchSuggestions" class="search-suggestions-dropdown"></div>
                         </div>
+                    </form>
 
-                        <% } else { %>
-                            <a href="/Login" class="btn-text">Login</a>
-                            <a href="/signup" class="btn-primary-small">Sign Up</a>
-                            <% } %>
+                    <div class="header-icons">
+                        <% if (typeof user !=='undefined' && user) { %>
+                            <a href="/user/wishlist" class="icon-btn">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                    </path>
+                                </svg>
+                                <% if (locals.wishlistCount> 0) { %>
+                                    <span class="wishlist-badge">
+                                        <%= wishlistCount %>
+                                    </span>
+                                    <% } %>
+                            </a>
+
+                            <a href="/user/cart" class="icon-btn cart-btn">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <circle cx="9" cy="21" r="1"></circle>
+                                    <circle cx="20" cy="21" r="1"></circle>
+                                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                                </svg>
+                                <% if (locals.cartCount> 0) { %>
+                                    <span class="cart-badge">
+                                        <%= cartCount %>
+                                    </span>
+                                    <% } %>
+                            </a>
+
+                            <div class="user-menu-container">
+                                <button class="icon-btn user-menu-trigger" onclick="toggleUserMenu()">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="12" cy="7" r="4"></circle>
+                                    </svg>
+                                </button>
+
+                                <div class="user-dropdown" id="userDropdown">
+                                    <div class="user-info">
+                                        <strong>
+                                            <%= user.name %>
+                                        </strong>
+                                        <span>
+                                            <%= user.email %>
+                                        </span>
+                                    </div>
+                                    <hr>
+                                    <a href="/user/profile">My Profile</a>
+                                    <a href="/user/orders">My Orders</a>
+                                    <a href="/user/settings">Payment Methods</a>
+                                    <a href="/user/addresses">Address Book</a>
+                                    <a href="/user/wallet">Wallet</a>
+                                    <a href="javascript:void(0)" onclick="openModal('couponModal')">Coupons /
+                                        Rewards</a>
+                                    <hr>
+                                    <a href="/logout" class="logout-link">Logout</a>
+                                </div>
+                            </div>
+                            <% } else { %>
+                                <a href="/Login" class="btn-text">Login</a>
+                                <a href="/signup" class="btn-primary-small">Sign Up</a>
+                                <% } %>
+                    </div>
                 </div>
             </div>
         </div>
