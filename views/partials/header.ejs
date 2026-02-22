@@ -92,6 +92,117 @@
                         transform: translateX(5px) rotate(10deg);
                     }
                 }
+
+                /* GLOBAL SEARCH STYLES */
+                .search-bar-form {
+                    flex-grow: 1;
+                    max-width: 450px;
+                    margin: 0 40px;
+                }
+
+                .search-container {
+                    position: relative;
+                    width: 100%;
+                    display: flex;
+                    align-items: center;
+                    background: #f5f5f5;
+                    border-radius: 8px;
+                    padding: 8px 15px;
+                    transition: all 0.2s ease;
+                    border: 1px solid transparent;
+                }
+
+                .search-container:focus-within {
+                    background: #fff;
+                    border-color: #000;
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+                }
+
+                .search-icon {
+                    color: #888;
+                    margin-right: 12px;
+                    flex-shrink: 0;
+                }
+
+                #globalSearchInput {
+                    border: none;
+                    background: transparent;
+                    width: 100%;
+                    font-size: 0.95rem;
+                    outline: none;
+                    color: #333;
+                }
+
+                .search-suggestions-dropdown {
+                    position: absolute;
+                    top: calc(100% + 8px);
+                    left: 0;
+                    right: 0;
+                    background: white;
+                    border-radius: 12px;
+                    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+                    z-index: 9999;
+                    max-height: 450px;
+                    overflow-y: auto;
+                    display: none;
+                    border: 1px solid #eee;
+                    padding: 8px 0;
+                }
+
+                .suggestion-item {
+                    display: flex;
+                    align-items: center;
+                    padding: 12px 16px;
+                    cursor: pointer;
+                    transition: background 0.2s;
+                    border-bottom: 1px solid #f9f9f9;
+                }
+
+                .suggestion-item:last-child {
+                    border-bottom: none;
+                }
+
+                .suggestion-item:hover {
+                    background-color: #f8f8f8;
+                }
+
+                .suggestion-image {
+                    width: 45px;
+                    height: 45px;
+                    object-fit: cover;
+                    border-radius: 6px;
+                    margin-right: 15px;
+                    border: 1px solid #eee;
+                }
+
+                .suggestion-info {
+                    display: flex;
+                    flex-direction: column;
+                    overflow: hidden;
+                }
+
+                .suggestion-name {
+                    font-size: 0.9rem;
+                    font-weight: 600;
+                    color: #1a1a1a;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .no-suggestions {
+                    padding: 20px;
+                    color: #888;
+                    text-align: center;
+                    font-size: 0.9rem;
+                    font-style: italic;
+                }
+
+                @media (max-width: 992px) {
+                    .search-bar-form {
+                        display: none;
+                    }
+                }
             </style>
 </head>
 
@@ -115,13 +226,15 @@
                 <nav class="main-nav">
 
 
-                        <% if(locals.categories && categories.length > 0) { %>
-        <% categories.forEach(category => { %>
-            <a href="/shop?category=<%= category._id %>"><%= category.name %></a>
-        <% }) %>
-    <% } %>
-                    <!-- <% if(locals.menCategoryId) { %> -->
-                        <!-- <a href="/mens-products?category=<%= menCategoryId %>">Men</a>
+                    <% if(locals.categories && categories.length> 0) { %>
+                        <% categories.forEach(category=> { %>
+                            <a href="/shop?category=<%= category._id %>">
+                                <%= category.name %>
+                            </a>
+                            <% }) %>
+                                <% } %>
+                                    <!-- <% if(locals.menCategoryId) { %> -->
+                                    <!-- <a href="/mens-products?category=<%= menCategoryId %>">Men</a>
                         <% } %>
                             <% if(locals.womenCategoryId) { %>
                                 <a href="/womens-products?category=<%= womenCategoryId %>">Women</a>
@@ -131,13 +244,18 @@
                                         <% } %> -->
                 </nav>
 
-                <!-- <div class="search-bar">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <path d="m21 21-4.35-4.35"></path>
-                    </svg>
-                    <input type="text" placeholder="Search products...">
-                </div> -->
+                <form action="/shop" method="GET" class="search-bar-form">
+                    <div class="search-container">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" class="search-icon">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <input type="text" name="search" id="globalSearchInput" placeholder="Search products..."
+                            autocomplete="off">
+                        <div id="globalSearchSuggestions" class="search-suggestions-dropdown"></div>
+                    </div>
+                </form>
 
                 <div class="header-actions">
                     <% if (typeof user !=='undefined' && user) { %>
@@ -242,6 +360,76 @@
             });
         })();
 
+        // GLOBAL SEARCH AUTOCOMPLETE
+        (function () {
+            const searchInput = document.getElementById('globalSearchInput');
+            const suggestionsDropdown = document.getElementById('globalSearchSuggestions');
+            let debounceTimer;
+
+            if (!searchInput || !suggestionsDropdown) return;
+
+            searchInput.addEventListener('input', function () {
+                const query = this.value.trim();
+                clearTimeout(debounceTimer);
+
+                if (query.length < 1) {
+                    suggestionsDropdown.style.display = 'none';
+                    return;
+                }
+
+                debounceTimer = setTimeout(() => {
+                    fetchGlobalSuggestions(query);
+                }, 300);
+            });
+
+            async function fetchGlobalSuggestions(query) {
+                try {
+                    if (typeof axios !== 'undefined') {
+                        const response = await axios.get(`/search-suggestions?q=${encodeURIComponent(query)}`);
+                        if (response.data.success) {
+                            renderGlobalSuggestions(response.data.suggestions);
+                        }
+                    }
+                } catch (error) {
+                    console.error('Search suggestions error:', error);
+                }
+            }
+
+            function renderGlobalSuggestions(suggestions) {
+                if (suggestions.length === 0) {
+                    suggestionsDropdown.innerHTML = '<div class="no-suggestions">No results found</div>';
+                    suggestionsDropdown.style.display = 'block';
+                    return;
+                }
+
+                suggestionsDropdown.innerHTML = suggestions.map(item => `
+                    <div class="suggestion-item" onclick="window.location.href='/product/${item._id}'">
+                        <img src="${item.image.startsWith('http') ? item.image : '/uploads/variant-images/' + item.image}" 
+                             class="suggestion-image" alt="${item.name}">
+                        <div class="suggestion-info">
+                            <span class="suggestion-name">${item.name}</span>
+                        </div>
+                    </div>
+                `).join('');
+
+                suggestionsDropdown.style.display = 'block';
+            }
+
+            // Close when clicking outside
+            document.addEventListener('click', function (e) {
+                if (!e.target.closest('.search-container')) {
+                    suggestionsDropdown.style.display = 'none';
+                }
+            });
+
+            // Show on focus if has query
+            searchInput.addEventListener('focus', function () {
+                if (this.value.trim().length > 0 && suggestionsDropdown.children.length > 0) {
+                    suggestionsDropdown.style.display = 'block';
+                }
+            });
+        })();
+
         function toggleUserMenu() {
             const dropdown = document.getElementById('userDropdown');
             if (dropdown) {
@@ -275,7 +463,4 @@
             const modal = document.getElementById(id);
             if (modal) modal.style.display = 'none';
         }
-
-
-
     </script>
