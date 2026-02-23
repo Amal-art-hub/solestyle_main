@@ -25,6 +25,8 @@
         <% } %>
             <!-- CRITICAL INLINE CSS: This stops the "writing" flash instantly -->
             <style>
+                @import url('https://fonts.googleapis.com/css2?family=Mrs+Saint+Delafield&family=Inter:wght@400;600;700&display=swap');
+
                 /* debugging */
                 /* 
 .container { border: 2px solid blue !important; }        
@@ -99,6 +101,7 @@
                     align-items: center;
                     justify-content: space-between;
                     height: 60px;
+                    /* Reverted to original compact height */
                     position: relative;
                 }
 
@@ -138,10 +141,21 @@
                     margin: 0 auto;
                 }
 
+                .brand-logo {
+                    font-family: 'Mrs Saint Delafield', cursive !important;
+                    font-size: 52px !important;
+                    /* Exact match with admin panel */
+                    color: #000 !important;
+                    text-decoration: none !important;
+                    line-height: 0.7 !important;
+                    display: inline-block !important;
+                    transform: translateY(2px) !important;
+                    /* Optical adjustment for 52px size */
+                    white-space: nowrap !important;
+                }
+
                 .logo a {
-                    font-size: 22px;
-                    font-weight: 800;
-                    letter-spacing: -0.5px;
+                    text-decoration: none;
                 }
 
                 /* CAPSULE SEARCH */
@@ -251,7 +265,7 @@
         <div class="container">
             <div class="header-content">
                 <div class="logo">
-                    <a href="/">👟 SoleStyle</a>
+                    <a href="/" class="brand-logo">SoleStyle</a>
                 </div>
 
                 <nav class="main-nav">
