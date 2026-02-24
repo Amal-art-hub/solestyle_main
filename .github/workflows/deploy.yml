@@ -43,3 +43,6 @@ jobs:
               -p 5000:5000 \
               --env-file /home/ubuntu/.env \
               ${{ secrets.DOCKER_USERNAME }}/solestyle-app:latest
+
+
+              # Start the engine!
