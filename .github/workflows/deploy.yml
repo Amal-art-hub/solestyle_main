@@ -3,7 +3,7 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - main  # This triggers the script every time you push to 'main'
+      - production-Live  # This triggers the script every time you push to 'main'
 
 jobs:
   build-and-deploy:
