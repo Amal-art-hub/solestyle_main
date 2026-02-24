@@ -344,37 +344,100 @@ export const getTrendingProducts = async () => {
     };
 };
 
+// export const getSearchSuggestions = async (query, limit = 10) => {
+//     if (!query || query.trim().length === 0) return [];
+
+//     const products = await Product.find({
+//         name: { $regex: query, $options: "i" },
+//         isListed: true
+//     })
+//         .limit(limit)
+//         .select("name _id")
+//         .lean();
+
+//     if (products.length === 0) return [];
+
+//     const productIds = products.map(p => p._id);
+//     const variants = await Variant.find({
+//         productId: { $in: productIds },
+//         isListed: true
+//     }).sort({ price: 1 }).lean();
+
+//     const variantMap = variants.reduce((acc, v) => {
+//         const pid = v.productId.toString();
+//         if (!acc[pid]) acc[pid] = v;
+//         return acc;
+//     }, {});
+
+//     return products.map(p => {
+//         const variant = variantMap[p._id.toString()];
+//         return {
+//             _id: p._id,
+//             name: p.name,
+//             image: variant ? (variant.images[2] || variant.images[0]) : "default.jpg"
+//         };
+//     });
+// };
+
+
+
 export const getSearchSuggestions = async (query, limit = 10) => {
     if (!query || query.trim().length === 0) return [];
 
+    // 1. Fetch products that are listed AND match the search name
+    // Also check if Category and Brand are listed using populate + match
     const products = await Product.find({
         name: { $regex: query, $options: "i" },
         isListed: true
     })
+        .populate({
+            path: "categoryId",
+            match: { isListed: true },
+            select: "isListed"
+        })
+        .populate({
+            path: "brandId",
+            match: { isListed: true },
+            select: "isListed"
+        })
         .limit(limit)
-        .select("name _id")
+        .select("name _id categoryId brandId")
         .lean();
 
-    if (products.length === 0) return [];
+    // 2. Filter out products where the Category or Brand is unlisted 
+    // (If the match fails, populate returns null)
+    const activeProducts = products.filter(p => p.categoryId && p.brandId);
 
-    const productIds = products.map(p => p._id);
+    if (activeProducts.length === 0) return [];
+
+    const productIds = activeProducts.map(p => p._id);
+
+    // 3. Find only Listed Variants for these products
     const variants = await Variant.find({
         productId: { $in: productIds },
         isListed: true
     }).sort({ price: 1 }).lean();
 
+    // 4. Map them into a lookup object
     const variantMap = variants.reduce((acc, v) => {
         const pid = v.productId.toString();
         if (!acc[pid]) acc[pid] = v;
         return acc;
     }, {});
 
-    return products.map(p => {
-        const variant = variantMap[p._id.toString()];
-        return {
-            _id: p._id,
-            name: p.name,
-            image: variant ? (variant.images[2] || variant.images[0]) : "default.jpg"
-        };
-    });
+    // 5. Final Assembly
+    return activeProducts
+        .map(p => {
+            const variant = variantMap[p._id.toString()];
+            
+            // If No listed variants found, don't show the product in search
+            if (!variant) return null; 
+
+            return {
+                _id: p._id,
+                name: p.name,
+                image: variant.images[2] || variant.images[0]
+            };
+        })
+        .filter(item => item !== null); // Remove the nulls
 };

@@ -1,0 +1,45 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main  # This triggers the script every time you push to 'main'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push Docker Image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/solestyle-app:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/solestyle-app:latest
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Pull the latest image
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/solestyle-app:latest
+            
+            # Stop and remove the old container if it exists
+            sudo docker stop solestyle-app || true
+            sudo docker rm solestyle-app || true
+            
+            # Run the new container
+            sudo docker run -d \
+              --name solestyle-app \
+              -p 5000:5000 \
+              --env-file /home/ubuntu/.env \
+              ${{ secrets.DOCKER_USERNAME }}/solestyle-app:latest
