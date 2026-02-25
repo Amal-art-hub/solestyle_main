@@ -40,13 +40,20 @@ export const debitWallet = async (userId, amount, description) => {
     let wallet = await Wallet.findOne({ user_id: userId });
 
     if (!wallet) {
-        wallet = new Wallet({ user_id: userId, balance: 0, transactions: [] });
+        wallet = new Wallet({ user_id: userId, balance: 0, history: [] });
     }
 
-    wallet.balance += amount;
-    wallet.transactions.push({
+        if (wallet.balance < amount) {
+        throw new Error("Insufficient wallet balance. Please top up your wallet.");
+    }
+
+    wallet.balance -= amount;
+
+    console.log("DEBUG: Wallet found in DB:", wallet);
+console.log("DEBUG: Is history defined?", wallet.history);
+    wallet.history.push({
         amount,
-        type: "credit",
+        type: "debit",
         description,
         date: new Date()
     });

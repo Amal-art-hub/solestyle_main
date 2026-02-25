@@ -1,6 +1,27 @@
 # 1. Start with a "Base Image" (A clean computer with Node.js 20 installed)
 FROM node:20-slim
 
+
+# Install system dependencies for Puppeteer
+RUN apt-get update && apt-get install -y \
+    wget \
+    gnupg \
+    ca-certificates \
+    libgconf-2-4 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libgdk-pixbuf2.0-0 \
+    libgtk-3-0 \
+    libgbm-dev \
+    libnss3 \
+    libxss1 \
+    libasound2 \
+    libxshmfence1 \
+    libglu1 \
+    fonts-liberation \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
 # 2. Set the working directory (The folder inside the container)
 WORKDIR /app
 
