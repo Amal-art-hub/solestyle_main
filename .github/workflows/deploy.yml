@@ -30,19 +30,22 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Pull the latest image
-            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/solestyle-app:latest
-            
-            # Stop and remove the old container if it exists
+            # 1. Clear disk space (The Janitor)
+            sudo docker system prune -af --volumes
+
+            # 2. Stop and remove the old container
             sudo docker stop solestyle-app || true
             sudo docker rm solestyle-app || true
+
+            # 3. Pull the latest image from Docker Hub
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/solestyle-app:latest
             
-            # Run the new container
+            # 4. Run the new container
             sudo docker run -d \
               --name solestyle-app \
               -p 5000:5000 \
               --env-file /home/ubuntu/.env \
               ${{ secrets.DOCKER_USERNAME }}/solestyle-app:latest
 
-
-              # Start the engine!
+            # 5. Final Nginx Refresh
+            sudo systemctl restart nginx
