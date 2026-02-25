@@ -76,7 +76,7 @@ export const placeOrderService = async (userId, addressId, paymentMethod, coupon
         if (!pendingOrder) throw new Error("Order not found or expired");
 
         pendingOrder.status = "processing";
-        pendingOrder.items.forEach(item => { item.status = "pending"; });
+        pendingOrder.items.forEach(item => { item.status = "processing"; });
 
         const paymentDoc = new Payment({
             user_id: userId,

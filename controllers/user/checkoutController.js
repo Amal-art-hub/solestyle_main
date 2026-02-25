@@ -250,8 +250,8 @@ export const verifyRazorpayWebhook = async (req, res) => {
 
                 if (order && order.status === "Payment Pending") {
                     // Update order status to successful
-                    order.status = "pending";
-                    order.items.forEach(item => { item.status = "pending"; });
+                    order.status = "processing";
+                    order.items.forEach(item => { item.status = "processing"; });
 
                     const newPayment = new Payment({
                         user_id: order.user_id,
