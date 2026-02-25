@@ -57,6 +57,7 @@ const orderSchema = new mongoose.Schema({
       original_price: { type: Number, required: true },
       name_snapshot: { type: String },
       variant_snapshot: { type: String },
+      image_snapshot: { type: String },
 
       status: {
         type: String,

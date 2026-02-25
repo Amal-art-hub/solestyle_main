@@ -148,12 +148,13 @@ export const placeOrderService = async (userId, addressId, paymentMethod, coupon
             product_id: item.product_id,
             variant_id: item.variant_id._id,
             quantity: item.quantity,
-           
+
             original_price: originalMRP,
-             unit_price: finalPrice,
+            unit_price: finalPrice,
             total_amount: itemOfferTotal,
             name_snapshot: item.name_snapshot,
             variant_snapshot: `Size:${variant.size}, Color:${variant.color}`,
+            image_snapshot: variant.images?.[0] || 'default.jpg',
             status: initialStatus
         });
     }
@@ -171,9 +172,9 @@ export const placeOrderService = async (userId, addressId, paymentMethod, coupon
     const randomPart = Math.random().toString(36).substring(2, 7).toUpperCase();
     const orderNumber = `ORD-${datePart}-${randomPart}`;
 
-  if (paymentMethod === "Wallet") {
-    await debitWallet(userId, finalPayable, "Order Payment - " + orderNumber);
-}
+    if (paymentMethod === "Wallet") {
+        await debitWallet(userId, finalPayable, "Order Payment - " + orderNumber);
+    }
 
     const newOrder = new Order({
         user_id: userId,
@@ -201,7 +202,7 @@ export const placeOrderService = async (userId, addressId, paymentMethod, coupon
     });
 
 
-  
+
 
     await newOrder.save();
 
@@ -271,11 +272,12 @@ export const createRazorpayOrderService = async (userId, addressId, couponData) 
             original_price: originalMRP,
             total_amount: item.quantity * finalPrice,
             name_snapshot: item.name_snapshot,
+            image_snapshot: item.variant_id.images?.[0] || 'default.jpg',
             status: "Payment Pending"
         });
     }
 
-    
+
 
     let totalOfferSaving = totalMrpPrice - totalOfferPrice;
     let couponDiscount = couponData ? couponData.discount : 0;

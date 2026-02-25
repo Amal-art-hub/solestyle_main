@@ -24,14 +24,14 @@ async function updateStatus(orderId, newStatus) {
 
             if (data.success) {
                 await Swal.fire("Updated!", "Order status has been updated.", "success");
-                
+
                 const selectElement = document.querySelector(`select[data-order-id="${orderId}"]`);
                 selectElement.className = `status-badge status-${newStatus.replace(/\s+/g, "-")}`;
             } else {
                 throw new Error(data.message);
             }
         } else {
-            location.reload(); 
+            location.reload();
         }
     } catch (error) {
         console.error("Error:", error);
@@ -43,8 +43,8 @@ async function updateStatus(orderId, newStatus) {
 const modal = document.getElementById("orderModal");
 const span = document.getElementsByClassName("close-modal")[0];
 
-span.onclick = function() { modal.style.display = "none"; };
-window.onclick = function(event) { if (event.target == modal) modal.style.display = "none"; };
+span.onclick = function () { modal.style.display = "none"; };
+window.onclick = function (event) { if (event.target == modal) modal.style.display = "none"; };
 
 async function viewOrderDetails(orderId) {
     const modalBody = document.getElementById("modalBody");
@@ -57,10 +57,10 @@ async function viewOrderDetails(orderId) {
 
         if (data.success) {
             const order = data.order;
-            
-                       let itemsHtml = order.items.map(item => {
+
+            let itemsHtml = order.items.map(item => {
                 let actionButtons = "";
-                
+
                 // Logic to display the reason if it exists
                 // let reasonHtml = '';
                 // if(item.return_reason) {
@@ -69,14 +69,14 @@ async function viewOrderDetails(orderId) {
                 //                   </div>`;
                 // }
 
-                                // Logic to display the reason with "Read More" for long text
-                                let reasonHtml = "";
-                if(item.return_reason) {
-                    const fullText = item.return_reason.replace(/"/g, "&quot;"); 
+                // Logic to display the reason with "Read More" for long text
+                let reasonHtml = "";
+                if (item.return_reason) {
+                    const fullText = item.return_reason.replace(/"/g, "&quot;");
                     const shortText = fullText.length > 50 ? fullText.substring(0, 50) + "..." : fullText;
-                    
+
                     /* FIXED LOGIC HERE: Using a dedicated function call instead of inline Swal */
-                    const displayText = fullText.length > 50 
+                    const displayText = fullText.length > 50
                         ? `<span title="${fullText}">${shortText} <a href="javascript:void(0)" onclick="showReason('${fullText.replace(/'/g, "\\'")}')" style="color: blue; font-size: 0.9em;">Read Full</a></span>`
                         : `"${fullText}"`;
 
@@ -98,9 +98,14 @@ async function viewOrderDetails(orderId) {
                     `;
                 }
 
+                let rawImg = item.image_snapshot || item.variant_id?.images?.[0] || item.variant_id?.images?.[2] || "default.jpg";
+                let imagePath = rawImg.startsWith("http") ? rawImg : `/uploads/variant-images/${rawImg}`;
+
                 return `
                 <li class="item" style="margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-                   <img src="/uploads/variant-images/${item.variant_id?.images?.[2] || "default.jpg"}" alt="Item" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
+                   <img src="${imagePath}" 
+                        onerror="this.src='/uploads/product-image/default.jpg'"
+                        alt="Item" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
                     <div>
                         <strong>${item.name_snapshot || item.product_id?.productName}</strong><br>
                         Qty: ${item.quantity} | Price: ₹${item.unit_price}
@@ -135,7 +140,7 @@ async function viewOrderDetails(orderId) {
                     <p><strong>Total:</strong> ₹${order.final_total}</p>
                 </div>
             `;
-            
+
             modalBody.innerHTML = content;
         } else {
             modalBody.innerHTML = "<p class=\"error\">Failed to load details</p>";
@@ -158,7 +163,7 @@ async function handleReturn(orderId, itemId, action) {
             icon: "warning",
             showCancelButton: true,
             confirmButtonText: "Yes, proceed!",
-             confirmButtonColor: action === "approve" ? "#28a745" : "#dc3545"
+            confirmButtonColor: action === "approve" ? "#28a745" : "#dc3545"
         });
 
         if (result.isConfirmed) {
