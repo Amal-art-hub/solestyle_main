@@ -75,7 +75,7 @@ export const placeOrderService = async (userId, addressId, paymentMethod, coupon
 
         if (!pendingOrder) throw new Error("Order not found or expired");
 
-        pendingOrder.status = "pending";
+        pendingOrder.status = "processing";
         pendingOrder.items.forEach(item => { item.status = "pending"; });
 
         const paymentDoc = new Payment({
@@ -133,6 +133,7 @@ export const placeOrderService = async (userId, addressId, paymentMethod, coupon
 
     let totalOfferPrice = 0;
     let totalMrpPrice = 0;
+    const initialStatus = (paymentMethod === 'Wallet') ? 'processing' : 'pending';
     const orderItems = [];
 
     for (const item of validItems) {
@@ -153,7 +154,7 @@ export const placeOrderService = async (userId, addressId, paymentMethod, coupon
             total_amount: itemOfferTotal,
             name_snapshot: item.name_snapshot,
             variant_snapshot: `Size:${variant.size}, Color:${variant.color}`,
-            status: "pending"
+            status: initialStatus
         });
     }
 
@@ -170,15 +171,13 @@ export const placeOrderService = async (userId, addressId, paymentMethod, coupon
     const randomPart = Math.random().toString(36).substring(2, 7).toUpperCase();
     const orderNumber = `ORD-${datePart}-${randomPart}`;
 
-    let orderStatus = "pending";
-    if (paymentMethod === "Wallet") {
-        await debitWallet(userId, finalPayable, "Order Payment - " + orderNumber);
-        orderStatus = "processing";
-    }
+  if (paymentMethod === "Wallet") {
+    await debitWallet(userId, finalPayable, "Order Payment - " + orderNumber);
+}
 
     const newOrder = new Order({
         user_id: userId,
-        status: orderStatus,
+        status: initialStatus,
         subtotal: totalMrpPrice,
         offer_discount: totalOfferSavings,
         discount_amount: couponDiscount,
