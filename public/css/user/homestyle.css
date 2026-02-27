@@ -1,3 +1,5 @@
+@import "/css/global-swal.css";
+
 * {
     margin: 0;
     padding: 0;
@@ -1354,6 +1356,7 @@ div:where(.swal2-container) button:where(.swal2-cancel):hover {
     z-index: 2;
 }
 
-.play-btn, .video-info {
+.play-btn,
+.video-info {
     z-index: 3;
 }

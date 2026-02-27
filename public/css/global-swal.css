@@ -1,0 +1,81 @@
+/* Vibrant Gradient Theme for SweetAlert2 */
+
+.swal2-popup {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border: none !important;
+    border-radius: 20px !important;
+    box-shadow: 0 15px 35px rgba(118, 75, 162, 0.4) !important;
+    padding: 2rem !important;
+}
+
+/* Title and Text Styling */
+.swal2-title {
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    font-family: 'Inter', sans-serif !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+    font-size: 1.8rem !important;
+}
+
+.swal2-html-container {
+    color: rgba(255, 255, 255, 0.95) !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 1.1rem !important;
+    line-height: 1.5 !important;
+    font-weight: 500 !important;
+}
+
+/* Button Styling - High Contrast White with Glow */
+.swal2-confirm {
+    background: #ffffff !important;
+    color: #764ba2 !important;
+    border-radius: 50px !important;
+    padding: 14px 40px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    border: none !important;
+    transition: all 0.3s ease !important;
+}
+
+.swal2-confirm:hover {
+    transform: scale(1.05) !important;
+    box-shadow: 0 15px 30px rgba(255, 255, 255, 0.3) !important;
+    background: #f8f9fa !important;
+}
+
+/* Cancel Button Styling */
+.swal2-cancel {
+    background: transparent !important;
+    border: 2px solid rgba(255, 255, 255, 0.5) !important;
+    border-radius: 50px !important;
+    padding: 12px 35px !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+}
+
+.swal2-cancel:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border-color: #ffffff !important;
+}
+
+/* Icon Colors - White for maximum impact on gradient */
+.swal2-icon {
+    border-color: #ffffff !important;
+    color: #ffffff !important;
+}
+
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+    background-color: #ffffff !important;
+}
+
+.swal2-icon.swal2-success .swal2-success-ring {
+    border: .25em solid rgba(255, 255, 255, .3) !important;
+}
+
+/* Backdrop Dimming */
+.swal2-backdrop-show {
+    background: rgba(0, 0, 0, 0.7) !important;
+}
