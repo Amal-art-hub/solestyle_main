@@ -62,7 +62,7 @@ async function openEditModal(button) {
     }
   } catch (error) {
     console.error("Error loading images:", error);
-    alert("Error loading variant images");
+    Swal.fire({ icon: 'error', title: 'Oops...', text: 'Error loading variant images!' });
   }
 
   document.getElementById("editModal").style.display = "block";
@@ -115,7 +115,8 @@ function toggleImageDelete(imageName) {
     const remainingImages = currentVariantImages.length - imagesToDelete.length;
 
     if (remainingImages <= 1) {
-      alert("Cannot delete this image. You must keep at least 3 images.");
+      Swal.fire({ icon: 'warning', title: 'Action Denied', text: 'You must keep at least 3 images for this variant!' });
+
       return;
     }
 
@@ -150,30 +151,6 @@ window.onclick = function (event) {
   }
 };
 
-// Toggle Variant Listing
-// async function toggleVariant(button) {
-//   const variantId = button.dataset.id;
-
-//   try {
-//     const response = await fetch(`/admin/variants/${variantId}/toggle-listing`, {
-//       method: 'PATCH',
-//       headers: {
-//         'Content-Type': 'application/json'
-//       }
-//     });
-
-//     const result = await response.json();
-
-//     if (result.success) {
-//       location.reload();
-//     } else {
-//       alert(result.message || 'Error toggling variant');
-//     }
-//   } catch (error) {
-//     console.error('Error:', error);
-//     alert('Error toggling variant');
-//   }
-// }
 
 
 /* REPLACE THE OLD FUNCTION WITH THIS NEW ONE */
@@ -227,31 +204,32 @@ async function toggleVariant(button) {
 
 // Delete Variant
 async function deleteVariant(variantId) {
-  if (!confirm("Are you sure you want to delete this variant?")) {
-    return;
-  }
+  const result = await Swal.fire({
+    title: 'Are you sure?',
+    text: "You won't be able to revert this!",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Yes, delete it!'
+  });
 
-  try {
-    const response = await fetch(`/admin/variants/${variantId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json"
+  if (result.isConfirmed) {
+    try {
+      const response = await fetch(`/admin/variants/${variantId}`, { method: "DELETE" });
+      const resData = await response.json();
+      if (resData.success) {
+        await Swal.fire('Deleted!', 'Variant has been deleted.', 'success');
+        location.reload();
+      } else {
+        Swal.fire('Error', resData.message || 'Error deleting variant', 'error');
       }
-    });
-
-    const result = await response.json();
-
-    if (result.success) {
-      alert(result.message);
-      location.reload();
-    } else {
-      alert(result.message || "Error deleting variant");
+    } catch (error) {
+      Swal.fire('Error', 'Server error during deletion', 'error');
     }
-  } catch (error) {
-    console.error("Error:", error);
-    alert("Error deleting variant");
   }
 }
+
 
 // Client-side validation and event listeners
 document.addEventListener("DOMContentLoaded", function () {
@@ -266,13 +244,15 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log("Files selected:", files.length);
 
       if (files.length < 3) {
-        alert("Please select at least 3 images");
+        Swal.fire({ icon: 'warning', title: 'Upload Error', text: 'Please select between 3 and 10 images!' });
+
         e.target.value = "";
         return;
       }
 
       if (files.length > 10) {
-        alert("Maximum 10 images allowed");
+        Swal.fire({ icon: 'warning', title: 'Upload Error', text: 'Please select between 3 and 10 images!' });
+
         e.target.value = "";
         return;
       }
@@ -504,12 +484,20 @@ document.addEventListener("DOMContentLoaded", function () {
       const totalImages = remainingImages + newImagesCount;
 
       if (totalImages < 1) {
-        alert(`Total images must be at least 3. Currently: ${remainingImages} existing - ${imagesToDelete.length} to delete + ${newImagesCount} new = ${totalImages} total`);
+        Swal.fire({
+          icon: 'warning',
+          title: 'Image Count Error',
+          text: `Total images must be at least 3. Currently: ${remainingImages} existing - ${imagesToDelete.length} to delete + ${newImagesCount} new = ${totalImages} total`
+        });
         return;
       }
 
       if (totalImages > 10) {
-        alert(`Total images cannot exceed 10. Currently: ${totalImages} total`);
+        Swal.fire({
+          icon: 'warning',
+          title: 'Limit Exceeded',
+          text: `Total images cannot exceed 10. Currently: ${totalImages} total`
+        });
         return;
       }
 
@@ -548,11 +536,21 @@ document.addEventListener("DOMContentLoaded", function () {
           window.location.href = resData.redirectUrl || location.href;
         } else {
           const resData = await response.json().catch(() => ({}));
-          alert(resData.message || "Error updating variant");
+          Swal.fire({
+            icon: 'error',
+            title: 'Update Failed',
+            text: resData.message || "Error updating variant"
+          });
+
         }
       } catch (error) {
         console.error("Error:", error);
-        alert("Error updating variant");
+        Swal.fire({
+          icon: 'error',
+          title: 'Update Failed',
+          text: resData.message || "Error updating variant"
+        });
+
       }
     });
   }
@@ -591,7 +589,11 @@ function processNextImage() {
         // Check if Cropper is available
         if (typeof Cropper === "undefined") {
           console.error("Cropper library is not loaded!");
-          alert("Error: Image cropping library not loaded. Please refresh the page.");
+          Swal.fire({
+            icon: 'error',
+            title: 'Library Missing',
+            text: 'Error: Image cropping library not loaded. Please refresh the page.'
+          });
           return;
         }
 
@@ -650,7 +652,11 @@ function processNextEditImage() {
         // Check if Cropper is available
         if (typeof Cropper === "undefined") {
           console.error("Cropper library not loaded!");
-          alert("Error: Image cropping library not loaded. Please refresh the page.");
+          Swal.fire({
+            icon: 'error',
+            title: 'Library Missing',
+            text: 'Error: Image cropping library not loaded. Please refresh the page.'
+          });
           return;
         }
 

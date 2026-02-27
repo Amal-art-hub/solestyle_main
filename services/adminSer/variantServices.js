@@ -38,6 +38,10 @@ export const createVariant = async (productId, data, files) => {
         console.log("DEBUG 4: Service received ->", { productId, dataKeys: Object.keys(data) });
         const { size, color, price, stock } = data;
 
+        if(size<0){
+            throw new Error("size should not be negative");
+        }
+
         const images = files.map(file => file.path);
 
         const newVariant = new Variant({
@@ -62,11 +66,17 @@ export const updateVariant = async (id, data, files) => {
         if (!variant) {
             throw new Error("Variant not found");
         }
-
+        
+if(data.size < 0){
+    throw new Error("size should not be negative");
+}
+        
         variant.size = data.size;
         variant.color = data.color;
         variant.price = data.price;
         variant.stock = data.stock;
+
+       
 
         let currentImages = [...variant.images];
 
