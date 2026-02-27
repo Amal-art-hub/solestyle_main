@@ -135,6 +135,10 @@ export async function verifyOtpService(session, otp) {
       };
     }
 
+        if (Date.now() > session.otpExpiry) {
+        return { success: false, status: statusCode.BAD_REQUEST, message: "OTP has expired. Please resend." };
+    }
+
     if (otp !== session.userOtp) {
       return {
         success: false,
@@ -195,6 +199,7 @@ export async function resendOtpService(session) {
   }
 
   session.userOtp = otp;
+  session.otpExpiry = Date.now() + 5 * 60 * 1000;
 
   console.log("OTP resent successfully to:", email);
   console.log("======================================");
@@ -295,6 +300,12 @@ export const verifyResetOtpService = async (session, otp) => {
   try {
     const storedOtp = session.resetOtp;
     const email = session.resetEmail;
+        const expiry = session.resetOtpExpiry;
+
+
+            if (Date.now() > expiry) {
+        return { success: false, status: statusCode.BAD_REQUEST, message: "OTP has expired." };
+    }
 
     if (!storedOtp || !email) {
       return {

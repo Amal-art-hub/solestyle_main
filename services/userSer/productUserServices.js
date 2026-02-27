@@ -344,40 +344,7 @@ export const getTrendingProducts = async () => {
     };
 };
 
-// export const getSearchSuggestions = async (query, limit = 10) => {
-//     if (!query || query.trim().length === 0) return [];
 
-//     const products = await Product.find({
-//         name: { $regex: query, $options: "i" },
-//         isListed: true
-//     })
-//         .limit(limit)
-//         .select("name _id")
-//         .lean();
-
-//     if (products.length === 0) return [];
-
-//     const productIds = products.map(p => p._id);
-//     const variants = await Variant.find({
-//         productId: { $in: productIds },
-//         isListed: true
-//     }).sort({ price: 1 }).lean();
-
-//     const variantMap = variants.reduce((acc, v) => {
-//         const pid = v.productId.toString();
-//         if (!acc[pid]) acc[pid] = v;
-//         return acc;
-//     }, {});
-
-//     return products.map(p => {
-//         const variant = variantMap[p._id.toString()];
-//         return {
-//             _id: p._id,
-//             name: p.name,
-//             image: variant ? (variant.images[2] || variant.images[0]) : "default.jpg"
-//         };
-//     });
-// };
 
 
 

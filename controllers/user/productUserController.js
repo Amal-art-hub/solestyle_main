@@ -45,6 +45,11 @@ export const getProductDetails = async (req, res) => {
         const data = await getProductDetailService(req.params.id);
         if (!data) return res.redirect("/");
 
+                if (!data.product.categoryId.isListed) {
+            // Redirect to shop with a message
+            return res.redirect("/shop");
+        }
+
         res.status(statusCode.OK).render("productDetails", {
             product: data.product,
             variants: data.variants,

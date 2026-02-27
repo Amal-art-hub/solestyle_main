@@ -126,6 +126,7 @@ export const signup = async (req, res) => {
 
     req.session.userOtp = otp;
     req.session.userData = { firstName, lastName, email, phone, password, referralCode };
+    req.session.otpExpiry = Date.now() + 5 * 60 * 1000;
 
     return res.status(statusCode.OK).json({ success: true, redirect: "/verify-otp" });
   } catch (error) {
