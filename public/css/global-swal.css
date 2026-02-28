@@ -9,20 +9,38 @@
 }
 
 /* Title and Text Styling */
-.swal2-title {
-    color: #ffffff !important;
-    font-weight: 800 !important;
-    font-family: 'Inter', sans-serif !important;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
-    font-size: 1.8rem !important;
+/* UNIVERSAL TARGETING: Force everything inside the popup to be black first */
+.swal2-popup * {
+    color: #000000 !important;
+    opacity: 1 !important;
 }
 
-.swal2-html-container {
-    color: rgba(255, 255, 255, 0.95) !important;
+/* EXEMPT TITLE: The title should stay white */
+.swal2-title {
+    color: #ffffff !important;
+}
+
+/* EXEMPT BUTTONS: The buttons need their specific colors */
+.swal2-confirm {
+    color: #764ba2 !important;
+    background-color: #ffffff !important;
+}
+
+.swal2-cancel {
+    color: #ffffff !important;
+}
+
+/* SPECIFIC HTML CONTAINER: Make it extra bold and add a green border for testing */
+.swal2-html-container,
+#swal2-html-container,
+.swal2-content {
+    color: #000000 !important;
     font-family: 'Inter', sans-serif !important;
-    font-size: 1.1rem !important;
+    font-size: 1.2rem !important;
     line-height: 1.5 !important;
-    font-weight: 500 !important;
+    font-weight: 900 !important;
+    /* Thickest possible */
+    margin: 1em 1.6em 0.3em !important;
 }
 
 /* Button Styling - High Contrast White with Glow */
@@ -48,7 +66,7 @@
 /* Cancel Button Styling */
 .swal2-cancel {
     background: transparent !important;
-    border: 2px solid rgba(255, 255, 255, 0.5) !important;
+    border: 2px solid rgba(17, 16, 16, 0.5) !important;
     border-radius: 50px !important;
     padding: 12px 35px !important;
     color: #ffffff !important;
@@ -72,7 +90,7 @@
 }
 
 .swal2-icon.swal2-success .swal2-success-ring {
-    border: .25em solid rgba(255, 255, 255, .3) !important;
+    border: .25em solid rgba(14, 13, 13, 0.3) !important;
 }
 
 /* Backdrop Dimming */
