@@ -18,6 +18,9 @@ import BrandSection from "../../models/BrandSection.js";
 import User from "../../models/user.js";
 import 'dotenv/config';
 import statusCode from "../../utils/statusCodes.js";
+import { logToFile } from "../../utils/logger.js";
+
+
 
 export const pageNotFound = (req, res) => {
   res.status(statusCode.NOT_FOUND).render("page-404");
@@ -96,6 +99,7 @@ export const signup = async (req, res) => {
     const { firstName, lastName, email, phone, password, confirmPassword, referralCode } =
       req.body;
 
+      logToFile(`USER ACTION: Signup attempt with email: ${email}`);
 
     if (!firstName || !lastName || !email || !phone || !password) {
       return res.status(400).json({ message: "All fields are required" });

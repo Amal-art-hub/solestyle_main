@@ -14,6 +14,7 @@ import userRouter from "./routes/userRouter.js";
 import adminRouter from "./routes/adminRouter.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import compression from "compression";
+import {logToFile} from "./utils/logger.js";
 
 const app = express();
 app.use(compression());
@@ -26,7 +27,10 @@ const __dirname = path.dirname(__filename);
 db();
 
 app.set("trust proxy", 1);
-app.use(morgan('dev'));
+app.use(morgan('dev',{
+  stream:{write:(message)=> logToFile(message.trim())
+  }
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

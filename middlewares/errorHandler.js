@@ -1,9 +1,17 @@
+
+import { logToFile } from "../utils/logger.js";
+
+
+
+
 const errorHandler = (err, req, res, next) => {
     console.error(err.stack);
 
     const statusCode = err.statusCode || 500;
 
     const message = err.message || "Internal Server Error";
+
+      logToFile(`ERROR [${statusCode}]: ${message}\nStack: ${err.stack}`);
 
 
     // If it's an AJAX request or expects JSON, return JSON
