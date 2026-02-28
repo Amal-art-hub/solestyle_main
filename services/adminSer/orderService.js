@@ -70,14 +70,36 @@ export const approveReturnService = async (orderId, itemId) => {
     throw new Error("Item is not pending return approval");
   }
 
-  let refundAmount = item.total_amount;
+  // let refundAmount = item.total_amount;
 
-  if (order.discount_amount && order.discount_amount > 0) {
-    const currentSubtotal = order.items.reduce((sum, i) => sum + i.total_amount, 0);
-    const itemDiscountPortion = (item.total_amount / currentSubtotal) * order.discount_amount;
-    refundAmount = item.total_amount - itemDiscountPortion;
-    refundAmount = Math.round(refundAmount);
-  }
+  // if (order.discount_amount && order.discount_amount > 0) {
+  //   const currentSubtotal = order.items.reduce((sum, i) => sum + i.total_amount, 0);
+  //   const itemDiscountPortion = (item.total_amount / currentSubtotal) * order.discount_amount;
+  //   refundAmount = item.total_amount - itemDiscountPortion;
+  //   refundAmount = Math.round(refundAmount);
+  // }
+
+   const orderTotalBeforeCoupen=order.subtotal-order.offer_discount;
+
+   const coupenShareForThisItem=orderTotalBeforeCoupen>0?(order.discount_amount*(item.total_amount/orderTotalBeforeCoupen)):0;
+
+   const itemOfferSavings=(item.original_price*item.quantity)-item.total_amount;
+
+   order.subtotal-=(item.original_price*item.quantity);
+
+   order.offer_discount-=itemOfferSavings;
+
+   order.discount_amount -=coupenShareForThisItem;
+
+   order.final_total=Math.max(0,order.subtotal-order.offer_discount-order.discount_amount+(order.delivery_charge||0));
+
+
+     // F. Calculate Wallet Refund (Using Math.round for clean numbers)
+   const refundAmount=Math.round(item.total_amount-coupenShareForThisItem);
+
+
+
+
 
   item.status = "returned";
 
@@ -90,23 +112,22 @@ export const approveReturnService = async (orderId, itemId) => {
   await walletService.creditWallet(
     order.user_id,
     refundAmount,
-    `Refund for Order #${order.order_number}`
+        `Refund for returned item: ${item.name_snapshot} (Order #${order.order_number})`
   );
 
-  const allItemReturned = order.items.every(item => item.status === "returned");
-  const allItemcanceled = order.items.every(item => item.status === "canceled");
-
-  if (allItemReturned) {
-    order.status = "returned";
-  }
-
-  if (allItemcanceled) {
-    order.status = "canceled";
-  }
-
+  const allVoided = order.items.every(item => ["returned", "canceled"].includes(item.status));
+  if (allVoided) {
+    const hasAnyReturn = order.items.some(item => item.status === "returned");
+    if (hasAnyReturn) {
+      order.status = "returned";
+    } else {
+      order.status = "canceled";
+    }
+  } // <--- This closes the 'if (allVoided)'
+  // 5. This MUST be outside all 'if' blocks to always save
   await order.save();
   return { success: true, message: "Return Approved & Refunded" };
-};
+}; 
 
 export const rejectReturnService = async (orderId, itemId) => {
   const order = await Order.findById(orderId);

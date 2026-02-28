@@ -108,8 +108,8 @@ export const applyCoupen = async (req, res) => {
             discount = coupon.discount_value;
         }
 
-        if (discount > 2000) {
-            discount = 2000;
+        if (discount > 5000) {
+            discount = 5000;
         }
 
         req.session.coupon = {
