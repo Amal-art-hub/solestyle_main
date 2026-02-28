@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function nameValidateChecking(e) {
     const nameval1 = nameid1.value;
     const nameval2 = nameid2.value;
-    const namepattern = /^[A-ZA-z]+$/;
+   const namepattern = /^[a-zA-Z\s]+$/;
 
     if (nameval1.trim() === "" || nameval2.trim() === "") {
       error1.style.display = "block";

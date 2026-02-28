@@ -101,7 +101,7 @@ export const signup = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    const nameRegex = /^[A-Zaa-z\s]+$/;
+  const nameRegex = /^[a-zA-Z\s]+$/;
     if (!nameRegex.test(firstName) || !nameRegex.test(lastName)) {
       return res.status(400).json({ message: "Names should only contain letters" });
     }
@@ -116,7 +116,8 @@ export const signup = async (req, res) => {
       return res.status(400).json({ message: "Phone number must be exactly 10 digits" });
     }
 
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+
     if (!passwordRegex.test(password)) {
       return res.status(400).json({ message: "Password must be at least 8 characters long and contain both letters and numbers" });
     }
