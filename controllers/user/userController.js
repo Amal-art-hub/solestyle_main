@@ -90,11 +90,39 @@ export const verifyOtp = async (req, res) => {
   }
 };
 
-// Signup handler – generate OTP and redirect to verification page
+
 export const signup = async (req, res) => {
   try {
     const { firstName, lastName, email, phone, password, confirmPassword, referralCode } =
       req.body;
+
+
+    if (!firstName || !lastName || !email || !phone || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const nameRegex = /^[A-Zaa-z\s]+$/;
+    if (!nameRegex.test(firstName) || !nameRegex.test(lastName)) {
+      return res.status(400).json({ message: "Names should only contain letters" });
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
+
+    const phoneRegex = /^\d{10}$/;
+    if (!phoneRegex.test(phone)) {
+      return res.status(400).json({ message: "Phone number must be exactly 10 digits" });
+    }
+
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({ message: "Password must be at least 8 characters long and contain both letters and numbers" });
+    }
+
+
+
     if (password !== confirmPassword) {
       return res.status(statusCode.BAD_REQUEST).json({ message: "Password do not match" });
     }
@@ -179,7 +207,7 @@ export const login = async (req, res) => {
 
     const result = await loginUser(email, password);
 
-    console.log("login responces:",result);
+    console.log("login responces:", result);
 
     if (!result.success) {
       const code = result.message.includes("blocked")
