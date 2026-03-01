@@ -229,78 +229,72 @@
                             </div>
                             <p style="margin-top:10px; font-size:0.85rem; color:#666;">
                                 Payment Method: <strong>
-                                    <%= order.payment_id ? 'Online' : 'Cash on Delivery' %>
+                                    <%= order.payment_method %>
                                 </strong>
                             </p>
                     </div>
 
-                    <!-- ACTIONS CARD -->
-                    <% if (order.status !=='canceled' && order.status !=='returned' ) { %>
-                        <div class="card actions-card">
-                            <h3>Order Actions</h3>
-                            <div class="action-buttons">
-                                <% // Check if all items are in terminal states var
-                                    allItemsCanceled=order.items.every(item=> item.status === 'canceled');
-                                    var allItemsReturned = order.items.every(item => item.status === 'returned');
-                                    var allItemsFinal = allItemsCanceled || allItemsReturned;
-                                    %>
 
-                                    <% if((order.status==="Payment Pending" || order.status==="Payment Failed" )&&
-                                        order.payment_method==="Online" ){%>
-                                        <button onclick="retryPayment('<%= order._id %>')" class="btn-action"
-                                            style="background-color: #27ae60; color: white;">
 
-                                            <i class="fas fa-redo"></i>Retry Payment
-                                        </button>
-                                        <% } %>
 
-                                            <% if (['pending', 'processing' ].includes(order.status) &&
-                                                !allItemsCanceled) { %>
-                                                <!-- Show Cancel Button ONLY if not all canceled -->
-                                                <button class="btn-action btn-cancel"
-                                                    onclick="cancelOrder('<%= order._id %>')">
-                                                    <i class="fas fa-times-circle"></i> Cancel Order
-                                                </button>
-                                                <% } %>
 
-                                                    <% if (order.status==='delivered' && !allItemsReturned &&
-                                                        !allItemsCanceled) { %>
-                                                        <!-- Show Return Button ONLY if no items are returned/canceled -->
-                                                        <button class="btn-action btn-return"
-                                                            onclick="returnOrder('<%= order._id %>')">
-                                                            <i class="fas fa-undo"></i> Return Order
-                                                        </button>
-                                                        <% } %>
+<!-- ACTIONS CARD -->
+<% if (order.status !== 'canceled' && order.status !== 'returned') { %>
+    <div class="card actions-card">
+        <h3>Order Actions</h3>
+        <div class="action-buttons">
+            <% 
+                // Check if all items are in terminal states
+                var allItemsCanceled = order.items.every((item) => item.status === 'canceled');
+                var allItemsReturned = order.items.every((item) => item.status === 'returned');
+                var allItemsFinal = allItemsCanceled || allItemsReturned;
+            %>
 
-                                                            <% if (allItemsFinal) { %>
-                                                                <p style="color: #666; font-weight: bold;">No further
-                                                                    actions available</p>
-                                                                <% } %>
+            <% if ((order.status === "Payment Pending" || order.status === "Payment Failed") && order.payment_method === "Online") { %>
+                <button onclick="retryPayment('<%= order._id %>')" class="btn-action" style="background-color: #27ae60; color: white;">
+                    <i class="fas fa-redo"></i> Retry Payment
+                </button>
+            <% } %>
 
-                                                                    <% if (order.status==='shipped' ) { %>
-                                                                        <p class="status-note">Order is in transit and
-                                                                            cannot be cancelled.</p>
-                                                                        <% } %>
+            <% if (['pending', 'processing'].includes(order.status) && !allItemsCanceled) { %>
+                <button class="btn-action btn-cancel" onclick="cancelOrder('<%= order._id %>')">
+                    <i class="fas fa-times-circle"></i> Cancel Order
+                </button>
+            <% } %>
 
-                                                                            <% const isPaid=['Online', 'Wallet'
-                                                                                ].includes(order.payment_method); const
-                                                                                isSuccess = !['Payment Pending', 'Payment Failed' , 'canceled'
-                                                                                ].includes(order.status); const
-                                                                                canDownloadInvoice=(isPaid && isSuccess)
-                                                                                || (order.status==='delivered' ); %>
+            <% if (order.status === 'delivered' && !allItemsReturned && !allItemsCanceled) { %>
+                <button class="btn-action btn-return" onclick="returnOrder('<%= order._id %>')">
+                    <i class="fas fa-undo"></i> Return Order
+                </button>
+            <% } %>
 
-                                                                                <% if (canDownloadInvoice) { %>
-                                                                                    <a href="/user/orders/invoice/<%= order._id %>"
-                                                                                        class="btn-action btn-invoice"
-                                                                                        style="background-color: #34495e; color: white; text-decoration: none; padding: 10px 15px; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
-                                                                                        <i
-                                                                                            class="fas fa-file-download"></i>
-                                                                                        Download Invoice
-                                                                                    </a>
-                                                                                    <% } %>
-                            </div>
-                        </div>
-                        <% } %>
+            <% if (allItemsFinal) { %>
+                <p style="color: #666; font-weight: bold;">No further actions available</p>
+            <% } %>
+
+            <% if (order.status === 'shipped') { %>
+                <p class="status-note">Order is in transit and cannot be cancelled.</p>
+            <% } %>
+
+            <% 
+                // Final logic for the invoice button
+                const isPaid = ['Online', 'Wallet'].includes(order.payment_method); 
+                const isSuccess = !['Payment Pending', 'Payment Failed', 'canceled'].includes(order.status); 
+                const canDownloadInvoice = (isPaid && isSuccess) || (order.status === 'delivered'); 
+            %>
+
+            <% if (canDownloadInvoice) { %>
+              <a href="/user/orders/invoice/<%= order._id %>" 
+   class="btn-action btn-invoice"
+   style="background-color: #34495e; color: white; text-decoration: none; padding: 10px 15px; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+    <i class="fas fa-file-download"></i> Download Invoice
+</a>
+
+            <% } %>
+        </div>
+    </div>
+<% } %>
+
 
 
                 </div>

@@ -19,6 +19,15 @@ export const loadCheckout = async (req, res) => {
     try {
         const userId = req.session.user._id;
         const { cart, addresses, subtotal, coupons } = await getCheckoutData(userId);
+
+
+        if (req.session.coupon) {
+    if (subtotal < req.session.coupon.mincart_value) {
+        req.session.coupon = null;
+    }
+}
+
+
         const wallet = await getWallet(userId);
         if (!cart) {
             return res.redirect("/user/cart");
@@ -115,7 +124,8 @@ export const applyCoupen = async (req, res) => {
         req.session.coupon = {
             code: coupon.code,
             discount: discount,
-            _id: coupon._id
+            _id: coupon._id,
+            mincart_value: coupon.mincart_value
         };
 
         res.status(statusCode.OK).json({ success: true, discount, newTotal: subtotal - discount });

@@ -20,6 +20,8 @@ export const getCheckoutData = async (userId) => {
         });
 
 
+
+
         const coupons = await Coupon.find({
             status: "active",
             expiry_date: { $gte: new Date() },
@@ -131,6 +133,20 @@ export const placeOrderService = async (userId, addressId, paymentMethod, coupon
     const address = await Address.findById(addressId);
     if (!address) throw new Error("Address not found");
 
+
+        if (couponData) {
+        const liveCoupon = await Coupon.findById(couponData._id);
+        if (!liveCoupon || liveCoupon.status !== 'active') {
+            throw new Error("This coupon is no longer active.");
+        }
+        if (liveCoupon.used_by.includes(userId)) {
+            throw new Error("You have already used this coupon code.");
+        }
+       
+    }
+
+
+
     let totalOfferPrice = 0;
     let totalMrpPrice = 0;
     const initialStatus = (paymentMethod === 'Wallet') ? 'processing' : 'pending';
@@ -157,6 +173,11 @@ export const placeOrderService = async (userId, addressId, paymentMethod, coupon
             image_snapshot: variant.images?.[0] || 'default.jpg',
             status: initialStatus
         });
+    }
+
+
+        if (couponData && totalOfferPrice < couponData.mincart_value) {
+        throw new Error(`Order total ₹${totalOfferPrice} is below the ₹${couponData.mincart_value} coupon limit.`);
     }
 
     let totalOfferSavings = totalMrpPrice - totalOfferPrice;

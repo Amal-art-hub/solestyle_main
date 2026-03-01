@@ -34,7 +34,7 @@ export const updateOrderStatus = async (orderId, newStatus) => {
     throw new Error("Order not found");
   }
 
- const oldStatus = order.status;
+  const oldStatus = order.status;
   if (oldStatus === "canceled") {
     throw new Error("Order is already canceled");
   }
@@ -55,26 +55,26 @@ export const updateOrderStatus = async (orderId, newStatus) => {
   });
 
 
-if(newStatus=== "canceled"  && oldStatus !=="canceled"){
-  for(const item of order.items){
-    if(item.variant_id){
-      await Variant.findByIdAndUpdate(item.variant_id,{
-        $inc:{stock:item.quantity}
-      });
+  if (newStatus === "canceled" && oldStatus !== "canceled") {
+    for (const item of order.items) {
+      if (item.variant_id) {
+        await Variant.findByIdAndUpdate(item.variant_id, {
+          $inc: { stock: item.quantity }
+        });
+      }
     }
+    if (order.payment_method !== "COD" && oldStatus !== "Payment Failed") {
+      await walletService.creditWallet(
+        order.user_id,
+        order.final_total,
+        `Refund for Order #${order.order_number} (Canceled by Administrator)`
+      );
+    }
+
+
+
+
   }
-   if(order.payment_method !=="COD" && oldStatus !=="Payment Failed"){
-  await walletService.creditWallet(
-    order.user_id,
-    order.final_total,
-    `Refund for Order #${order.order_number} (Canceled by Administrator)`
-  );
-}
-
-
-
-
-}
 
 
 
@@ -110,23 +110,23 @@ export const approveReturnService = async (orderId, itemId) => {
   //   refundAmount = Math.round(refundAmount);
   // }
 
-   const orderTotalBeforeCoupen=order.subtotal-order.offer_discount;
+  const orderTotalBeforeCoupen = order.subtotal - order.offer_discount;
 
-   const coupenShareForThisItem=orderTotalBeforeCoupen>0?(order.discount_amount*(item.total_amount/orderTotalBeforeCoupen)):0;
+  const coupenShareForThisItem = orderTotalBeforeCoupen > 0 ? (order.discount_amount * (item.total_amount / orderTotalBeforeCoupen)) : 0;
 
-   const itemOfferSavings=(item.original_price*item.quantity)-item.total_amount;
+  const itemOfferSavings = (item.original_price * item.quantity) - item.total_amount;
 
-   order.subtotal-=(item.original_price*item.quantity);
+  order.subtotal -= (item.original_price * item.quantity);
 
-   order.offer_discount-=itemOfferSavings;
+  order.offer_discount -= itemOfferSavings;
 
-   order.discount_amount -=coupenShareForThisItem;
+  order.discount_amount -= coupenShareForThisItem;
 
-   order.final_total=Math.max(0,order.subtotal-order.offer_discount-order.discount_amount+(order.delivery_charge||0));
+  order.final_total = Math.max(0, order.subtotal - order.offer_discount - order.discount_amount + (order.delivery_charge || 0));
 
 
-     // F. Calculate Wallet Refund (Using Math.round for clean numbers)
-   const refundAmount=Math.round(item.total_amount-coupenShareForThisItem);
+  // F. Calculate Wallet Refund (Using Math.round for clean numbers)
+  const refundAmount = Math.round(item.total_amount - coupenShareForThisItem);
 
 
 
@@ -143,7 +143,7 @@ export const approveReturnService = async (orderId, itemId) => {
   await walletService.creditWallet(
     order.user_id,
     refundAmount,
-        `Refund for returned item: ${item.name_snapshot} (Order #${order.order_number})`
+    `Refund for returned item: ${item.name_snapshot} (Order #${order.order_number})`
   );
 
   const allVoided = order.items.every(item => ["returned", "canceled"].includes(item.status));
@@ -158,7 +158,7 @@ export const approveReturnService = async (orderId, itemId) => {
   // 5. This MUST be outside all 'if' blocks to always save
   await order.save();
   return { success: true, message: "Return Approved & Refunded" };
-}; 
+};
 
 export const rejectReturnService = async (orderId, itemId) => {
   const order = await Order.findById(orderId);
