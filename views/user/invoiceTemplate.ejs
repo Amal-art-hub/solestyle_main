@@ -320,7 +320,7 @@
             </div>
 
             <!-- ITEMS TABLE -->
-            <table class="items-table">
+            <!-- <table class="items-table">
                 <thead>
                     <tr>
                         <th style="width: 50px;">SR.</th>
@@ -360,7 +360,70 @@
                         </tr>
                         <% }); %>
                 </tbody>
+            </table> -->
+
+
+                        <!-- ITEMS TABLE -->
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">SR.</th>
+                        <th>PRODUCT DESCRIPTION</th>
+                        <th style="text-align: center; width: 80px;">SIZE</th>
+                        <th style="text-align: center; width: 60px;">QTY</th>
+                        <th style="text-align: right; width: 100px;">PRC (₹)</th>
+                        <th style="text-align: right; width: 120px;">TOTAL (₹)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% 
+                        // Filter to only show active (delivered/pending) items
+                        const activeItems = order.items.filter(item => 
+                            item.status !== 'canceled' && 
+                            item.status !== 'returned' 
+                        ); 
+                    %>
+
+                    <% activeItems.forEach(function(item, index) { %>
+                        <tr>
+                            <td style="color: #999;">
+                                <%= index + 1 %>
+                            </td>
+                            <td>
+                                <div class="item-name">
+                                    <%= item.name_snapshot %>
+                                </div>
+                                <div class="item-variant">SKU: SS-<%= item.product_id ?
+                                        item.product_id.toString().slice(-6).toUpperCase() : 'N/A' %>
+                                </div>
+                            </td>
+                            <td style="text-align: center; font-weight: bold;">
+                                <%= item.variant_snapshot || 'N/A' %>
+                            </td>
+                            <td style="text-align: center;">
+                                <%= item.quantity %>
+                            </td>
+                            <td style="text-align: right;">
+                                <%= item.unit_price.toFixed(2) %>
+                            </td>
+                            <td style="text-align: right; font-weight: bold;">
+                                <%= item.total_amount.toFixed(2) %>
+                            </td>
+                        </tr>
+                    <% }); %>
+
+                    <% if (activeItems.length === 0) { %>
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 20px; color: #666;">
+                                No active items in this invoice.
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
             </table>
+
+
+
 
             <!-- SUMMARY -->
             <div class="summary-container">

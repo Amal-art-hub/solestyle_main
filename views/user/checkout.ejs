@@ -271,45 +271,77 @@
 
                     <hr>
 
-                    <!-- INSERT THIS RIGHT AFTER <hr> AT LINE 270 -->
-                    <% let totalOriginal=0; let totalFinal=0; cart.items.forEach(item=> {
-                        totalOriginal += item.quantity * (item.originalPrice || item.price_at_addition);
-                        totalFinal += item.quantity * (item.finalPrice || item.price_at_addition);
-                        });
-                        const totalSavings = totalOriginal - totalFinal;
-                        %>
-                        <% if(totalSavings> 0) { %>
-                            <div class="summary-row" style="color: #27ae60;">
-                                <span>Your Savings</span>
-                                <span>- ₹<%= totalSavings %></span>
-                            </div>
-                            <% } %>
+                
 
-                                <div class="summary-row">
-                                    <span>Subtotal</span>
-                                    <span id="subtotalAmount">₹<%= subtotal %></span>
-                                </div>
+                                 
+
+                                <% 
+  // 1. Initialize our counters for MRP and Offer prices
+  let totalMRP = 0; 
+  let totalOfferPrice = 0; 
+
+  cart.items.forEach(item => {
+    // MRP: The original price from the variant
+    const mrp = item.variant_id ? item.variant_id.price : (item.price_at_addition || 0);
+    totalMRP += mrp * item.quantity;
+    
+    // Offer Price: What they pay AFTER product/category discounts (before coupon)
+    const paidPrice = item.finalPrice || (item.price_at_addition || 0);
+    totalOfferPrice += paidPrice * item.quantity;
+  });
+
+  // 2. Product Savings: The gap between MRP and Offer Price
+  const totalOfferDiscount = totalMRP - totalOfferPrice;
+
+  // 3. Coupon Discount: From your controller/session
+  const couponDiscountAmount = (typeof discount !== 'undefined' && discount) ? discount : 0;
+
+  // 4. Final Math: (MRP - OfferSavings) - Coupon
+  const finalPayable = totalOfferPrice - couponDiscountAmount;
+%>
+
+<div class="summary-details">
+    <!-- Row 1: The high starting price -->
+    <div class="summary-row">
+        <span>Cart Total (MRP)</span>
+        <span>₹<%= totalMRP %></span>
+    </div>
+
+    <!-- Row 2: Money saved through Product/Category Offers -->
+    <% if (totalOfferDiscount > 0) { %>
+    <div class="summary-row" style="color: #27ae60;">
+        <span>Offer Discount</span>
+        <span>- ₹<%= totalOfferDiscount %></span>
+    </div>
+    <% } %>
+
+    <!-- Row 3: Money saved from the Coupon -->
+    <div class="summary-row">
+        <span>Coupon Discount</span>
+        <span style="color: #e74c3c;">- ₹<span id="discountAmount"><%= couponDiscountAmount %></span></span>
+    </div>
+
+    <!-- Row 4: Shipping -->
+    <div class="summary-row">
+        <span>Shipping</span>
+        <span style="color: #27ae60;">Free</span>
+    </div>
+
+    <hr>
+
+    <!-- Row 5: The Final Mathematical Result -->
+    <div class="summary-row total">
+        <strong>Final Payable</strong>
+        <strong id="totalAmount">₹<%= finalPayable %></strong>
+    </div>
+</div>
 
 
-                                <!-- NEW DISCOUNT ROW -->
-                                <div class="summary-row">
-                                    <span>Discount</span>
-                                    <span style="color: #e74c3c;">- ₹<span id="discountAmount">
-                                            <%= typeof discount !=='undefined' ? discount : 0 %>
-                                        </span></span>
-                                </div>
-
-                                <div class="summary-row">
-                                    <span>Shipping</span>
-                                    <span style="color:var(--success-color);">Free</span>
-                                </div>
+                             
 
 
-                                <div class="summary-row total">
-                                    <span>Total Amount</span>
-                                    <span id="totalAmount">₹<%= subtotal - (typeof discount !=='undefined' ? discount :
-                                            0) %></span>
-                                </div>
+
+
 
                                 <button type="button" class="place-order-btn" onclick="placeOrder()">
                                     Place Order &nbsp; <i class="fas fa-arrow-right"></i>
