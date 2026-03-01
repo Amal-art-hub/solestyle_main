@@ -34,6 +34,12 @@ export const updateOrderStatus = async (orderId, newStatus) => {
     throw new Error("Order not found");
   }
 
+ const oldStatus = order.status;
+  if (oldStatus === "canceled") {
+    throw new Error("Order is already canceled");
+  }
+
+
   order.status = newStatus;
 
   // Update dates if specific milestones are hit
@@ -47,6 +53,31 @@ export const updateOrderStatus = async (orderId, newStatus) => {
       item.status = newStatus;
     }
   });
+
+
+if(newStatus=== "canceled"  && oldStatus !=="canceled"){
+  for(const item of order.items){
+    if(item.variant_id){
+      await Variant.findByIdAndUpdate(item.variant_id,{
+        $inc:{stock:item.quantity}
+      });
+    }
+  }
+   if(order.payment_method !=="COD" && oldStatus !=="Payment Failed"){
+  await walletService.creditWallet(
+    order.user_id,
+    order.final_total,
+    `Refund for Order #${order.order_number} (Canceled by Administrator)`
+  );
+}
+
+
+
+
+}
+
+
+
 
   await order.save();
   return order;
