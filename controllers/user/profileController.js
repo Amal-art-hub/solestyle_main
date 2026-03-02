@@ -43,18 +43,38 @@ export const updateProfile = async (req, res) => {
     }
 };
 
-//------------------------------------updating password
+//---------------------------------------------------------password update
 export const updatePassword = async (req, res) => {
     try {
         const { currentPassword, newPassword, confirmPassword } = req.body;
-        if (newPassword !== confirmPassword) return res.redirect("/user/profile?error=Password do not match");
+
+        if (newPassword !== confirmPassword) {
+            return res.status(statusCode.BAD_REQUEST).json({
+                success: false,
+                message: "Passwords do not match"
+            });
+        }
 
         const result = await changePassword(req.session.user._id, currentPassword, newPassword);
-        if (!result.success) return res.redirect(`/user/profile?error=${result.message}`);
-        res.redirect("/user/profile?message=Password changed");
+
+        if (!result.success) {
+            return res.status(statusCode.BAD_REQUEST).json({
+                success: false,
+                message: result.message
+            });
+        }
+
+        res.status(statusCode.OK).json({
+            success: true,
+            message: "Password updated successfully"
+        });
+
     } catch (error) {
         console.error("Update Password Error:", error);
-        res.redirect("/user/profile?error=Server Error");
+        res.status(statusCode.BAD_REQUEST).json({
+            success: false,
+            message: error.message || "Server Error occurred while updating password"
+        });
     }
 };
 

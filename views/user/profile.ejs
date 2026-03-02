@@ -99,7 +99,7 @@
             <div class="modal-content">
                 <span class="close-btn" onclick="closeModal('passwordModal')">&times;</span>
                 <h3>Change Password</h3>
-                <form action="/user/profile/password" method="POST" onsubmit="return validatePassword(event)">
+                <form id="changePasswordForm">
                     <label>Current Password</label>
                     <div class="password-wrapper">
                         <input type="password" name="currentPassword" id="currentPass" required>

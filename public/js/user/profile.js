@@ -39,17 +39,6 @@ function validatePassword(e) {
         return false;
     }
 
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    if (!passwordRegex.test(newPass)) {
-        e.preventDefault();
-        Swal.fire({
-            icon: "error",
-            title: "Weak Password",
-            text: "Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character."
-        });
-        return false;
-    }
-
     return true;
 }
 
@@ -71,3 +60,49 @@ function copyReferral(type, text) {
         console.error("Failed to copy", err);
     });
 }
+
+// ------------------- AJAX PASSOWRD CHANGE -------------------
+
+document.getElementById("changePasswordForm")?.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    // 1. Existing Validation
+    if (!validatePassword(e)) return;
+
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+
+    try {
+        const response = await fetch("/user/profile/password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            await Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: result.message,
+                showConfirmButton: false,
+                timer: 1500
+            });
+            location.reload();
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: result.message
+            });
+        }
+    } catch (error) {
+        console.error("Password Update Error:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An unexpected error occurred. Please try again later.'
+        });
+    }
+});

@@ -1,5 +1,9 @@
 /* Vibrant Gradient Theme for SweetAlert2 */
 
+.swal2-container {
+    z-index: 10000 !important;
+}
+
 .swal2-popup {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
     border: none !important;
@@ -9,11 +13,6 @@
 }
 
 /* Title and Text Styling */
-/* UNIVERSAL TARGETING: Force everything inside the popup to be black first */
-.swal2-popup * {
-    color: #000000 !important;
-    opacity: 1 !important;
-}
 
 /* EXEMPT TITLE: The title should stay white */
 .swal2-title {
@@ -83,6 +82,15 @@
 .swal2-icon {
     border-color: #ffffff !important;
     color: #ffffff !important;
+}
+
+/* Fix for the "black line" - ensure icon segments are correctly colored/hidden */
+.swal2-icon.swal2-error [class^='swal2-x-mark-line'] {
+    background-color: #ffffff !important;
+}
+
+.swal2-icon.swal2-error {
+    border-color: #f27474 !important;
 }
 
 .swal2-icon.swal2-success [class^='swal2-success-line'] {
