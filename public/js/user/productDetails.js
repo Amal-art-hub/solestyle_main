@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const zoomLevel = 2; // 2x Zoom
 
     if (mainImgWrapper && mainImg && lens) {
-        
+
         mainImgWrapper.addEventListener("mouseenter", () => {
             lens.style.display = "block";
             lens.style.backgroundImage = `url('${mainImg.src}')`;
@@ -53,17 +53,17 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     // === 3. VARIANT SELECTION (SIZE) ===
-   document.querySelectorAll(".size-box").forEach(box => {
-    box.addEventListener("click", function () {
-        selectVariant(
-            this.dataset.variantId, 
-            this.dataset.price, 
-            parseInt(this.dataset.stock),
-            this.dataset.originalPrice, 
-            this.dataset.discount
-        );
+    document.querySelectorAll(".size-box").forEach(box => {
+        box.addEventListener("click", function () {
+            selectVariant(
+                this.dataset.variantId,
+                this.dataset.price,
+                parseInt(this.dataset.stock),
+                this.dataset.originalPrice,
+                this.dataset.discount
+            );
+        });
     });
-});
 
     // === 4. COLOR SELECTION (INITIAL) ===
     const activeColorBtn = document.querySelector(".color-btn.active");
@@ -109,7 +109,7 @@ function selectVariant(variantId, price, stock, originalPrice, discount) {
 
     if (discount > 0) {
         // --- SHOW OFFER ---
-        displayPrice.parentElement.style.color = "#d9534f"; 
+        displayPrice.parentElement.style.color = "#d9534f";
 
         if (displayOriginal) {
             displayOriginal.style.display = "inline";
@@ -177,7 +177,7 @@ function filterByColor(btnElement, selectedColor) {
                 thumbDiv.setAttribute("data-image", img);
                 const fullPath = img.startsWith("http") ? img : `/uploads/variant-images/${img}`;
                 thumbDiv.innerHTML = `<img src="${fullPath}" alt="Thumbnail">`;
-                thumbDiv.addEventListener("click", function() { changeImage(this, img); });
+                thumbDiv.addEventListener("click", function () { changeImage(this, img); });
                 thumbnailContainer.appendChild(thumbDiv);
             });
             const defaultImg = images[2] || images[0];
@@ -206,7 +206,7 @@ async function addToCart() {
 
 /* Add this function at the bottom of public/js/user/productDetails.js */
 
-async function addToWishlist() {
+async function addToWishlist(event) {
     // 1. Get IDs from Hidden Inputs (The "Better" Way)
     const variantId = document.getElementById("selectedVariantId").value;
     // NOTE: Make sure you added <input type="hidden" id="productId" value="<%= product._id %>"> in EJS
@@ -224,11 +224,11 @@ async function addToWishlist() {
         });
         return;
     }
-    
+
     // Fallback if forgotten in EJS (Safety First!)
     if (!productId) {
-         console.error("Product ID missing in EJS");
-         return;
+        console.error("Product ID missing in EJS");
+        return;
     }
 
     try {
@@ -239,6 +239,14 @@ async function addToWishlist() {
         });
 
         if (response.data.success) {
+            // Update UI Instantly
+            const icon = document.getElementById("wishlistIcon");
+            if (icon) {
+                icon.classList.remove("far");
+                icon.classList.add("fas");
+                icon.style.color = "red";
+            }
+
             Swal.fire({
                 icon: "success",
                 title: "Added to Wishlist",
@@ -246,7 +254,7 @@ async function addToWishlist() {
                 timer: 1500
             });
         } else {
-             // If "Item already in wishlist"
+            // If "Item already in wishlist"
             Swal.fire({
                 icon: "info",
                 title: "Info",
@@ -255,7 +263,7 @@ async function addToWishlist() {
         }
     } catch (error) {
         if (error.response && error.response.status === 401) {
-             // Not logged in -> Go to login
+            // Not logged in -> Go to login
             window.location.href = "/login";
         } else {
             console.error(error);
@@ -279,7 +287,7 @@ async function buyNow() {
     try {
         // Step 1: Add to cart
         const response = await axios.post("/cart/add", { variantId, quantity: 1 });
-        
+
         if (response.data.success) {
             // Step 2: Redirect to checkout on success
             window.location.href = "/checkout";
@@ -288,10 +296,10 @@ async function buyNow() {
         if (error.response?.status === 401) {
             window.location.href = "/login";
         } else {
-            Swal.fire({ 
-                icon: "error", 
-                title: "Wait...", 
-                text: error.response?.data?.message || "Something went wrong" 
+            Swal.fire({
+                icon: "error",
+                title: "Wait...",
+                text: error.response?.data?.message || "Something went wrong"
             });
         }
     }

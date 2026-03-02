@@ -61,10 +61,11 @@
 
                 <div class="video-box">
 
-<video autoplay muted loop playsinline class="video-background">
-    <source src="https://res.cloudinary.com/demo/video/upload/so_0,eo_10/castle.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-</video>
+                    <video autoplay muted loop playsinline class="video-background">
+                        <source src="https://res.cloudinary.com/demo/video/upload/so_0,eo_10/castle.mp4"
+                            type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
 
 
                     <button class="play-btn">
@@ -91,13 +92,18 @@
                     <% trending.men.forEach(product=> { %>
                         <!-- Reuse your existing product-card HTML here -->
                         <div class="product-card">
-                            <!-- ... Insert your Product Card Code ... -->
                             <div class="product-image">
                                 <a href="/product/<%= product._id %>">
                                     <img src="<%= optimizeUrl(product.image.startsWith('http') ? product.image : '/uploads/variant-images/' + product.image) %>"
                                         alt="<%= product.name %>" loading="lazy"
                                         style="width: 100%; height: 250px; object-fit: cover;">
                                 </a>
+                                <button class="wishlist-btn"
+                                    onclick="addToWishlist('<%= product._id %>', '<%= product.variantId %>', event)">
+                                    <i class="<%= product.isWishlisted ? 'fas' : 'far' %> fa-heart"
+                                        style="<%= product.isWishlisted ? 'color: red;' : '' %>">
+                                    </i>
+                                </button>
                             </div>
                             <div class="product-info">
                                 <h4>
@@ -117,13 +123,18 @@
                     <% trending.women.forEach(product=> { %>
                         <!-- Reuse product-card HTML -->
                         <div class="product-card">
-                            <!-- ... Product Card Content ... -->
                             <div class="product-image">
                                 <a href="/product/<%= product._id %>">
                                     <img src="<%= optimizeUrl(product.image.startsWith('http') ? product.image : '/uploads/variant-images/' + product.image) %>"
                                         alt="<%= product.name %>" loading="lazy"
                                         style="width: 100%; height: 250px; object-fit: cover;">
                                 </a>
+                                <button class="wishlist-btn"
+                                    onclick="addToWishlist('<%= product._id %>', '<%= product.variantId %>', event)">
+                                    <i class="<%= product.isWishlisted ? 'fas' : 'far' %> fa-heart"
+                                        style="<%= product.isWishlisted ? 'color: red;' : '' %>">
+                                    </i>
+                                </button>
                             </div>
                             <div class="product-info">
                                 <h4>
@@ -143,13 +154,18 @@
                     <% trending.kids.forEach(product=> { %>
                         <!-- Reuse product-card HTML -->
                         <div class="product-card">
-                            <!-- ... Product Card Content ... -->
                             <div class="product-image">
                                 <a href="/product/<%= product._id %>">
                                     <img src="<%= optimizeUrl(product.image.startsWith('http') ? product.image : '/uploads/variant-images/' + product.image) %>"
                                         alt="<%= product.name %>" loading="lazy"
                                         style="width: 100%; height: 250px; object-fit: cover;">
                                 </a>
+                                <button class="wishlist-btn"
+                                    onclick="addToWishlist('<%= product._id %>', '<%= product.variantId %>', event)">
+                                    <i class="<%= product.isWishlisted ? 'fas' : 'far' %> fa-heart"
+                                        style="<%= product.isWishlisted ? 'color: red;' : '' %>">
+                                    </i>
+                                </button>
                             </div>
                             <div class="product-info">
                                 <h4>
@@ -364,3 +380,50 @@
         </section>
 
         <%- include('../partials/footer') %>
+            <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+            <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+            <script>
+                async function addToWishlist(productId, variantId, event) {
+                    try {
+                        if (!productId || !variantId) {
+                            return Swal.fire('Error', 'Product info missing', 'error');
+                        }
+                        const response = await axios.post('/user/wishlist/add', {
+                            productId, variantId
+                        });
+
+                        if (response.data.success) {
+                            // Instant UI Update
+                            const btn = event?.target?.closest('button') || document.activeElement;
+                            const icon = btn.querySelector('i');
+                            if (icon) {
+                                icon.classList.remove('far');
+                                icon.classList.add('fas');
+                                icon.style.color = 'red';
+                            }
+
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Added to Wishlist',
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'info',
+                                title: response.data.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+                        }
+                    } catch (error) {
+                        if (error.response && error.response.status === 401) {
+                            window.location.href = '/login';
+                        } else {
+                            console.error(error);
+                            const msg = error.response?.data?.message || 'Something went wrong';
+                            Swal.fire('Info', msg, 'info');
+                        }
+                    }
+                }
+            </script>

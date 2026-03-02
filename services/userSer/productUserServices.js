@@ -322,25 +322,35 @@ export const getTrendingProducts = async () => {
         return acc;
     }, {});
 
-    const processProducts = (products) => {
-        return products.map(p => {
+    const today = new Date();
+    const activeOffers = await Offers.find({
+        status: "active",
+        start_date: { $lte: today },
+        end_date: { $gte: today }
+    }).lean();
+
+    const processProducts = async (products) => {
+        const processed = await Promise.all(products.map(async (p) => {
             const variant = variantMap[p._id.toString()];
             if (variant) {
+                const { finalPrice } = await calculateFinalPrice(p, variant.price, activeOffers);
                 return {
                     ...p,
                     image: (variant.images && variant.images.length >= 3) ? variant.images[2] : (variant.images[0] || "default.jpg"),
-                    price: variant.price,
-                    offerPrice: variant.offerPrice
+                    price: finalPrice,
+                    originalPrice: variant.price,
+                    variantId: variant._id
                 };
             }
             return null;
-        }).filter(p => p !== null).slice(0, 3);
+        }));
+        return processed.filter(p => p !== null).slice(0, 3);
     };
 
     return {
-        men: processProducts(productsByCategory.Men),
-        women: processProducts(productsByCategory.Women),
-        kids: processProducts(productsByCategory.Kids)
+        men: await processProducts(productsByCategory.Men),
+        women: await processProducts(productsByCategory.Women),
+        kids: await processProducts(productsByCategory.Kids)
     };
 };
 
@@ -396,9 +406,9 @@ export const getSearchSuggestions = async (query, limit = 10) => {
     return activeProducts
         .map(p => {
             const variant = variantMap[p._id.toString()];
-            
+
             // If No listed variants found, don't show the product in search
-            if (!variant) return null; 
+            if (!variant) return null;
 
             return {
                 _id: p._id,

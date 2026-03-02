@@ -159,7 +159,12 @@
                                     </div>
                                 </div>
                             </a>
-                            <!-- ... Wishlist Button ... -->
+                            <button class="wishlist-btn"
+                                onclick="addToWishlist('<%= p._id %>', '<%= p.variantId %>', event)">
+                                <i class="<%= p.isWishlisted ? 'fas' : 'far' %> fa-heart"
+                                    style="<%= p.isWishlisted ? 'color: red;' : '' %>">
+                                </i>
+                            </button>
                         </div>
 
                         <% }) %>
@@ -183,7 +188,7 @@
             <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
             <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
             <script>
-                async function addToWishlist(productId, variantId) {
+                async function addToWishlist(productId, variantId, event) {
                     try {
                         if (!productId || !variantId) {
                             return Swal.fire('Error', 'Product info missing', 'error');
@@ -193,13 +198,20 @@
                         });
 
                         if (response.data.success) {
+                            // Instant UI Update
+                            const btn = event?.target?.closest('button') || document.activeElement;
+                            const icon = btn.querySelector('i');
+                            if (icon) {
+                                icon.classList.remove('far');
+                                icon.classList.add('fas');
+                                icon.style.color = 'red';
+                            }
+
                             Swal.fire({
-                                toast: true,
-                                position: 'top-end',
                                 icon: 'success',
                                 title: 'Added to Wishlist',
                                 showConfirmButton: false,
-                                timer: 3000
+                                timer: 1500
                             });
                         } else {
                             Swal.fire({
@@ -216,7 +228,8 @@
                             window.location.href = '/login'; // Redirect if not logged in
                         } else {
                             console.error(error);
-                            Swal.fire('Error', 'Something went wrong', 'error');
+                            const msg = error.response?.data?.message || 'Something went wrong';
+                            Swal.fire('Info', msg, 'info');
                         }
                     }
                 }

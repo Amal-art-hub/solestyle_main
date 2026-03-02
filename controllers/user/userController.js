@@ -25,6 +25,7 @@ import { logToFile } from "../../utils/logger.js";
 export const pageNotFound = (req, res) => {
   res.status(statusCode.NOT_FOUND).render("page-404");
 };
+import { getWishlistService } from "../../services/userSer/wishlistService.js";
 
 // Load home page
 export const loadHomepage = async (req, res) => {
@@ -38,10 +39,35 @@ export const loadHomepage = async (req, res) => {
       BrandSection.findOne()
     ]);
 
+    // --- ADD WISHLIST LOGIC ---
+    let wishlistedIds = [];
+    if (req.session.user) {
+      const wishlist = await getWishlistService(req.session.user._id);
+      wishlistedIds = wishlist ? wishlist.products.map(p => {
+        const id = p.products_id._id ? p.products_id._id : p.products_id;
+        return id.toString();
+      }) : [];
+    }
+
+    const markWishlisted = (products) => {
+      if (!products) return [];
+      return products.map(p => ({
+        ...p,
+        isWishlisted: wishlistedIds.includes(p._id.toString())
+      }));
+    };
+
+    const trending = {
+      men: markWishlisted(trendingData.men),
+      women: markWishlisted(trendingData.women),
+      kids: markWishlisted(trendingData.kids)
+    };
+    // --------------------------
+
     return res.render("home", {
       ...data,
-      trending: trendingData,
-      banners: banners,
+      trending,
+      banners,
       brandSection: brandSection || {},
       user: req.session.user || null,
     });
@@ -99,13 +125,13 @@ export const signup = async (req, res) => {
     const { firstName, lastName, email, phone, password, confirmPassword, referralCode } =
       req.body;
 
-      logToFile(`USER ACTION: Signup attempt with email: ${email}`);
+    logToFile(`USER ACTION: Signup attempt with email: ${email}`);
 
     if (!firstName || !lastName || !email || !phone || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-  const nameRegex = /^[a-zA-Z\s]+$/;
+    const nameRegex = /^[a-zA-Z\s]+$/;
     if (!nameRegex.test(firstName) || !nameRegex.test(lastName)) {
       return res.status(400).json({ message: "Names should only contain letters" });
     }
