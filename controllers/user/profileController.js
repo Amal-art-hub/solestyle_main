@@ -127,12 +127,37 @@ export const verifyEmailOtp = async (req, res) => {
 
 //--------------------------------------------------------------------
 const validateAddress = (data) => {
-    const { name, phone, postal_code, city, state } = data;
+    const { name, phone, postal_code, city, state, address_line1 } = data;
     const errors = {};
-    if (!name || name.trim().length < 3) errors.name = "Name is too short";
-    if (!/^\d{10}$/.test(phone)) errors.phone = "Invalid Phone Number";
-    if (!/^\d{6}$/.test(postal_code)) errors.pincode = "Invalid Pincode";
-    if (!city || city.trim().length < 2) errors.city = "City is required";
+
+    // 1. Name: Only letters and spaces, at least 3 chars
+    if (!/^[a-zA-Z\s]{3,}$/.test(name?.trim())) {
+        errors.name = "Name must contain at least 3 letters";
+    }
+
+    // 2. Phone: Exactly 10 digits
+    if (!/^\d{10}$/.test(phone)) {
+        errors.phone = "Invalid Phone Number";
+    }
+
+    // 3. Pincode: Exactly 6 digits
+    if (!/^\d{6}$/.test(postal_code)) {
+        errors.pincode = "Invalid Pincode";
+    }
+
+    // 4. City/State: Only letters and spaces, at least 2 chars
+    if (!/^[a-zA-Z\s]{2,}$/.test(city?.trim())) {
+        errors.city = "Invalid City name";
+    }
+    if (!/^[a-zA-Z\s]{2,}$/.test(state?.trim())) {
+        errors.state = "Invalid State name";
+    }
+
+    // 5. Address Line 1: Must contain at least some letters or numbers
+    if (!/[a-zA-Z0-9]/.test(address_line1?.trim())) {
+        errors.address_line1 = "Address line 1 is required and cannot be just symbols";
+    }
+
     return { isValid: Object.keys(errors).length === 0, errors };
 };
 

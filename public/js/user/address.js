@@ -49,10 +49,13 @@ function validateAddressForm(event) {
     const name = document.getElementById("name").value.trim();
     const phone = document.getElementById("phone").value.trim();
     const pincode = document.getElementById("postal_code").value.trim();
+    const address1 = document.getElementById("address_line1").value.trim();
+    const city = document.getElementById("city").value.trim();
+    const state = document.getElementById("state").value.trim();
 
-    // 1. Name Check
-    if (name.length < 3) {
-        Swal.fire("Error", "Name must be at least 3 characters", "error");
+    // 1. Name: Only letters and spaces, at least 3 chars
+    if (!/^[a-zA-Z\s]{3,}$/.test(name)) {
+        Swal.fire("Error", "Name must contain at least 3 letters (alphabets only)", "error");
         return false;
     }
 
@@ -63,7 +66,25 @@ function validateAddressForm(event) {
         return false;
     }
 
-    // 3. Pincode Check (6 Digits)
+    // 3. Address Line 1: Not just symbols
+    if (!/[a-zA-Z0-9]/.test(address1)) {
+        Swal.fire("Error", "Address Line 1 cannot be empty or just symbols", "error");
+        return false;
+    }
+
+    // 4. City Check
+    if (!/^[a-zA-Z\s]{2,}$/.test(city)) {
+        Swal.fire("Error", "Enter a valid City name (alphabets only)", "error");
+        return false;
+    }
+
+    // 5. State Check
+    if (!/^[a-zA-Z\s]{2,}$/.test(state)) {
+        Swal.fire("Error", "Enter a valid State name (alphabets only)", "error");
+        return false;
+    }
+
+    // 6. Pincode Check (6 Digits)
     const pinRegex = /^[0-9]{6}$/;
     if (!pinRegex.test(pincode)) {
         Swal.fire("Error", "Enter a valid 6-digit Pincode", "error");
