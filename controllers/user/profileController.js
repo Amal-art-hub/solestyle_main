@@ -36,10 +36,19 @@ export const loadProfile = async (req, res) => {
 export const updateProfile = async (req, res) => {
     try {
         await updateUserProfile(req.session.user._id, req.body);
-        res.redirect("/user/profile?message=profile updated");
+        res.status(statusCode.OK).json({ success: true, message: "Profile updated successfully" });
     } catch (error) {
         console.error("update profile error", error);
-        res.redirect("/user/profile?error?Update failed");
+
+        let message = "Failed to update profile";
+        if (error.code === 11000) {
+            const field = Object.keys(error.keyPattern)[0];
+            message = `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`;
+        } else if (error.message) {
+            message = error.message;
+        }
+
+        res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message });
     }
 };
 

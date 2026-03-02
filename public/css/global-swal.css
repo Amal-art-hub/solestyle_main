@@ -33,13 +33,19 @@
 .swal2-html-container,
 #swal2-html-container,
 .swal2-content {
-    color: #000000 !important;
+    color: #ffffff !important;
     font-family: 'Inter', sans-serif !important;
-    font-size: 1.2rem !important;
+    font-size: 1.1rem !important;
     line-height: 1.5 !important;
-    font-weight: 900 !important;
-    /* Thickest possible */
+    font-weight: 500 !important;
     margin: 1em 1.6em 0.3em !important;
+    opacity: 0.9 !important;
+}
+
+/* Hide any weird pseudo-elements that cause black lines */
+.swal2-icon::before,
+.swal2-icon::after {
+    display: none !important;
 }
 
 /* Button Styling - High Contrast White with Glow */

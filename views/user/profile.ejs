@@ -84,7 +84,7 @@
             <div class="modal-content">
                 <span class="close-btn" onclick="closeModal('editModal')">&times;</span>
                 <h3>Edit Profile</h3>
-                <form action="/user/profile/edit" method="POST">
+                <form id="editProfileForm">
                     <label>Full Name</label><input type="text" name="name" value="<%= user.name %>" required>
                     <label>Phone</label><input type="text" name="phone" value="<%= user.phone %>">
                     <div class="modal-actions">

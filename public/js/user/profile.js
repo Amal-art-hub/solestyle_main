@@ -106,3 +106,46 @@ document.getElementById("changePasswordForm")?.addEventListener("submit", async 
         });
     }
 });
+
+// ------------------- AJAX PROFILE EDIT -------------------
+
+document.getElementById("editProfileForm")?.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+
+    try {
+        const response = await fetch("/user/profile/edit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            await Swal.fire({
+                icon: 'success',
+                title: 'Updated!',
+                text: result.message,
+                showConfirmButton: false,
+                timer: 1500
+            });
+            location.reload();
+        } else {
+            Swal.fire({
+                icon: 'error',
+                title: 'Failed',
+                text: result.message || "Failed to update profile"
+            });
+        }
+    } catch (error) {
+        console.error("Profile Update Error:", error);
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'An unexpected error occurred. Please try again later.'
+        });
+    }
+});

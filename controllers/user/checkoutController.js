@@ -22,10 +22,10 @@ export const loadCheckout = async (req, res) => {
 
 
         if (req.session.coupon) {
-    if (subtotal < req.session.coupon.mincart_value) {
-        req.session.coupon = null;
-    }
-}
+            if (subtotal < req.session.coupon.mincart_value) {
+                req.session.coupon = null;
+            }
+        }
 
 
         const wallet = await getWallet(userId);
@@ -299,7 +299,7 @@ export const verifyRazorpayWebhook = async (req, res) => {
         res.status(statusCode.OK).json({ status: "ok" });
     } catch (error) {
         console.error("Webhook Error:", error);
-        res.status(200).json({ status: "error" });
+        res.status(statusCode.INTERNAL_SERVER_ERROR).json({ status: "error" });
     }
 };
 
