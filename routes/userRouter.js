@@ -77,6 +77,7 @@ router.get("/user/profile/email", isAuth, checkUserStatus, profileController.loa
 router.post("/user/profile/email", isAuth, checkUserStatus, profileController.requestEmailOtp);
 //------------------------------submiting otp for verify
 router.post("/user/verify-email-otp", isAuth, checkUserStatus, profileController.verifyEmailOtp);
+router.post("/user/resend-email-otp", isAuth, checkUserStatus, profileController.resendEmailOtp);
 
 //----------------------------------------------------------------------------------------address list
 router.get("/user/addresses", isAuth, checkUserStatus, profileController.loadAddressPage);

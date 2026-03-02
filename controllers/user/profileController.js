@@ -72,13 +72,33 @@ export const loadChangeEmail = async (req, res) => {
 export const requestEmailOtp = async (req, res) => {
     try {
         const result = await requestEmailChange(req.session.user._id, req.body.newEmail);
-        if (!result.success) return res.status(statusCode.BAD_REQUEST).json({ success: false, message: "Failed" });
+        if (!result.success) return res.render("profile-emailchange", { error: result.message || "Failed to send OTP" });
+
         req.session.emailChange = { email: req.body.newEmail, otp: result.otp };
         res.status(statusCode.OK).render("changeEmailVerifyOtp", { newEmail: req.body.newEmail });
 
     } catch (error) {
         console.error("result email otp error:", error);
-        res.render("profile-emailchange", { error: "Server Error" });
+        res.render("profile-emailchange", { error: error.message || "Server Error" });
+    }
+};
+
+//--------------------------------resend email otp
+export const resendEmailOtp = async (req, res) => {
+    try {
+        if (!req.session.emailChange?.email) {
+            return res.status(statusCode.BAD_REQUEST).json({ success: false, message: "No pending email change" });
+        }
+
+        const result = await requestEmailChange(req.session.user._id, req.session.emailChange.email);
+        if (result.success) {
+            req.session.emailChange.otp = result.otp;
+            return res.status(statusCode.OK).json({ success: true, message: "OTP Resent Successfully" });
+        }
+        res.status(statusCode.BAD_REQUEST).json({ success: false, message: "Failed to resend OTP" });
+    } catch (error) {
+        console.error("Resend OTP Error:", error);
+        res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: error.message || "Server Error" });
     }
 };
 

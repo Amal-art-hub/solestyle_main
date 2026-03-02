@@ -47,7 +47,7 @@ export const requestEmailChange = async (userId, newEmail) => {
     });
 
     await sendVerificationEmail(newEmail, otp); // Using existing sendVerificationEmail
-    return { message: "OTP sent to new email" };
+    return { success: true, message: "OTP sent to new email", otp };
 };
 
 //---------------------------verify otp

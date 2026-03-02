@@ -22,6 +22,11 @@ const userSchema = new mongoose.Schema({
   // address_ids: [{ type: mongoose.Schema.Types.ObjectId, ref: "Address" }],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
+  emailChangeRequest: {
+    newEmail: { type: String, lowercase: true, trim: true },
+    otp: { type: String },
+    otpExpiry: { type: Date }
+  }
 });
 
 // Pre-save hook to hash password

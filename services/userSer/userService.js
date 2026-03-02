@@ -18,6 +18,7 @@ export function generateOtp() {
 
 // Send Email
 export async function sendVerificationEmail(email, otp) {
+  console.log(`[DEVELOPMENT] OTP for ${email}: ${otp}`);
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
