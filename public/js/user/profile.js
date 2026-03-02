@@ -32,11 +32,24 @@ if (error) {
 function validatePassword(e) {
     const newPass = document.getElementById("newPass").value;
     const confirmPass = document.getElementById("confirmPass").value;
+
     if (newPass !== confirmPass) {
         e.preventDefault(); // Stop form
         Swal.fire({ icon: "warning", title: "Mismatch", text: "New passwords do not match!" });
         return false;
     }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(newPass)) {
+        e.preventDefault();
+        Swal.fire({
+            icon: "error",
+            title: "Weak Password",
+            text: "Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character."
+        });
+        return false;
+    }
+
     return true;
 }
 
@@ -44,7 +57,7 @@ function validatePassword(e) {
 
 function copyReferral(type, text) {
     if (!text || text === "N/A") return;
-    
+
     navigator.clipboard.writeText(text).then(() => {
         Swal.fire({
             toast: true,

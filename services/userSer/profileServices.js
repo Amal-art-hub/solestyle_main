@@ -22,9 +22,14 @@ export const changePassword = async (userId, oldPass, newPass) => {
     const isMatch = await bcrypt.compare(oldPass, user.password);
     if (!isMatch) throw new Error("Incorrect current password");
 
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(newPass)) {
+        throw new Error("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
+    }
+
     user.password = await bcrypt.hash(newPass, 10);
     await user.save();
-    return { message: "Password updated successfully" };
+    return { success: true, message: "Password updated successfully" };
 };
 
 //-------------------------------requesting email otp
@@ -115,8 +120,8 @@ export const getCoupons = async (userId) => {
     // We fetch coupons that are active and not yet expired.
     // We check for both global coupons (userId: null) AND 
     // the user's personal referral reward coupons.
-    
-  return await Coupon.find({
+
+    return await Coupon.find({
         status: "active",
         expiry_date: { $gt: new Date() },
         used_by: { $ne: userId }, // NEW: Only show if NOT used by this user

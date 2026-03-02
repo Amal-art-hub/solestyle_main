@@ -53,75 +53,75 @@ export async function checkExistingUser(email, phone) {
 // Create a new user with Referral Logic
 // Full corrected createUser function in userService.js
 export async function createUser({ firstName, lastName, email, phone, password, referralCode }) {
-    console.log("---------- REFERRAL DEBUG ----------");
-    console.log("1. Incoming Signup Data - Name:", firstName, "| Ref Code:", referralCode);
+  console.log("---------- REFERRAL DEBUG ----------");
+  console.log("1. Incoming Signup Data - Name:", firstName, "| Ref Code:", referralCode);
 
-    const name = `${firstName} ${lastName}`;
+  const name = `${firstName} ${lastName}`;
 
-    // Generate a unique code for the new user
-    const myReferralCode = firstName.toUpperCase() + Math.floor(1000 + Math.random() * 9000);
+  // Generate a unique code for the new user
+  const myReferralCode = firstName.toUpperCase() + Math.floor(1000 + Math.random() * 9000);
 
-    let referredByUserId = null;
+  let referredByUserId = null;
 
-    // Check if a referral code was actually provided
-    if (referralCode && referralCode.trim() !== "") {
-        const cleanRefCode = referralCode.trim().toUpperCase();
-        console.log("2. Searching for Referrer with code:", cleanRefCode);
+  // Check if a referral code was actually provided
+  if (referralCode && referralCode.trim() !== "") {
+    const cleanRefCode = referralCode.trim().toUpperCase();
+    console.log("2. Searching for Referrer with code:", cleanRefCode);
 
-        const referrer = await User.findOne({ referralCode: cleanRefCode });
+    const referrer = await User.findOne({ referralCode: cleanRefCode });
 
-        if (referrer) {
-            console.log("3. ✅ SUCCESS: Referrer found:", referrer.name);
-            referredByUserId = referrer._id;
+    if (referrer) {
+      console.log("3. ✅ SUCCESS: Referrer found:", referrer.name);
+      referredByUserId = referrer._id;
 
-            // Fetch the active referral offer from database
-            const today = new Date();
-            const activeReferralOffer = await Offers.findOne({
-                type: "referral",
-                status: "active",
-                start_date: { $lte: today },
-                end_date: { $gte: today }
-            });
+      // Fetch the active referral offer from database
+      const today = new Date();
+      const activeReferralOffer = await Offers.findOne({
+        type: "referral",
+        status: "active",
+        start_date: { $lte: today },
+        end_date: { $gte: today }
+      });
 
-            // Use dynamic discount if offer exists, otherwise default to 10%
-            const discountVal = activeReferralOffer ? activeReferralOffer.discount_percentage : 10;
-            const offerName = activeReferralOffer ? activeReferralOffer.name : "Referral Reward";
+      // Use dynamic discount if offer exists, otherwise default to 10%
+      const discountVal = activeReferralOffer ? activeReferralOffer.discount_percentage : 10;
+      const offerName = activeReferralOffer ? activeReferralOffer.name : "Referral Reward";
 
-            // Create the reward coupon for the REFERRER
-            const rewardCoupon = new Coupon({
-                code: `REF-${Math.floor(100000 + Math.random() * 900000)}`,
-                description: `Reward for referring ${firstName}`,
-                discount_type: "Percentage",
-                discount_value: discountVal,
-                mincart_value: 500,
-                expiry_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days expiry
-                userId: referrer._id, // Assign to the person who invited
-                status: "active"
-            });
+      // Create the reward coupon for the REFERRER
+      const rewardCoupon = new Coupon({
+        code: `REF-${Math.floor(100000 + Math.random() * 900000)}`,
+        description: `Reward for referring ${firstName}`,
+        discount_type: "Percentage",
+        discount_value: discountVal,
+        mincart_value: 500,
+        expiry_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days expiry
+        userId: referrer._id, // Assign to the person who invited
+        status: "active"
+      });
 
-            await rewardCoupon.save();
-            console.log("4. ✅ SUCCESS: Reward Coupon saved for Referrer!");
-        } else {
-            console.log("3. ❌ FAILURE: Referrer code not found in database.");
-        }
+      await rewardCoupon.save();
+      console.log("4. ✅ SUCCESS: Reward Coupon saved for Referrer!");
     } else {
-        console.log("2. ⚠️ INFO: No referral code was entered.");
+      console.log("3. ❌ FAILURE: Referrer code not found in database.");
     }
+  } else {
+    console.log("2. ⚠️ INFO: No referral code was entered.");
+  }
 
-    const newUser = new User({
-        name,
-        email,
-        phone,
-        password,
-        referralCode: myReferralCode, 
-        referredBy: referredByUserId  
-    });
+  const newUser = new User({
+    name,
+    email,
+    phone,
+    password,
+    referralCode: myReferralCode,
+    referredBy: referredByUserId
+  });
 
-    console.log("5. Saving new user to database...");
-    const savedUser = await newUser.save();
-    console.log("---------- DEBUG COMPLETE ----------");
+  console.log("5. Saving new user to database...");
+  const savedUser = await newUser.save();
+  console.log("---------- DEBUG COMPLETE ----------");
 
-    return savedUser;
+  return savedUser;
 }
 
 // Verify OTP and create user
@@ -135,8 +135,8 @@ export async function verifyOtpService(session, otp) {
       };
     }
 
-        if (Date.now() > session.otpExpiry) {
-        return { success: false, status: statusCode.BAD_REQUEST, message: "OTP has expired. Please resend." };
+    if (Date.now() > session.otpExpiry) {
+      return { success: false, status: statusCode.BAD_REQUEST, message: "OTP has expired. Please resend." };
     }
 
     if (otp !== session.userOtp) {
@@ -300,11 +300,11 @@ export const verifyResetOtpService = async (session, otp) => {
   try {
     const storedOtp = session.resetOtp;
     const email = session.resetEmail;
-        const expiry = session.resetOtpExpiry;
+    const expiry = session.resetOtpExpiry;
 
 
-            if (Date.now() > expiry) {
-        return { success: false, status: statusCode.BAD_REQUEST, message: "OTP has expired." };
+    if (Date.now() > expiry) {
+      return { success: false, status: statusCode.BAD_REQUEST, message: "OTP has expired." };
     }
 
     if (!storedOtp || !email) {
@@ -347,7 +347,16 @@ export const checkPassword = async (session, newPassword) => {
       return {
         success: false,
         status: statusCode.FORBIDDEN,
-        message: "Unauthorized.Please verify OTP first"
+        message: "Unauthorized. Please verify OTP first"
+      };
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!passwordRegex.test(newPassword)) {
+      return {
+        success: false,
+        status: statusCode.BAD_REQUEST,
+        message: "Password must be at least 8 characters long and include uppercase, lowercase, number, and special character."
       };
     }
 
@@ -361,7 +370,7 @@ export const checkPassword = async (session, newPassword) => {
     session.otpVerified = null;
     return {
       success: true,
-      message: "Paassword",
+      message: "Password updated successfully",
     };
   } catch (error) {
     console.error("Error in updateUserPasswordService:", error);

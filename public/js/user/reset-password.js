@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const lenCheck = document.getElementById("lenCheck");
     const numCheck = document.getElementById("numCheck");
     const upperCheck = document.getElementById("upperCheck");
+    const lowerCheck = document.getElementById("lowerCheck");
+    const specialCheck = document.getElementById("specialCheck");
 
     // Toggle password visibility
     document.getElementById("toggleNew").addEventListener("click", () => {
@@ -22,6 +24,8 @@ document.addEventListener("DOMContentLoaded", () => {
         lenCheck.checked = val.length >= 8;
         numCheck.checked = /\d/.test(val);
         upperCheck.checked = /[A-Z]/.test(val);
+        lowerCheck.checked = /[a-z]/.test(val);
+        specialCheck.checked = /[@$!%*?&]/.test(val);
     });
 
     // Form submission

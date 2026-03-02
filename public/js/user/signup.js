@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function nameValidateChecking(e) {
     const nameval1 = nameid1.value;
     const nameval2 = nameid2.value;
-   const namepattern = /^[a-zA-Z\s]+$/;
+    const namepattern = /^[a-zA-Z\s]+$/;
 
     if (nameval1.trim() === "" || nameval2.trim() === "") {
       error1.style.display = "block";
@@ -65,15 +65,19 @@ document.addEventListener("DOMContentLoaded", function () {
   function passValidateChecking(e) {
     const passval = passwordInput.value;
     const cpassval = confirmPasswordInput.value;
-    const alpha = /[a-zA-Z]/;
-    const digit = /\d/;
+
+    // Complex validation regex
+    const hasAlpha = /[a-z]/;
+    const hasUpper = /[A-Z]/;
+    const hasDigit = /\d/;
+    const hasSymbol = /[@$!%*?&]/;
 
     if (passval.length < 8) {
       error4.style.display = "block";
-      error4.innerHTML = "Should contain atleast 8 characters";
-    } else if (!alpha.test(passval) || !digit.test(passval)) {
+      error4.innerHTML = "Should contain at least 8 characters";
+    } else if (!hasAlpha.test(passval) || !hasUpper.test(passval) || !hasDigit.test(passval) || !hasSymbol.test(passval)) {
       error4.style.display = "block";
-      error4.innerHTML = "Should contain numbers and alphabets";
+      error4.innerHTML = "Use a mix of uppercase, lowercase, numbers, and symbols";
     } else {
       error4.style.display = "none";
       error4.innerHTML = "";
@@ -88,17 +92,17 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
- 
+
 
 
   function showError(message) {
     Swal.fire({
-        icon: "error",
-        title: "Signup Error",
-        text: message,
-        confirmButtonColor: "#ff4444"
+      icon: "error",
+      title: "Signup Error",
+      text: message,
+      confirmButtonColor: "#ff4444"
     });
-}
+  }
 
   // Toggle password visibility
   window.togglePassword = function (fieldId) {

@@ -146,10 +146,12 @@ export const signup = async (req, res) => {
       return res.status(400).json({ message: "Phone number must be exactly 10 digits" });
     }
 
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
     if (!passwordRegex.test(password)) {
-      return res.status(400).json({ message: "Password must be at least 8 characters long and contain both letters and numbers" });
+      return res.status(400).json({
+        message: "Password must be at least 8 characters long and include an uppercase letter, a lowercase letter, a number, and a special character."
+      });
     }
 
 
