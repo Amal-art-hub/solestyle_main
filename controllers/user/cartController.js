@@ -48,8 +48,8 @@ export const updateCartQty = async (req, res) => {
 
         const result = await updateQuantityService(userId, itemId, action);
 
-        if(req.session.coupon && result.optTotal<req.session.coupon.mincart_value){
-            req.session.coupon=null;
+        if (req.session.coupon && result.optTotal < req.session.coupon.mincart_value) {
+            req.session.coupon = null;
         }
 
         res.status(statusCode.OK).json({
@@ -75,12 +75,12 @@ export const removeCartItem = async (req, res) => {
 
         await removeItemService(userId, itemId);
 
-        const updatedCart=await Cart.findOne ({user_id:userId}).populate("items.variant_id");
+        const updatedCart = await Cart.findOne({ user_id: userId }).populate("items.variant_id");
 
-        const newTotal=updatedCart?updatedCart.items.reduce((sum,item)=>sum+(item.quantity*item.variant_id.price),0):0;
+        const newTotal = updatedCart ? updatedCart.items.reduce((sum, item) => sum + (item.quantity * item.variant_id.price), 0) : 0;
 
-        if(req.session.coupon && newTotal < req.session.coupon.mincart_value){
-            req.session.coupon=null;
+        if (req.session.coupon && newTotal < req.session.coupon.mincart_value) {
+            req.session.coupon = null;
         }
 
         res.status(statusCode.OK).json({ success: true, message: "Item removed" });
