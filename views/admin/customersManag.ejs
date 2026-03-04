@@ -60,11 +60,11 @@
                                     <td>
                                         <% if(user.isBlock) { %>
                                             <button
-                                                onclick="confirmAction('/admin/unblockCustomer?id=<%= user._id %>', 'unblock')"
+                                                onclick="confirmAction('/admin/unblockCustomer?id=<%= user._id %>', 'unblock',this)"
                                                 class="action-btn btn-unblock">Unblock</button>
                                             <% } else { %>
                                                 <button
-                                                    onclick="confirmAction('/admin/blockCustomer?id=<%= user._id %>', 'block')"
+                                                    onclick="confirmAction('/admin/blockCustomer?id=<%= user._id %>', 'block',this)"
                                                     class="action-btn btn-block">Block</button>
                                                 <% } %>
                                     </td>

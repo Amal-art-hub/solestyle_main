@@ -1,4 +1,4 @@
-function confirmAction(url, action) {
+function confirmAction(url, action, buttonElement) {
     Swal.fire({
         title: "Are you sure?",
         text: `Do you really want to ${action} this user?`,
@@ -10,38 +10,38 @@ function confirmAction(url, action) {
     }).then(async (result) => {
         if (result.isConfirmed) {
             try {
-                // CHANGE: Use fetch with PATCH method
                 const response = await fetch(url, {
                     method: "PATCH",
-                    headers: {
-                        "Content-Type": "application/json"
-                    }
+                    headers: { "Content-Type": "application/json" }
                 });
                 
                 const data = await response.json();
 
                 if (data.success) {
-                    Swal.fire(
-                        "Success!",
-                        data.message,
-                        "success"
-                    ).then(() => {
-                        location.reload();
-                    });
+                    Swal.fire("Success!", data.message, "success");
+                    
+                    const row = buttonElement.closest('tr');
+                    const badge = row.querySelector('.status-badge');
+
+                    if (action === "block") {
+                        badge.innerText = "Blocked";
+                        badge.className = "status-badge status-blocked";
+                        buttonElement.innerText = "Unblock";
+                        buttonElement.className = "action-btn btn-unblock";
+                        buttonElement.setAttribute("onclick", `confirmAction('${url.replace('block', 'unblock')}', 'unblock', this)`);
+                    } else {
+                        badge.innerText = "Active";
+                        badge.className = "status-badge status-active";
+                        buttonElement.innerText = "Block";
+                        buttonElement.className = "action-btn btn-block";
+                        buttonElement.setAttribute("onclick", `confirmAction('${url.replace('unblock', 'block')}', 'block', this)`);
+                    }
                 } else {
-                    Swal.fire(
-                        "Error!",
-                        data.message || "Action failed",
-                        "error"
-                    );
+                    Swal.fire("Error!", data.message || "Action failed", "error");
                 }
             } catch (error) {
                 console.error("Error:", error);
-                Swal.fire(
-                    "Error!",
-                    "Something went wrong",
-                    "error"
-                );
+                Swal.fire("Error!", "Something went wrong", "error");
             }
         }
     });
