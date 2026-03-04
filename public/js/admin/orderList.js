@@ -1,3 +1,28 @@
+// Helper to refresh the order table and content without a full reload
+const refreshUI = async () => {
+    try {
+        console.log("[DEBUG] Fetching fresh order table...");
+        const response = await fetch(window.location.href, {
+            method: "GET",
+            headers: { "Accept": "text/html" }
+        });
+        if (response.ok) {
+            const html = await response.text();
+            const parser = new DOMParser();
+            const newDoc = parser.parseFromString(html, "text/html");
+            const newContent = newDoc.querySelector(".main-content");
+            const currentContent = document.querySelector(".main-content");
+
+            if (newContent && currentContent) {
+                currentContent.innerHTML = newContent.innerHTML;
+                console.log("[UI Refresh] Order management content updated successfully.");
+            }
+        }
+    } catch (error) {
+        console.error("Refresh Error:", error);
+    }
+};
+
 // Status Update Function
 async function updateStatus(orderId, newStatus) {
     try {
@@ -23,19 +48,25 @@ async function updateStatus(orderId, newStatus) {
             const data = await response.json();
 
             if (data.success) {
-                await Swal.fire("Updated!", "Order status has been updated.", "success");
-
-                const selectElement = document.querySelector(`select[data-order-id="${orderId}"]`);
-                selectElement.className = `status-badge status-${newStatus.replace(/\s+/g, "-")}`;
+                await Swal.fire({
+                    icon: "success",
+                    title: "Updated!",
+                    text: "Order status has been updated.",
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                await refreshUI();
             } else {
                 throw new Error(data.message);
             }
         } else {
-            location.reload();
+            // FIX: Removed location.reload() here to prevent unwanted spinning on cancel
+            await refreshUI(); // Re-fetch to ensure the dropdown resets to its DB state
         }
     } catch (error) {
         console.error("Error:", error);
         Swal.fire("Error!", "Failed to update status: " + error.message, "error");
+        await refreshUI(); // Reset UI on error
     }
 }
 
@@ -43,7 +74,7 @@ async function updateStatus(orderId, newStatus) {
 const modal = document.getElementById("orderModal");
 const span = document.getElementsByClassName("close-modal")[0];
 
-span.onclick = function () { modal.style.display = "none"; };
+if (span) span.onclick = function () { modal.style.display = "none"; };
 window.onclick = function (event) { if (event.target == modal) modal.style.display = "none"; };
 
 async function viewOrderDetails(orderId) {
@@ -61,21 +92,12 @@ async function viewOrderDetails(orderId) {
             let itemsHtml = order.items.map(item => {
                 let actionButtons = "";
 
-                // Logic to display the reason if it exists
-                // let reasonHtml = '';
-                // if(item.return_reason) {
-                //     reasonHtml = `<div style="font-size: 0.85em; color: #666; margin-top: 4px;">
-                //                     <strong>Return Reason:</strong> <em>"${item.return_reason}"</em>
-                //                   </div>`;
-                // }
-
                 // Logic to display the reason with "Read More" for long text
                 let reasonHtml = "";
                 if (item.return_reason) {
                     const fullText = item.return_reason.replace(/"/g, "&quot;");
                     const shortText = fullText.length > 50 ? fullText.substring(0, 50) + "..." : fullText;
 
-                    /* FIXED LOGIC HERE: Using a dedicated function call instead of inline Swal */
                     const displayText = fullText.length > 50
                         ? `<span title="${fullText}">${shortText} <a href="javascript:void(0)" onclick="showReason('${fullText.replace(/'/g, "\\'")}')" style="color: blue; font-size: 0.9em;">Read Full</a></span>`
                         : `"${fullText}"`;
@@ -176,8 +198,15 @@ async function handleReturn(orderId, itemId, action) {
             const data = await response.json();
 
             if (data.success) {
-                await Swal.fire("Success", data.message, "success");
-                viewOrderDetails(orderId); // Refresh modal to show updated status
+                await Swal.fire({
+                    icon: "success",
+                    title: "Success",
+                    text: data.message,
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                viewOrderDetails(orderId); // Refresh modal
+                await refreshUI();       // Refresh background table
             } else {
                 throw new Error(data.message);
             }
@@ -187,7 +216,6 @@ async function handleReturn(orderId, itemId, action) {
     }
 }
 
-/* Add this at the very bottom of orderList.js */
 function showReason(text) {
     Swal.fire({
         title: "Return Reason",
