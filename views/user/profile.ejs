@@ -22,13 +22,13 @@
             <h2>My Profile</h2>
 
             <div class="profile-card">
-                <div class="info-row"><span class="label">Name:</span> <span class="value">
+                <div class="info-row"><span class="label">Name:</span> <span class="value" id="user-display-name">
                         <%= user.name %>
                     </span></div>
                 <div class="info-row"><span class="label">Email:</span> <span class="value">
                         <%= user.email %>
                     </span></div>
-                <div class="info-row"><span class="label">Phone:</span> <span class="value">
+                <div class="info-row"><span class="label">Phone:</span> <span class="value" id="user-display-phone">
                         <%= user.phone || 'Not set' %>
                     </span></div>
 

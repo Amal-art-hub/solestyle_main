@@ -89,7 +89,8 @@ document.getElementById("changePasswordForm")?.addEventListener("submit", async 
                 showConfirmButton: false,
                 timer: 1500
             });
-            location.reload();
+            closeModal('passwordModal');
+            this.reset(); // Clear form
         } else {
             Swal.fire({
                 icon: 'error',
@@ -125,6 +126,20 @@ document.getElementById("editProfileForm")?.addEventListener("submit", async fun
         const result = await response.json();
 
         if (result.success) {
+            // ✅ UPDATE DASHBOARD DYNAMICALLY
+            const user = result.user;
+            const displayName = document.getElementById("user-display-name");
+            const displayPhone = document.getElementById("user-display-phone");
+            const headerName = document.getElementById("header-user-name");
+
+            if (displayName) displayName.innerText = user.name;
+            if (displayPhone) displayPhone.innerText = user.phone || "Not set";
+            if (headerName) headerName.innerText = user.name;
+
+            // Sync modal inputs for next time
+            this.querySelector('input[name="name"]').value = user.name;
+            this.querySelector('input[name="phone"]').value = user.phone || "";
+
             await Swal.fire({
                 icon: 'success',
                 title: 'Updated!',
@@ -132,7 +147,7 @@ document.getElementById("editProfileForm")?.addEventListener("submit", async fun
                 showConfirmButton: false,
                 timer: 1500
             });
-            location.reload();
+            closeModal('editModal');
         } else {
             Swal.fire({
                 icon: 'error',

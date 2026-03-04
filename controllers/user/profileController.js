@@ -35,8 +35,13 @@ export const loadProfile = async (req, res) => {
 //---------------------------------------------------------------------------------updating edit profile
 export const updateProfile = async (req, res) => {
     try {
-        await updateUserProfile(req.session.user._id, req.body);
-        res.status(statusCode.OK).json({ success: true, message: "Profile updated successfully" });
+        const updatedUser = await updateUserProfile(req.session.user._id, req.body);
+        req.session.user = updatedUser; // Update session
+        res.status(statusCode.OK).json({
+            success: true,
+            message: "Profile updated successfully",
+            user: updatedUser
+        });
     } catch (error) {
         console.error("update profile error", error);
 
@@ -87,6 +92,8 @@ export const updatePassword = async (req, res) => {
     }
 };
 
+
+//-------------------------------request for emailchangeotp
 //------------------------------loadchangemail
 export const loadChangeEmail = async (req, res) => {
     try {
@@ -97,13 +104,20 @@ export const loadChangeEmail = async (req, res) => {
     }
 };
 
-//-------------------------------request for emailchangeotp
+//-------------------------------------------------------------sending the otp to the changing email
 export const requestEmailOtp = async (req, res) => {
     try {
         const result = await requestEmailChange(req.session.user._id, req.body.newEmail);
         if (!result.success) return res.render("profile-emailchange", { error: result.message || "Failed to send OTP" });
 
         req.session.emailChange = { email: req.body.newEmail, otp: result.otp };
+
+        // 🛠️ DEVELOPMENT ONLY: Print OTP to terminal for easy copy-paste
+        console.log(`\n--- [DEVELOPMENT] EMAIL CHANGE OTP ---`);
+        console.log(`Email: ${req.body.newEmail}`);
+        console.log(`OTP  : ${result.otp}`);
+        console.log(`--------------------------------------\n`);
+
         res.status(statusCode.OK).render("changeEmailVerifyOtp", { newEmail: req.body.newEmail });
 
     } catch (error) {
