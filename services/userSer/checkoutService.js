@@ -68,6 +68,9 @@ export const getCheckoutData = async (userId) => {
 };
 
 export const placeOrderService = async (userId, addressId, paymentMethod, couponData, paymentDetails) => {
+
+
+    //online payment----------------------------------------
     if (paymentMethod === "Online") {
         const { razorpay_order_id, razorpay_payment_id } = paymentDetails;
 
@@ -99,23 +102,16 @@ export const placeOrderService = async (userId, addressId, paymentMethod, coupon
             });
         }
 
-        for (const item of pendingOrder.items) {
-            if (item.variant_id) {
-                const updatedVariant = await Variant.findOneAndUpdate(
-                    { _id: item.variant_id._id, stock: { $gte: item.quantity } },
-                    { $inc: { stock: -item.quantity } }
-                );
-                if (!updatedVariant) {
-                    throw new Error(`Sorry, ${item.name_snapshot} just went out of stock before payment completed!`);
-                }
-            }
-        }
+  
 
         await Cart.findOneAndDelete({ user_id: userId });
 
         return pendingOrder;
     }
 
+
+
+    //cod--wallet--------------------------------------------
     const cart = await Cart.findOne({ user_id: userId })
         .populate("items.variant_id")
         .populate("items.product_id");
@@ -128,6 +124,17 @@ export const placeOrderService = async (userId, addressId, paymentMethod, coupon
 
     if (validItems.length === 0) {
         throw new Error("No available items to purchase");
+    }
+
+
+       for (const item of validItems) {
+        const updatedVariant = await Variant.findOneAndUpdate(
+            { _id: item.variant_id._id, stock: { $gte: item.quantity } },
+            { $inc: { stock: -item.quantity } }
+        );
+        if (!updatedVariant) {
+            throw new Error(`Stock for ${item.name_snapshot} was just purchased by another user!`);
+        }
     }
 
     const address = await Address.findById(addressId);
@@ -233,16 +240,7 @@ export const placeOrderService = async (userId, addressId, paymentMethod, coupon
         });
     }
 
-    for (const item of validItems) {
-        const updatedVariant = await Variant.findOneAndUpdate(
-            { _id: item.variant_id._id, stock: { $gte: item.quantity } },
-            { $inc: { stock: -item.quantity } }
-        );
-
-        if (!updatedVariant) {
-            throw new Error(`Stock for ${item.name_snapshot} was just purchased by another user!`);
-        }
-    }
+    
 
     await Cart.findOneAndDelete({ user_id: userId });
 
@@ -280,6 +278,21 @@ export const createRazorpayOrderService = async (userId, addressId, couponData) 
     const orderItems = [];
 
     for (const item of validItems) {
+
+
+            const updatedVariant = await Variant.findOneAndUpdate(
+            { 
+                _id: item.variant_id._id, 
+                stock: { $gte: item.quantity } 
+            },
+            { $inc: { stock: -item.quantity } },
+            { new: true }
+        );
+        if (!updatedVariant) {
+            throw new Error(`Sorry, ${item.name_snapshot} was just bought by someone else!`);
+        }
+
+
         const originalMRP = item.variant_id.price;
         const { finalPrice } = await calculateFinalPrice(item.product_id, originalMRP);
         totalOfferPrice += item.quantity * finalPrice;

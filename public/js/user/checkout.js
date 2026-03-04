@@ -45,7 +45,7 @@ async function placeOrder() {
                 },
                 "modal": {
                     "ondismiss": function () {
-                        Swal.fire("Payment Cancelled", "You cancelled the payment process.", "info");
+                        window.location.href = `/checkout/payment-failure?razorpay_order_id=${orderData.id}&message=Payment Cancelled`;
                     }
                 },
                 "prefill": {
@@ -59,7 +59,7 @@ async function placeOrder() {
             rzp1.open();
 
             rzp1.on("payment.failed", function (response) {
-                window.location.href = "/checkout/payment-failure";
+                window.location.href = `/checkout/payment-failure?razorpay_order_id=${orderData.id}&message=Payment Failed`;
             });
 
         } catch (error) {

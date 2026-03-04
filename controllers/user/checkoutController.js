@@ -14,6 +14,7 @@ import Order from "../../models/orders.js";
 import Payment from "../../models/payment.js";
 import Cart from "../../models/cart.js";
 import Coupon from "../../models/Coupen.js";
+import Variant from "../../models/varient.js";
 
 export const loadCheckout = async (req, res) => {
     try {
@@ -170,16 +171,29 @@ export const createRazorpayOrder = async (req, res) => {
 
 export const paymentFailed = async (req, res) => {
     try {
-        const message = req.query.message || "We couldn't process your payment. This might be due to a network issue or a declined transaction. Don't worry, you haven't been charged.";
-        res.render("paymentFailure", {
-            user: req.session.user,
-            message: message
-        });
+        const { razorpay_order_id } = req.query; // Ensure your frontend passes this back
+
+        const order = await Order.findOne({ razorpay_order_id: razorpay_order_id });
+
+        if (order && order.status === "Payment Pending") {
+            // RELEASE STOCK
+            for (const item of order.items) {
+                await Variant.findByIdAndUpdate(item.variant_id, {
+                    $inc: { stock: item.quantity }
+                });
+            }
+            order.status = "Payment Failed";
+            await order.save();
+        }
+
+        const message = req.query.message || "Payment cancelled. Items have been returned to stock.";
+        res.render("paymentFailure", { user: req.session.user, message });
     } catch (error) {
-        console.error("Payment Failure Page Error:", error);
-        res.status(statusCode.INTERNAL_SERVER_ERROR).render("page-404");
+        console.error("Release Stock Error:", error);
+        res.status(500).render("page-404");
     }
 };
+
 
 // export const verifyRazorpayWebhook = async (req, res) => {
 
