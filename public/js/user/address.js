@@ -33,8 +33,85 @@ document.getElementById("addressForm").addEventListener("submit", async function
         const result = await response.json();
 
         if (result.success) {
-            Swal.fire("Saved!", result.message, "success")
-                .then(() => location.reload()); // Reload to show new/updated address
+            if (isEditMode) {
+                // ✅ UPDATE UI DYNAMICALLY (Edit Mode)
+                const card = document.getElementById(`card-${addressId}`);
+                if (card) {
+                    card.querySelector(".addr-name").innerText = data.name;
+                    card.querySelector(".addr-phone").innerText = data.phone;
+                    card.querySelector(".addr-lines").innerText = data.address_line1 + (data.address_line2 ? `, ${data.address_line2}` : "");
+                    card.querySelector(".addr-location").innerText = `${data.city}, ${data.state} - ${data.postal_code}`;
+
+                    // Update data attributes on the edit button
+                    const editBtn = card.querySelector(".edit-btn");
+                    editBtn.setAttribute("data-name", data.name);
+                    editBtn.setAttribute("data-phone", data.phone);
+                    editBtn.setAttribute("data-line1", data.address_line1);
+                    editBtn.setAttribute("data-line2", data.address_line2);
+                    editBtn.setAttribute("data-city", data.city);
+                    editBtn.setAttribute("data-state", data.state);
+                    editBtn.setAttribute("data-postal", data.postal_code);
+                    editBtn.setAttribute("data-default", data.is_default_shipping);
+
+                    // Handle Default Badge
+                    let badge = card.querySelector(".default-badge");
+                    if (data.is_default_shipping) {
+                        // REMOVE DEFAULT BADGE FROM ALL OTHER CARDS
+                        document.querySelectorAll(".default-badge").forEach(b => b.remove());
+
+                        if (!badge) {
+                            const newBadge = document.createElement("span");
+                            newBadge.className = "badge default-badge";
+                            newBadge.style = "background:green; color:white; font-size: 10px; padding: 2px 5px; border-radius: 4px;";
+                            newBadge.innerText = "Default";
+                            card.querySelector("h3").appendChild(newBadge);
+                        }
+                    } else if (badge) {
+                        badge.remove();
+                    }
+                }
+                closeModal();
+                Swal.fire("Saved!", "Address updated successfully.", "success");
+            } else {
+                // ✅ DYNAMIC ADD (No Reload)
+                const addr = result.address;
+                const addressList = document.getElementById("addressList");
+
+                // Remove empty state message if it exists
+                if (addressList.querySelector("p") && addressList.children.length === 1) {
+                    addressList.innerHTML = "";
+                }
+
+                // If setting as default, remove other badges
+                if (addr.is_default_shipping) {
+                    document.querySelectorAll(".default-badge").forEach(b => b.remove());
+                }
+
+                const cardHTML = `
+                    <div class="address-card" id="card-${addr._id}">
+                        <h3>
+                            <span class="addr-name">${addr.name}</span>
+                            ${addr.is_default_shipping ? '<span class="badge default-badge" style="background:green; color:white; font-size: 10px; padding: 2px 5px; border-radius: 4px;">Default</span>' : ''}
+                        </h3>
+                        <p class="addr-lines">${addr.address_line1}${addr.address_line2 ? ', ' + addr.address_line2 : ''}</p>
+                        <p class="addr-location">${addr.city}, ${addr.state} - ${addr.postal_code}</p>
+                        <p>Phone: <span class="addr-phone">${addr.phone}</span></p>
+                        <div class="actions">
+                            <button onclick="openEditModal(this)" 
+                                data-id="${addr._id}" data-name="${addr.name}"
+                                data-phone="${addr.phone}" data-line1="${addr.address_line1}"
+                                data-line2="${addr.address_line2 || ''}" data-city="${addr.city}"
+                                data-state="${addr.state}" data-postal="${addr.postal_code}"
+                                data-default="${addr.is_default_shipping}"
+                                class="edit-btn" style="background-color: #007bff;">Edit</button>
+                            <button onclick="deleteAddress('${addr._id}')" style="background-color: #dc3545;">Delete</button>
+                        </div>
+                    </div>
+                `;
+                addressList.insertAdjacentHTML("afterbegin", cardHTML);
+                closeModal();
+                Swal.fire("Saved!", "New address added successfully.", "success");
+            }
         } else {
             Swal.fire("Error", result.message || "Failed to save", "error");
         }
@@ -175,8 +252,14 @@ async function deleteAddress(id) {
             const data = await response.json();
 
             if (data.success) {
-                Swal.fire("Deleted!", "Your address has been deleted.", "success")
-                    .then(() => location.reload());
+                // ✅ REMOVE UI ELEMENT DYNAMICALLY
+                const card = document.getElementById(`card-${id}`);
+                if (card) {
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.9)';
+                    setTimeout(() => card.remove(), 300);
+                }
+                Swal.fire("Deleted!", "Your address has been deleted.", "success");
             } else {
                 Swal.fire("Error", data.message, "error");
             }

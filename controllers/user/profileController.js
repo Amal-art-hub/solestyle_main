@@ -214,8 +214,12 @@ export const addAddress = async (req, res) => {
         const userId = req.session.user._id;
         const data = req.body;
 
-        await addAddressService(userId, data);
-        res.status(statusCode.OK).json({ success: true, message: "Address added successfully" });
+        const newAddr = await addAddressService(userId, data);
+        res.status(statusCode.OK).json({
+            success: true,
+            message: "Address added successfully",
+            address: newAddr
+        });
     } catch (error) {
         console.error("Add address error:", error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Server Error" });

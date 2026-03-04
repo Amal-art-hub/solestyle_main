@@ -13,23 +13,27 @@
         <div id="addressList">
             <% if (addresses && addresses.length> 0) { %>
                 <% addresses.forEach(addr=> { %>
-                    <div class="address-card">
+                    <div class="address-card" id="card-<%= addr._id %>">
                         <h3>
-                            <%= addr.name %>
-                                <% if(addr.is_default_shipping) { %>
-                                    <span class="badge"
-                                        style="background:green; color:white; font-size: 10px; padding: 2px 5px; border-radius: 4px;">Default</span>
-                                    <% } %>
+                            <span class="addr-name">
+                                <%= addr.name %>
+                            </span>
+                            <% if(addr.is_default_shipping) { %>
+                                <span class="badge default-badge"
+                                    style="background:green; color:white; font-size: 10px; padding: 2px 5px; border-radius: 4px;">Default</span>
+                                <% } %>
                         </h3>
-                        <p>
+                        <p class="addr-lines">
                             <%= addr.address_line1 %>
                                 <% if(addr.address_line2) { %>, <%= addr.address_line2 %>
                                         <% } %>
                         </p>
-                        <p>
+                        <p class="addr-location">
                             <%= addr.city %>, <%= addr.state %> - <%= addr.postal_code %>
                         </p>
-                        <p>Phone: <%= addr.phone %>
+                        <p>Phone: <span class="addr-phone">
+                                <%= addr.phone %>
+                            </span>
                         </p>
 
                         <div class="actions">
@@ -38,7 +42,7 @@
                                 data-phone="<%= addr.phone %>" data-line1="<%= addr.address_line1 %>"
                                 data-line2="<%= addr.address_line2 %>" data-city="<%= addr.city %>"
                                 data-state="<%= addr.state %>" data-postal="<%= addr.postal_code %>"
-                                data-default="<%= addr.is_default_shipping %>"
+                                data-default="<%= addr.is_default_shipping %>" size="small" class="edit-btn"
                                 style="background-color: #007bff;">Edit</button>
 
                             <button onclick="deleteAddress('<%= addr._id %>')"
@@ -64,17 +68,17 @@
 
                 <div class="form-group">
                     <label>Full Name</label>
-                    <input type="text" id="name" name="name" >
+                    <input type="text" id="name" name="name">
                 </div>
 
                 <div class="form-group">
                     <label>Phone Number</label>
-                    <input type="text" id="phone" name="phone" >
+                    <input type="text" id="phone" name="phone">
                 </div>
 
                 <div class="form-group">
                     <label>Address Line 1</label>
-                    <input type="text" id="address_line1" name="address_line1" >
+                    <input type="text" id="address_line1" name="address_line1">
                 </div>
 
                 <div class="form-group">
@@ -86,18 +90,18 @@
                     <div style="display: flex; gap: 10px;">
                         <div style="flex: 1;">
                             <label>City</label>
-                            <input type="text" id="city" name="city" >
+                            <input type="text" id="city" name="city">
                         </div>
                         <div style="flex: 1;">
                             <label>State</label>
-                            <input type="text" id="state" name="state" >
+                            <input type="text" id="state" name="state">
                         </div>
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>Postal Code</label>
-                    <input type="text" id="postal_code" name="postal_code" >
+                    <input type="text" id="postal_code" name="postal_code">
                 </div>
 
                 <div class="form-group">
