@@ -5,6 +5,7 @@ import {
     addToCartService,
     updateQuantityService,
     removeItemService,
+    getCartSummary
 } from "../../services/userSer/cartServices.js";
 
 export const loadCartPage = async (req, res) => {
@@ -47,8 +48,9 @@ export const updateCartQty = async (req, res) => {
         const { itemId, action } = req.body;
 
         const result = await updateQuantityService(userId, itemId, action);
+        const summary = await getCartSummary(userId);
 
-        if (req.session.coupon && result.optTotal < req.session.coupon.mincart_value) {
+        if (req.session.coupon && summary.cartTotal < req.session.coupon.mincart_value) {
             req.session.coupon = null;
         }
 
@@ -56,8 +58,9 @@ export const updateCartQty = async (req, res) => {
             success: true,
             message: "Quantity updated",
             newQty: result.newQty,
-            cartTotal: result.optTotal,
-            totalSavings: result.totalSavings
+            cartTotal: summary.cartTotal,
+            totalSavings: summary.totalSavings,
+            itemCount: summary.itemCount
         });
 
     } catch (error) {
@@ -74,18 +77,22 @@ export const removeCartItem = async (req, res) => {
         const { itemId } = req.params;
 
         await removeItemService(userId, itemId);
+        const summary = await getCartSummary(userId);
 
-        const updatedCart = await Cart.findOne({ user_id: userId }).populate("items.variant_id");
-
-        const newTotal = updatedCart ? updatedCart.items.reduce((sum, item) => sum + (item.quantity * item.variant_id.price), 0) : 0;
-
-        if (req.session.coupon && newTotal < req.session.coupon.mincart_value) {
+        if (req.session.coupon && summary.cartTotal < req.session.coupon.mincart_value) {
             req.session.coupon = null;
         }
 
-        res.status(statusCode.OK).json({ success: true, message: "Item removed" });
+        res.status(statusCode.OK).json({
+            success: true,
+            message: "Item removed",
+            cartTotal: summary.cartTotal,
+            totalSavings: summary.totalSavings,
+            itemCount: summary.itemCount
+        });
 
     } catch (error) {
+        console.error("Remove Item Error:", error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).json({
             success: false,
             message: "Server Error"

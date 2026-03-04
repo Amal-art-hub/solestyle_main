@@ -8,13 +8,13 @@
         <div class="cart-header">
             <h1>Shopping Cart</h1>
             <!-- Valid Items Count -->
-            <span class="item-count">
+            <span class="item-count" id="header-item-count">
                 <%= cart && cart.items ? cart.items.length : 0 %> Items
             </span>
         </div>
 
         <% if (cart && cart.items.length> 0) { %>
-            <div class="cart-content">
+            <div class="cart-content" id="cart-main-content">
                 <!-- Left: Items List -->
                 <div class="cart-items">
                     <% cart.items.forEach(item=> { %>
@@ -23,7 +23,8 @@
                             <% const isBlocked=item.product_id.isDeleted || !item.product_id.isListed; %>
                                 <% const isDisabled=isOutOfStock || isBlocked; %>
 
-                                    <div class="cart-item <%= isDisabled ? 'disabled-item' : '' %>">
+                                    <div class="cart-item <%= isDisabled ? 'disabled-item' : '' %>"
+                                        id="item-row-<%= item._id %>">
                                         <div class="item-image">
                                             <img src="<%= item.image_snapshot.startsWith('http') ? item.image_snapshot : '/uploads/variant-images/' + item.image_snapshot %>"
                                                 alt="<%= item.name_snapshot %>">
@@ -189,15 +190,16 @@
                                 </button>
                 </div>
             </div>
-            <% } else { %>
-                <!-- Empty State -->
-                <div class="empty-cart">
+            <% } %>
+
+                <!-- Empty State (Always in DOM for dynamic toggle) -->
+                <div class="empty-cart" id="empty-cart-msg"
+                    style="<%= (cart && cart.items.length > 0) ? 'display: none;' : '' %>">
                     <i class="fa fa-shopping-bag"></i>
                     <h2>Your cart is empty</h2>
                     <p>Looks like you haven't added anything to your cart yet.</p>
                     <a href="/" class="btn-continue">Continue Shopping</a>
                 </div>
-                <% } %>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>

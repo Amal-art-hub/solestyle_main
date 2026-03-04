@@ -208,3 +208,49 @@ export const removeItemService = async (userId, itemId) => {
         { new: true }
     );
 };
+
+export const getCartSummary = async (userId) => {
+    try {
+        const cart = await Cart.findOne({ user_id: userId }).populate({
+            path: "items.variant_id",
+            select: "size color price stock"
+        }).populate({
+            path: "items.product_id",
+            select: "name isDeleted isListed categoryId"
+        });
+
+        if (!cart || !cart.items.length) {
+            return {
+                cartTotal: 0,
+                totalSavings: 0,
+                itemCount: 0
+            };
+        }
+
+        const validItems = cart.items.filter(item =>
+            item.variant_id &&
+            item.product_id &&
+            item.variant_id.stock >= item.quantity &&
+            !item.product_id.isDeleted &&
+            item.product_id.isListed
+        );
+
+        let grandTotal = 0;
+        let totalMRP = 0;
+
+        await Promise.all(validItems.map(async (item) => {
+            const { finalPrice } = await calculateFinalPrice(item.product_id, item.variant_id.price);
+            grandTotal += (item.quantity * finalPrice);
+            totalMRP += (item.quantity * item.variant_id.price);
+        }));
+
+        return {
+            cartTotal: grandTotal,
+            totalSavings: totalMRP - grandTotal,
+            itemCount: cart.items.length
+        };
+    } catch (error) {
+        console.error("getCartSummary Error:", error);
+        throw error;
+    }
+};
