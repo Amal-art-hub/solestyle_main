@@ -27,8 +27,8 @@ export const changePassword = async (userId, oldPass, newPass) => {
         throw new Error("Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.");
     }
 
-    user.password = await bcrypt.hash(newPass, 10);
-    await user.save();
+    user.password = newPass;
+    await user.save(); // The User model pre-save hook will hash this.
     return { success: true, message: "Password updated successfully" };
 };
 
