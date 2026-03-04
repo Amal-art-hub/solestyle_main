@@ -1,43 +1,46 @@
-// Auto-refresh order status every 5 seconds
-const startOrderStatusRefresh = () => {
-    const orderId = window.location.pathname.split("/").pop();
-    setInterval(async () => {
-        try {
-            const response = await fetch(`/user/orders/${orderId}`, {
-                method: "GET",
-                headers: { "Content-Type": "application/json" }
-            });
-            if (response.ok) {
-                const html = await response.text();
-                // Parse the new HTML and update order details
-                const parser = new DOMParser();
-                const newDoc = parser.parseFromString(html, "text/html");
+// Reusable function to refresh the entire order details area
+const refreshOrderUI = async () => {
+    const pathParts = window.location.pathname.split("/").filter(p => p);
+    const orderId = pathParts[pathParts.length - 1];
 
-                // Update tracking section
-                const newTrackingSection = newDoc.querySelector(".tracking-wrapper");
-                const currentTrackingSection = document.querySelector(".tracking-wrapper");
-                if (newTrackingSection && currentTrackingSection) {
-                    currentTrackingSection.innerHTML = newTrackingSection.innerHTML;
-                }
+    try {
+        console.log(`[DEBUG] Refreshing Order #${orderId}...`);
 
-                // Update items section (left-col with order items)
-                const newItemsSection = newDoc.querySelector(".left-col");
-                const currentItemsSection = document.querySelector(".left-col");
-                if (newItemsSection && currentItemsSection) {
-                    currentItemsSection.innerHTML = newItemsSection.innerHTML;
-                }
+        const response = await fetch(`/orders/${orderId}?t=${Date.now()}`, {
+            method: "GET",
+            headers: { "Accept": "text/html" }
+        });
 
-                // Update actions card (right side buttons)
-                const newActionsCard = newDoc.querySelector(".actions-card");
-                const currentActionsCard = document.querySelector(".actions-card");
-                if (newActionsCard && currentActionsCard) {
-                    currentActionsCard.innerHTML = newActionsCard.innerHTML;
-                }
+        if (response.ok) {
+            const html = await response.text();
+            const parser = new DOMParser();
+            const newDoc = parser.parseFromString(html, "text/html");
+
+            const newContent = newDoc.querySelector(".order-details-container");
+            const currentContent = document.querySelector(".order-details-container");
+
+            if (newContent && currentContent) {
+                // Log the status of the first few items in the response for debugging
+                const badges = Array.from(newDoc.querySelectorAll(".status-badge")).map(b => b.innerText.trim());
+                console.log("[DEBUG] Status Badges in Response:", badges);
+
+                // Robust replacement
+                currentContent.replaceWith(newContent);
+                console.log("[DEBUG] UI Updated Successfully.");
+            } else {
+                console.warn("[DEBUG] Container mismatch. Reloading...");
+                location.reload();
             }
-        } catch (error) {
-            console.error("Error refreshing order status:", error);
         }
-    }, 5000);
+    } catch (error) {
+        console.error("[DEBUG] Sync Error:", error);
+    }
+};
+
+// Auto-refresh in background to keep tracking line and statuses live
+const startOrderStatusRefresh = () => {
+    // Refresh every 15 seconds in background (less aggressive than before)
+    setInterval(refreshOrderUI, 15000);
 };
 
 
@@ -76,8 +79,8 @@ const cancelOrderItem = async (orderId, itemId) => {
             });
             const result = await response.json();
             if (result.success) {
-                Swal.fire("Canceled!", "Item has been canceled.", "success")
-                    .then(() => location.reload());
+                Swal.fire("Canceled!", "Item has been canceled.", "success");
+                setTimeout(refreshOrderUI, 300); // Small delay for DB consistency
             } else {
                 Swal.fire("Error", result.message || "Could not cancel item", "error");
             }
@@ -121,8 +124,8 @@ async function returnOrderItem(orderId, itemId) {
             const data = await response.json();
 
             if (data.success) {
-                Swal.fire("Submitted!", "Return request submitted.", "success")
-                    .then(() => location.reload());
+                Swal.fire("Submitted!", "Return request submitted.", "success");
+                setTimeout(refreshOrderUI, 300); // Small delay for DB consistency
             } else {
                 Swal.fire("Error", data.message || "Could not return item", "error");
             }
@@ -168,8 +171,8 @@ const cancelOrder = async (orderId) => {
             const result = await response.json();
 
             if (result.success) {
-                Swal.fire("Canceled!", "Order has been canceled.", "success")
-                    .then(() => location.reload());
+                Swal.fire("Canceled!", "Order has been canceled.", "success");
+                setTimeout(refreshOrderUI, 300); // Small delay for DB consistency
             } else {
                 Swal.fire("Error", result.message || "Could not cancel order", "error");
             }
@@ -215,8 +218,8 @@ const returnOrder = async (orderId) => {
             const result = await response.json();
 
             if (result.success) {
-                Swal.fire("Returned!", "Order return request submitted.", "success")
-                    .then(() => location.reload());
+                Swal.fire("Returned!", "Order return request submitted.", "success");
+                setTimeout(refreshOrderUI, 300); // Small delay for DB consistency
             } else {
                 Swal.fire("Error", result.message || "Could not return order", "error");
             }
