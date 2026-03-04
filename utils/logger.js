@@ -35,7 +35,7 @@ export const logToFile=(message)=>{
 
     const logEntry=`[${timestamp}] ${message}\n`;
 
-fs.appendFileSync(logFile,logEntry);
+fs.appendFile(logFile,logEntry,()=>{});
 
 console.log(logEntry.trim());
 };

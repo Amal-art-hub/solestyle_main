@@ -1,4 +1,4 @@
-/* public/js/user/wishlist.js */
+
 
 async function removeFromWishlist(id) {
     try {
@@ -19,6 +19,24 @@ async function removeFromWishlist(id) {
             const response = await axios.delete(`/user/wishlist/remove/${id}`);
 
             if (response.data.success) {
+
+
+               const badge=document.querySelector(".wishlist-badge");
+
+               if(badge){
+                let count= parseInt(badge.innerText);
+                count=count-1;
+                if(count>0){
+                    badge.innerText=count;
+                }else{
+                badge.remove();
+                }
+               }
+
+
+
+
+
                 // Success - Animation
                 await Swal.fire({
                     icon: "success",
@@ -34,7 +52,7 @@ async function removeFromWishlist(id) {
                     card.style.transition = "all 0.5s ease";
                     card.style.opacity = "0";
                     card.style.transform = "scale(0.9)";
-                    setTimeout(() => location.reload(), 500);
+                    setTimeout(() => card.remove(), 500);
                 } else {
                     location.reload();
                 }
@@ -51,3 +69,4 @@ async function removeFromWishlist(id) {
         });
     }
 }
+
