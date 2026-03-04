@@ -63,8 +63,10 @@ async function placeOrder() {
             });
 
         } catch (error) {
-            console.error(error);
-            Swal.fire("Error", "Payment initialization failed", "error");
+         console.error(error);
+  
+    const serverMessage = error.response?.data?.message || "Payment initialization failed";
+    Swal.fire("Error", serverMessage, "error");
         }
         return;
     }
