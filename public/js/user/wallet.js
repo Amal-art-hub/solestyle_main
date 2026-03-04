@@ -9,7 +9,7 @@ function initiateTopup(amount) {
         confirmButtonText: 'Yes, Pay Now!',
         cancelButtonText: 'Cancel'
     }).then((result) => {
-       
+
         if (result.isConfirmed) {
             openRazorpay(amount);
         }
@@ -37,13 +37,13 @@ async function openRazorpay(amount) {
         });
         const data = await res.json();
         if (!data.success) {
-    Swal.fire({
-        icon: 'error',
-        title: 'Payment Error',
-        text: 'Failed to create payment order. Please try again.'
-    });
-    return; 
-}
+            Swal.fire({
+                icon: 'error',
+                title: 'Payment Error',
+                text: 'Failed to create payment order. Please try again.'
+            });
+            return;
+        }
 
 
         const rzp = new Razorpay({
@@ -66,8 +66,32 @@ async function openRazorpay(amount) {
                 });
                 const result = await verifyRes.json();
                 if (result.success) {
-                    Swal.fire({ icon: 'success', title: 'Wallet Topped Up!', text: `₹${amount} added successfully!` })
-                        .then(() => window.location.reload());
+                    Swal.fire({ icon: 'success', title: 'Wallet Topped Up!', text: `₹${amount} added successfully!` });
+
+                    // ✅ UPDATE BALANCE INSTANTLY
+                    document.getElementById('walletBalance').innerText = `₹${result.newBalance}`;
+
+                    // ✅ UPDATE TRANSACTION LIST (PREPEND NEW ROW)
+                    const historyTable = document.querySelector('.transaction-table tbody');
+                    if (historyTable) {
+                        const newRow = document.createElement('tr');
+                        newRow.className = 'txn-row';
+                        newRow.innerHTML = `
+                            <td>${new Date(result.newTransaction.date).toLocaleDateString()}</td>
+                            <td>${result.newTransaction.description}</td>
+                            <td><span class="status-badge credit">Credit</span></td>
+                            <td class="text-right amount credit">+ ₹${result.newTransaction.amount.toFixed(2)}</td>
+                        `;
+                        historyTable.prepend(newRow);
+                    } else {
+                        // If table didn't exist (empty state), better to reload once or handle empty state
+                        window.location.reload();
+                    }
+
+                    // ✅ CLEAR INPUT 
+                    const customInput = document.getElementById('customAmount');
+                    if (customInput) customInput.value = '';
+
                 } else {
                     Swal.fire({ icon: 'error', title: 'Verification Failed', text: 'Contact support.' });
                 }

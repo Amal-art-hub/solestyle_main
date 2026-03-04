@@ -2,7 +2,7 @@ import {
     getWallet,
     createWalletTopupOrder,
     verifyWalletPayment,
-    creditWallet 
+    creditWallet
 } from "../../services/userSer/walletService.js";
 
 
@@ -65,8 +65,13 @@ export const verifyTopupPayment = async (req, res) => {
         if (!isValid) {
             return res.status(statusCode.BAD_REQUEST).json({ success: false, message: "Payment verification failed" });
         }
-        await creditWallet(userId, Number(amount), "Wallet Top-up via Razorpay");
-        res.status(statusCode.OK).json({ success: true, message: "Wallet topped up!" });
+        const wallet = await creditWallet(userId, Number(amount), "Wallet Top-up via Razorpay");
+        res.status(statusCode.OK).json({
+            success: true,
+            message: "Wallet topped up!",
+            newBalance: wallet.balance.toFixed(2),
+            newTransaction: wallet.history[wallet.history.length - 1]
+        });
     } catch (error) {
         console.error("Topup verify error:", error);
         res.status(statusCode.INTERNAL_SERVER_ERROR).json({ success: false, message: "Verification failed" });

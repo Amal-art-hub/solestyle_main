@@ -4,7 +4,7 @@
     <!-- Wallet specific styles -->
     <link rel="stylesheet" href="/css/user/wallet.css">
     <link rel="stylesheet" href="/css/user/homestyle.css">
-    
+
     <div class="dashboard-container">
         <!-- Breadcrumb / Header -->
         <div class="header-row">
@@ -16,7 +16,8 @@
         <div class="profile-card wallet-card">
             <div class="balance-info">
                 <span class="label-light">Current Balance</span>
-                <h1 class="balance-amount">₹<%= wallet.balance.toFixed(2) %></h1>
+                <h1 class="balance-amount" id="walletBalance">₹<%= wallet.balance.toFixed(2) %>
+                </h1>
             </div>
             <div class="wallet-icon">
                 <i class="fas fa-wallet"></i>
@@ -24,24 +25,24 @@
         </div>
 
 
-<!-- TOP UP SECTION -->
-<div class="topup-card">
-    <h3>Add Money to Wallet</h3>
+        <!-- TOP UP SECTION -->
+        <div class="topup-card">
+            <h3>Add Money to Wallet</h3>
 
-    <!-- Preset Amounts -->
-    <div class="preset-amounts">
-        <button class="preset-btn" onclick="initiateTopup(100)">₹100</button>
-        <button class="preset-btn" onclick="initiateTopup(250)">₹250</button>
-        <button class="preset-btn active" onclick="initiateTopup(500)">₹500 ⭐</button>
-        <button class="preset-btn" onclick="initiateTopup(1000)">₹1000</button>
-    </div>
+            <!-- Preset Amounts -->
+            <div class="preset-amounts">
+                <button class="preset-btn" onclick="initiateTopup(100)">₹100</button>
+                <button class="preset-btn" onclick="initiateTopup(250)">₹250</button>
+                <button class="preset-btn active" onclick="initiateTopup(500)">₹500 ⭐</button>
+                <button class="preset-btn" onclick="initiateTopup(1000)">₹1000</button>
+            </div>
 
-    <!-- Custom Amount -->
-    <div class="custom-row">
-        <input type="number" id="customAmount" placeholder="Enter amount (₹)" min="1" max="50000" />
-        <button class="pay-btn" onclick="initiateCustomTopup()">Pay Now →</button>
-    </div>
-</div>
+            <!-- Custom Amount -->
+            <div class="custom-row">
+                <input type="number" id="customAmount" placeholder="Enter amount (₹)" min="1" max="50000" />
+                <button class="pay-btn" onclick="initiateCustomTopup()">Pay Now →</button>
+            </div>
+        </div>
 
 
 
@@ -54,9 +55,9 @@
 
         <!-- Transaction History -->
         <h3>Transaction History</h3>
-        
+
         <div class="profile-card history-container">
-            <% if(transactions && transactions.length > 0) { %>
+            <% if(transactions && transactions.length> 0) { %>
                 <table class="transaction-table">
                     <thead>
                         <tr>
@@ -67,39 +68,43 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <% transactions.forEach(txn => { %>
+                        <% transactions.forEach(txn=> { %>
                             <tr class="txn-row">
-                                <td><%= new Date(txn.date).toLocaleDateString() %></td>
-                                <td><%= txn.description %></td>
+                                <td>
+                                    <%= new Date(txn.date).toLocaleDateString() %>
+                                </td>
+                                <td>
+                                    <%= txn.description %>
+                                </td>
                                 <td>
                                     <!-- Using simple text or badges -->
                                     <span class="status-badge <%= txn.type %>">
-                                        <%= txn.type === 'credit' ? 'Credit' : 'Debit' %>
+                                        <%= txn.type==='credit' ? 'Credit' : 'Debit' %>
                                     </span>
                                 </td>
                                 <td class="text-right amount <%= txn.type %>">
-                                    <%= txn.type === 'credit' ? '+' : '-' %> ₹<%= txn.amount.toFixed(2) %>
+                                    <%= txn.type==='credit' ? '+' : '-' %> ₹<%= txn.amount.toFixed(2) %>
                                 </td>
                             </tr>
-                        <% }) %>
+                            <% }) %>
                     </tbody>
                 </table>
-            <% } else { %>
-                <div class="empty-state">
-                    <p>No transactions yet.</p>
-                </div>
-            <% } %>
+                <% } else { %>
+                    <div class="empty-state">
+                        <p>No transactions yet.</p>
+                    </div>
+                    <% } %>
         </div>
-            
 
 
-            <%- include('../partials/pagination') %>
-          
 
-        </div> <!-- End of history-container -->
+        <%- include('../partials/pagination') %>
+
+
+    </div> <!-- End of history-container -->
     </div>
 
-<%- include('../partials/footer') %>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> 
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script src="/js/user/wallet.js"></script>
+    <%- include('../partials/footer') %>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+        <script src="/js/user/wallet.js"></script>
